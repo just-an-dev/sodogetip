@@ -78,11 +78,13 @@ def main():
                 except:
                     continue
                 parent_comment = msg.parent()
-                msg.reply('+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
+
                 print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
                 if user_function.user_exist(msg.author.name):
                     # check user have address before tip
                     if parent_comment.author.name in dict:
+                        msg.reply(
+                            '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
                         tip_user(msg.author.name, parent_comment.author.name, amount)
                     else:
                         msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
