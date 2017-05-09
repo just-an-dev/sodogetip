@@ -1,0 +1,4 @@
+.idea
+*.pyc
+user_file.json
+config.py
