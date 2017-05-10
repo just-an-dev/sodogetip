@@ -44,20 +44,22 @@ def main():
             else:
                 print msg.author.name + ' are already registered '
                 msg.reply('You are already registered ')
+
         elif msg_body == '+info' and msg_subject == '+info':
             mark_msg_read(msg)
             if user_function.user_exist(msg.author.name):
                 user_function.get_user_info(msg)
             else:
                 msg.reply('You need register before')
+
         elif msg_body == '+balance' and msg_subject == '+balance':
             mark_msg_read(msg)
             if user_function.user_exist(msg.author.name):
                 balance = get_user_balance(msg.author.name)
                 msg.reply('Your balance : ' + str(balance))
-
             else:
                 msg.reply('You need register before')
+
         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
             mark_msg_read(msg)
             if user_function.user_exist(msg.author.name):
@@ -68,9 +70,11 @@ def main():
                     send_to(sender_address, receiver_address, amount)
                     msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
                 else:
+                    print('You must use valid amount')
                     msg.reply('You must use valid amount')
             else:
                 msg.reply('You need register before')
+
         elif split_message.count('+/u/sodogetiptest'):
             print('An user mention detected ')
             mark_msg_read(msg)
@@ -89,15 +93,19 @@ def main():
                                 '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
                             tip_user(msg.author.name, parent_comment.author.name, amount)
                         else:
+                            print('user '+ parent_comment.author.name + ' not registered')
                             msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
                     else:
                         msg.reply('You need register before')
                 else:
+                    print('You must use valid amount')
                     msg.reply('You must use valid amount')
+
         else:
             mark_msg_read(msg)
             msg.reply('Currently not supported')
             print 'Currently not supported'
+
         # to not explode rate limit :)
         print 'Make an pause !'
         time.sleep(3)
