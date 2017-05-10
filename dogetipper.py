@@ -21,6 +21,8 @@ rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
     rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
     rpc_config['doge_rpc_port']))
 
+linkRegister = '[register](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Bregister&message=%2Bregister)'
+
 
 def main():
     # create file fi not exist
@@ -50,7 +52,7 @@ def main():
             if user_function.user_exist(msg.author.name):
                 user_function.get_user_info(msg)
             else:
-                msg.reply('You need register before')
+                msg.reply('You need %s before' % linkRegister)
 
         elif msg_body == '+balance' and msg_subject == '+balance':
             mark_msg_read(msg)
@@ -60,7 +62,7 @@ def main():
                 msg.reply('Your balance : ' + str(balance))
             else:
                 print('user %s not registered ' % (msg.author.name))
-                msg.reply('You need register before')
+                msg.reply('You need %s before' % linkRegister)
 
         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
             mark_msg_read(msg)
@@ -70,12 +72,12 @@ def main():
                 if check_amount_valid(amount):
                     receiver_address = split_message[4]
                     send_to(sender_address, receiver_address, amount, True)
-                    msg.reply(' : ' + str(amount) + ' to ' + receiver_address)
+                    msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
                 else:
                     print('You must use valid amount')
                     msg.reply('You must use valid amount')
             else:
-                msg.reply('You need register before')
+                msg.reply('You need %s before' % linkRegister)
 
         elif split_message.count('+/u/sodogetiptest'):
             print('An user mention detected ')
@@ -91,18 +93,20 @@ def main():
                         # check user have address before tip
                         if user_function.user_exist(parent_comment.author.name):
                             if int(amount) >= get_user_balance(msg.author.name):
-                                print('user %s not have enough to tip this amount (%s), balance = %s'% (msg.author.name, amount, get_user_balance(msg.author.name)) )
+                                print('user %s not have enough to tip this amount (%s), balance = %s' % (
+                                msg.author.name, amount, get_user_balance(msg.author.name)))
                                 msg.reply('+/u/' + msg.author.name + ' your balance is too low for this tip ')
                             else:
                                 print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
                                 msg.reply(
-                                    '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
+                                    '+/u/' + msg.author.name + ' tip ' + str(
+                                        amount) + ' to ' + parent_comment.author.name)
                                 tip_user(msg.author.name, parent_comment.author.name, amount)
                         else:
-                            print('user '+ parent_comment.author.name + ' not registered')
+                            print('user ' + parent_comment.author.name + ' not registered')
                             msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
                     else:
-                        msg.reply('You need register before')
+                        msg.reply('You need %s before' % linkRegister)
                 else:
                     print('You must use valid amount')
                     msg.reply('You must use valid amount')
@@ -152,7 +156,7 @@ def tip_user(sender_user, receiver_user, amount_tip):
     send_to(sender_address, receiver_address, amount_tip)
 
 
-def send_to(sender_address, receiver_address, amount, take_fee_on_amount = False):
+def send_to(sender_address, receiver_address, amount, take_fee_on_amount=False):
     print "send " + amount + " to " + receiver_address + " from " + sender_address
 
     list_unspent = rpc.listunspent(0, 99999999999, [sender_address])
@@ -186,7 +190,7 @@ def send_to(sender_address, receiver_address, amount, take_fee_on_amount = False
     print "fee : " + str(fee)
     fee = 1
 
-    if take_fee_on_amount :
+    if take_fee_on_amount:
         amount = (int(amount) - int(fee))
 
     return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
