@@ -69,8 +69,8 @@ def main():
                 amount = split_message[1]
                 if check_amount_valid(amount):
                     receiver_address = split_message[4]
-                    send_to(sender_address, receiver_address, amount)
-                    msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+                    send_to(sender_address, receiver_address, amount, True)
+                    msg.reply(' : ' + str(amount) + ' to ' + receiver_address)
                 else:
                     print('You must use valid amount')
                     msg.reply('You must use valid amount')
@@ -152,7 +152,7 @@ def tip_user(sender_user, receiver_user, amount_tip):
     send_to(sender_address, receiver_address, amount_tip)
 
 
-def send_to(sender_address, receiver_address, amount):
+def send_to(sender_address, receiver_address, amount, take_fee_on_amount = False):
     print "send " + amount + " to " + receiver_address + " from " + sender_address
 
     list_unspent = rpc.listunspent(0, 99999999999, [sender_address])
@@ -186,7 +186,11 @@ def send_to(sender_address, receiver_address, amount):
     print "fee : " + str(fee)
     fee = 1
 
+    if take_fee_on_amount :
+        amount = (int(amount) - int(fee))
+
     return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
+
     print "return_amount : " + str(return_amount)
 
     raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
@@ -198,7 +202,7 @@ def send_to(sender_address, receiver_address, amount):
     print "raw tx :"
     print(raw_tx)
 
-    print 'send ' + amount + ' Doge form ' + receiver_address + ' to ' + receiver_address
+    print 'send ' + str(amount) + ' Doge form ' + receiver_address + ' to ' + receiver_address
 
     signed = rpc.signrawtransaction(raw_tx)
     send = rpc.sendrawtransaction(signed['hex'])
