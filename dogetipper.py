@@ -29,67 +29,71 @@ def main():
         data = {}
         with open(bot_config['user_file'], 'w+') as f:
             json.dump(data, f)
+
     for msg in reddit.inbox.unread(limit=None):
+
         print str(msg) + ' - ' + msg.author.name + ' sub : ' + msg.subject
-        msgbody = msg.body
-        msgsubject = msg.subject
-        dict = user_function.get_users()
-        splitmessage = msgbody.split()
-        if msgbody == '+register' and msgsubject == '+register':
+        msg_body = msg.body
+        msg_subject = msg.subject
+        split_message = msg_body.split()
+
+        if msg_body == '+register' and msg_subject == '+register':
             mark_msg_read(msg)
-            if msg.author.name not in dict:
+            if not user_function.user_exist(msg.author.name):
                 register_user(msg)
             else:
                 print msg.author.name + ' are already registered '
                 msg.reply('You are already registered ')
-        elif msgbody == '+info' and msgsubject == '+info':
+        elif msg_body == '+info' and msg_subject == '+info':
             mark_msg_read(msg)
-            if msg.author.name in dict:
+            if user_function.user_exist(msg.author.name):
                 user_function.get_user_info(msg)
             else:
                 msg.reply('You need register before')
-        elif msgbody == '+balance' and msgsubject == '+balance':
+        elif msg_body == '+balance' and msg_subject == '+balance':
             mark_msg_read(msg)
-            if msg.author.name in dict:
+            if user_function.user_exist(msg.author.name):
                 balance = get_user_balance(msg.author.name)
                 msg.reply('Your balance : ' + str(balance))
 
             else:
                 msg.reply('You need register before')
-        elif splitmessage.count('+withdraw') and msgsubject == '+withdraw':
+        elif split_message.count('+withdraw') and msg_subject == '+withdraw':
             mark_msg_read(msg)
-            if msg.author.name in dict:
+            if user_function.user_exist(msg.author.name):
                 sender_address = user_function.get_user_address(msg.author.name)
-                amount = splitmessage[1]
-                receiver_address = splitmessage[4]
-                send_to(sender_address, receiver_address, amount)
-
-                msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+                amount = split_message[1]
+                if check_amount_valid(amount):
+                    receiver_address = split_message[4]
+                    send_to(sender_address, receiver_address, amount)
+                    msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+                else:
+                    msg.reply('You must use valid amount')
             else:
                 msg.reply('You need register before')
-        elif splitmessage.count('+/u/sodogetiptest'):
+        elif split_message.count('+/u/sodogetiptest'):
             print('An user mention detected ')
             mark_msg_read(msg)
-            tipindex = splitmessage.index('+/u/sodogetiptest')
+            tip_index = split_message.index('+/u/sodogetiptest')
 
-            if splitmessage[tipindex] == '+/u/sodogetiptest' and splitmessage[tipindex + 2] == 'doge':
-                try:
-                    amount = splitmessage[tipindex + 1]
-                except:
-                    continue
-                parent_comment = msg.parent()
+            if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
+                amount = split_message[tip_index + 1]
 
-                print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
-                if user_function.user_exist(msg.author.name):
-                    # check user have address before tip
-                    if parent_comment.author.name in dict:
-                        msg.reply(
-                            '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
-                        tip_user(msg.author.name, parent_comment.author.name, amount)
+                if check_amount_valid(amount):
+                    parent_comment = msg.parent()
+                    if user_function.user_exist(msg.author.name):
+                        # check user have address before tip
+                        if user_function.user_exist(parent_comment.author.name):
+                            print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
+                            msg.reply(
+                                '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
+                            tip_user(msg.author.name, parent_comment.author.name, amount)
+                        else:
+                            msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
                     else:
-                        msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
+                        msg.reply('You need register before')
                 else:
-                    msg.reply('You need register before')
+                    msg.reply('You must use valid amount')
         else:
             mark_msg_read(msg)
             msg.reply('Currently not supported')
@@ -97,6 +101,13 @@ def main():
         # to not explode rate limit :)
         print 'Make an pause !'
         time.sleep(3)
+
+
+def check_amount_valid(amount):
+    if isinstance(amount, int) and int(amount) > 0:
+        return True
+    else:
+        return False
 
 
 def register_user(msg):
@@ -159,7 +170,7 @@ def send_to(sender_address, receiver_address, amount):
     print "fee : " + str(fee)
     fee = 1
 
-    return_amount = float(sum(unspent_amounts)) - float(amount) - float(fee)
+    return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
     print "return_amount : " + str(return_amount)
 
     raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
