@@ -56,8 +56,10 @@ def main():
             mark_msg_read(msg)
             if user_function.user_exist(msg.author.name):
                 balance = get_user_balance(msg.author.name)
+                print('user %s balance = %s' % (msg.author.name, balance))
                 msg.reply('Your balance : ' + str(balance))
             else:
+                print('user %s not registered ' % (msg.author.name))
                 msg.reply('You need register before')
 
         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
@@ -88,8 +90,8 @@ def main():
                     if user_function.user_exist(msg.author.name):
                         # check user have address before tip
                         if user_function.user_exist(parent_comment.author.name):
-                            if get_user_balance(msg.author.name) <= amount:
-                                print('user ' + msg.author.name + ' not have enough to tip this amount (%s), balance = %s'% (amount, get_user_balance(msg.author.name)) )
+                            if int(amount) >= get_user_balance(msg.author.name):
+                                print('user %s not have enough to tip this amount (%s), balance = %s'% (msg.author.name, amount, get_user_balance(msg.author.name)) )
                                 msg.reply('+/u/' + msg.author.name + ' your balance is too low for this tip ')
                             else:
                                 print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
@@ -141,7 +143,7 @@ def get_user_balance(user):
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
 
-    return sum(unspent_amounts)
+    return int(sum(unspent_amounts))
 
 
 def tip_user(sender_user, receiver_user, amount_tip):
