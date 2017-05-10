@@ -104,7 +104,7 @@ def main():
 
 
 def check_amount_valid(amount):
-    if isinstance(amount, int) and int(amount) > 0:
+    if amount.isdigit() and amount >= 1:
         return True
     else:
         return False
