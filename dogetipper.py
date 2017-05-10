@@ -197,7 +197,10 @@ def send_to(sender_address, receiver_address, amount, take_fee_on_amount=False):
 
     print "return_amount : " + str(return_amount)
 
-    raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
+    if return_amount < 1:
+        raw_addresses = {receiver_address: int(amount)}
+    else:
+        raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
 
     print "raw addresses :"
     print raw_addresses
