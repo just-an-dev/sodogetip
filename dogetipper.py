@@ -89,8 +89,8 @@ def main():
                         # check user have address before tip
                         if user_function.user_exist(parent_comment.author.name):
                             if get_user_balance(msg.author.name) <= amount:
-                                print('user ' + parent_comment.author.name + ' not have enough to tip this amount (%s)'% amount )
-                                msg.reply('+/u/' + parent_comment.author.name + ' your balance is too low for this tip ')
+                                print('user ' + msg.author.name + ' not have enough to tip this amount (%s), balance = %s'% (amount, get_user_balance(msg.author.name)) )
+                                msg.reply('+/u/' + msg.author.name + ' your balance is too low for this tip ')
                             else:
                                 print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
                                 msg.reply(
