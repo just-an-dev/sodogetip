@@ -88,10 +88,14 @@ def main():
                     if user_function.user_exist(msg.author.name):
                         # check user have address before tip
                         if user_function.user_exist(parent_comment.author.name):
-                            print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
-                            msg.reply(
-                                '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
-                            tip_user(msg.author.name, parent_comment.author.name, amount)
+                            if get_user_balance(msg.author.name) <= amount:
+                                print('user ' + parent_comment.author.name + ' not have enough to tip this amount (%s)'% amount )
+                                msg.reply('+/u/' + parent_comment.author.name + ' your balance is too low for this tip ')
+                            else:
+                                print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
+                                msg.reply(
+                                    '+/u/' + msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name)
+                                tip_user(msg.author.name, parent_comment.author.name, amount)
                         else:
                             print('user '+ parent_comment.author.name + ' not registered')
                             msg.reply('+/u/' + parent_comment.author.name + ' need register before can be tipped')
@@ -147,6 +151,8 @@ def tip_user(sender_user, receiver_user, amount_tip):
 
 
 def send_to(sender_address, receiver_address, amount):
+    print "send " + amount + " to " + receiver_address + " from " + sender_address
+
     list_unspent = rpc.listunspent(0, 99999999999, [sender_address])
 
     unspent_list = []
