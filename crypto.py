@@ -14,9 +14,10 @@ def get_user_balance(rpc, user):
 
     # check if user have pending tips
     list_tip_unregistered = user_function.get_unregistered_tip()
-    for tip in list_tip_unregistered.values():
-        if tip['sender']:
-            pending_tips.append(int(tip['amount']))
+    for list_tip in list_tip_unregistered.values():
+        for tip in list_tip:
+            if tip['sender'] == user:
+                pending_tips.append(int(tip['amount']))
 
     return int(sum(unspent_amounts) - sum(pending_tips))
 

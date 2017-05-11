@@ -16,23 +16,26 @@ def register_user(rpc, msg):
             msg.reply(msg.author.name + ' registered, your address is ' + address)
             user_function.add_user(msg.author.name, address)
 
-            # check if user have pending tips
-            pending_tips = user_function.get_user_pending_tip(msg.author.name)
-            if pending_tips != False:
-                for tip in pending_tips:
-                    # check if it's not too old & replay tipping
-                    limit_date = datetime.now() - datetime.timedelta(days=3)
-                    if (datetime.datetime.strptime(tip['time']) < limit_date):
-                        print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
-                        crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
-
-                user_function.remove_pending_tip(msg.author.name)
+            pending_tips(rpc, msg)
         else:
             print 'Error during register !'
     else:
         print msg.author.name + ' are already registered '
         msg.reply('You are already registered ')
 
+
+def pending_tips(rpc, msg):
+    # check if user have pending tips
+    pending_tips = user_function.get_user_pending_tip(msg.author.name)
+    if pending_tips != False:
+        for tip in pending_tips:
+            # check if it's not too old & replay tipping
+            limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
+            if (datetime.datetime.strptime(tip['time']) < limit_date):
+                print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
+                crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
+
+        user_function.remove_pending_tip(msg.author.name)
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
@@ -89,25 +92,28 @@ def tip_user(rpc, msg):
         if utils.check_amount_valid(amount):
             parent_comment = msg.parent()
             if user_function.user_exist(msg.author.name):
-                # check user have address before tip
-                if user_function.user_exist(parent_comment.author.name):
-                    user_balance = crypto.get_user_balance(rpc, msg.author.name)
-                    if int(amount) >= user_balance:
-                        print('user %s not have enough to tip this amount (%s), balance = %s' % (
-                            msg.author.name, amount, user_balance))
-                        msg.reply('+/u/%s your balance is too low for this tip ' % msg.author.name)
-                    else:
+
+                # check we have enough
+                user_balance = crypto.get_user_balance(rpc, msg.author.name)
+                if int(amount) >= user_balance:
+                    print('user %s not have enough to tip this amount (%s), balance = %s' % (
+                        msg.author.name, amount, user_balance))
+                    msg.reply('+/u/%s your balance is too low for this tip ' % msg.author.name)
+                else:
+
+                    # check user have address before tip
+                    if user_function.user_exist(parent_comment.author.name):
                         if crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount):
                             print '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name)
                             msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
                                                                parent_comment.author.name))
-                else:
-                    user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
-                    print('user %s not registered' % parent_comment.author.name)
-                    msg.reply(
-                        '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
-                            parent_comment.author.name, linkRegister)
-                    )
+                    else:
+                        user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
+                        print('user %s not registered' % parent_comment.author.name)
+                        msg.reply(
+                            '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
+                                parent_comment.author.name, linkRegister)
+                        )
             else:
                 msg.reply('You need %s before' % linkRegister)
         else:

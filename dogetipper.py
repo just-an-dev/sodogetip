@@ -61,6 +61,11 @@ def main():
             mark_msg_read(msg)
             bot_command.tip_user(rpc, msg)
 
+        # only for debug
+        elif msg_body == '+pending_tips' and msg_subject == '+pending_tips':
+            mark_msg_read(msg)
+            bot_command.pending_tips(rpc, msg)
+
         else:
             mark_msg_read(msg)
             # msg.reply('Currently not supported')
