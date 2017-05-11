@@ -58,16 +58,22 @@ def withdraw_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         sender_address = user_function.get_user_address(msg.author.name)
         amount = split_message[1]
-        if utils.check_amount_valid(amount):
-            receiver_address = split_message[4]
-            try:
-                crypto.send_to(rpc, sender_address, receiver_address, amount, True)
-            except:
-                traceback.print_exc()
-            msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
-        else:
-            print('You must use valid amount')
-            msg.reply('You must use valid amount')
+        user_balance = crypto.get_user_balance(rpc, msg.author.name)
+        if int(amount) >= user_balance:
+            print('user %s not have enough to withdraw this amount (%s), balance = %s' % (
+                msg.author.name, amount, user_balance))
+            msg.reply('+/u/%s your balance is too low for this withdraw ' % msg.author.name)
+        else :
+            if utils.check_amount_valid(amount):
+                receiver_address = split_message[4]
+                try:
+                    crypto.send_to(rpc, sender_address, receiver_address, amount, True)
+                except:
+                    traceback.print_exc()
+                msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+            else:
+                print('You must use valid amount')
+                msg.reply('You must use valid amount')
     else:
         msg.reply('You need %s before' % linkRegister)
 
