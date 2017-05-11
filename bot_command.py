@@ -27,8 +27,8 @@ def register_user(rpc, msg):
                         crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
 
                 user_function.remove_pending_tip(msg.author.name)
-            else:
-                print 'Error during register !'
+        else:
+            print 'Error during register !'
     else:
         print msg.author.name + ' are already registered '
         msg.reply('You are already registered ')

@@ -49,7 +49,7 @@ def main():
             mark_msg_read(msg)
             bot_command.info_user(rpc, msg)
 
-        elif msg_body == '+balance' and msg_subject == '+balance':
+        elif msg_body == '+balance' or msg_subject == '+balance':
             mark_msg_read(msg)
             bot_command.balance_user(rpc, msg)
 
