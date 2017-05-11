@@ -17,14 +17,18 @@ def register_user(rpc, msg):
             user_function.add_user(msg.author.name, address)
 
             # check if user have pending tips
-            have_pending_tips = user_function.get_user_pending_tip(msg.author.name)
-            if have_pending_tips != False:
-                # check if it's not too old & replay tipping
-                limit_date = datetime.now() - datetime.timedelta(days=3)
-                if (datetime.datetime.strptime(have_pending_tips['time']) < limit_date):
-                    print "replay tipping"
-        else:
-            print 'Error during register !'
+            pending_tips = user_function.get_user_pending_tip(msg.author.name)
+            if pending_tips != False:
+                for tip in pending_tips:
+                    # check if it's not too old & replay tipping
+                    limit_date = datetime.now() - datetime.timedelta(days=3)
+                    if (datetime.datetime.strptime(tip['time']) < limit_date):
+                        print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
+                        crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
+
+                user_function.remove_pending_tip(msg.author.name)
+            else:
+                print 'Error during register !'
     else:
         print msg.author.name + ' are already registered '
         msg.reply('You are already registered ')

@@ -57,12 +57,15 @@ def save_unregistered_tip(sender, receiver, amount):
     print("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
     with open(bot_config['unregistered_tip_user'], 'w') as f:
-        data[receiver] = {
+        data[receiver] = []
+        data[receiver].append({
             'amount': amount,
             'sender': sender,
             'time': datetime.datetime.now().isoformat(),
-        }
+        })
         json.dump(data, f)
+
+
 
 
 def get_user_pending_tip(username):
@@ -71,3 +74,10 @@ def get_user_pending_tip(username):
         return unregistered_tip[username]
     else:
         return False
+
+
+def remove_pending_tip(username):
+    unregistered_tip = get_unregistered_tip()
+    del unregistered_tip[username]
+    with open(bot_config['unregistered_tip_user'], 'w+') as f:
+        json.dump(unregistered_tip, f)
