@@ -35,8 +35,8 @@ def main():
     for msg in reddit.inbox.unread(limit=None):
 
         print str(msg) + ' - ' + msg.author.name + ' sub : ' + msg.subject
-        msg_body = msg.body
-        msg_subject = msg.subject
+        msg_body = msg.body.strip()
+        msg_subject = msg.subject.strip()
         split_message = msg_body.split()
 
         if msg_body == '+register' and msg_subject == '+register':
