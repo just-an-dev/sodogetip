@@ -5,9 +5,10 @@ import traceback
 
 import logging
 import praw
+import requests
 from bitcoinrpc.authproxy import AuthServiceProxy
 
-from config import rpc_config, bot_config
+from config import rpc_config, bot_config, url_get_value
 import user_function
 
 # handler = logging.StreamHandler()
@@ -59,7 +60,8 @@ def main():
             if user_function.user_exist(msg.author.name):
                 balance = get_user_balance(msg.author.name)
                 print('user %s balance = %s' % (msg.author.name, balance))
-                msg.reply('Your balance : ' + str(balance))
+                value_usd = get_coin_value(balance)
+                msg.reply('Your balance : ' + str(balance) + ' ( '+str(value_usd)+'$ ) ')
             else:
                 print('user %s not registered ' % (msg.author.name))
                 msg.reply('You need %s before' % linkRegister)
@@ -94,7 +96,7 @@ def main():
                         if user_function.user_exist(parent_comment.author.name):
                             if int(amount) >= get_user_balance(msg.author.name):
                                 print('user %s not have enough to tip this amount (%s), balance = %s' % (
-                                msg.author.name, amount, get_user_balance(msg.author.name)))
+                                    msg.author.name, amount, get_user_balance(msg.author.name)))
                                 msg.reply('+/u/' + msg.author.name + ' your balance is too low for this tip ')
                             else:
                                 print msg.author.name + ' tip ' + str(amount) + ' to ' + parent_comment.author.name
@@ -221,6 +223,27 @@ def calculate_fee(raw_inputs, raw_addresses):
     nb_out = 2
     fee = nb_input * 180 + nb_out * 34 + 10
     return fee
+
+
+def get_coin_value(balance):
+    try:
+        c_currency = requests.get(url_get_value['coincap'])
+        jc_currency = c_currency.json()
+        print('value is $' + str(jc_currency['usdPrice']))
+        usd_currency = float(
+            "{0:.2f}".format(int(balance) * float(jc_currency['usdPrice'])))
+        return usd_currency
+    except:
+        try:
+            c_currency = requests.get(url_get_value['cryptocompare'])
+            jc_currency = c_currency.json()
+            print('value is $' + str(jc_currency['Data'][0]['Price']))
+            usd_currency = float(
+                "{0:.2f}".format(
+                    int(balance) * float(jc_currency['Data'][0]['Price'])))
+            return usd_currency
+        except:
+            traceback.print_exc()
 
 
 while True:

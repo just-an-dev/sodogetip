@@ -11,3 +11,8 @@ rpc_config = {
 bot_config = {
     'user_file': 'path/to/file'
 }
+
+url_get_value = {
+    "coincap": 'http://www.coincap.io/page/DOGE',
+    "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD'
+}
