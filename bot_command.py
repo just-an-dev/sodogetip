@@ -93,10 +93,10 @@ def withdraw_user(rpc, msg):
 
 def tip_user(rpc, msg):
     print('An user mention detected ')
-    split_message = msg.body.strip().split()
+    split_message = msg.body.lower().strip().split()
     tip_index = split_message.index('+/u/sodogetiptest')
 
-    if lower.split_message[tip_index] == '+/u/sodogetiptest' and lower.split_message[tip_index + 2] == 'doge':
+    if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
         amount = split_message[tip_index + 1]
 
         if utils.check_amount_valid(amount):
@@ -120,7 +120,7 @@ def tip_user(rpc, msg):
 
                             print '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name)
                             # if user have 'verify' in this command he will have confirmation
-                            if lower.split_message.count('verify') or int(amount) >= 1000:
+                            if split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
                                                                    parent_comment.author.name))
                     else:
