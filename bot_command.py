@@ -33,7 +33,7 @@ def pending_tips(rpc, msg):
             # check if it's not too old & replay tipping
             limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
-            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') < limit_date):
+            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
                 print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
                 crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
             else:
