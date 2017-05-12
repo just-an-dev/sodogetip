@@ -96,7 +96,7 @@ def tip_user(rpc, msg):
     split_message = msg.body.strip().split()
     tip_index = split_message.index('+/u/sodogetiptest')
 
-    if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
+    if lower.split_message[tip_index] == '+/u/sodogetiptest' and lower.split_message[tip_index + 2] == 'doge':
         amount = split_message[tip_index + 1]
 
         if utils.check_amount_valid(amount):
@@ -120,7 +120,7 @@ def tip_user(rpc, msg):
 
                             print '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name)
                             # if user have 'verify' in this command he will have confirmation
-                            if split_message.count('verify') or int(amount) >= 1000:
+                            if lower.split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
                                                                    parent_comment.author.name))
                     else:
