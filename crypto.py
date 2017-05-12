@@ -59,8 +59,8 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     print "raw input :"
     print raw_inputs
 
-    fee = calculate_fee(raw_inputs, None)
-    print "fee : " + str(fee)
+    #fee = calculate_fee(raw_inputs, None)
+    #print "fee : " + str(fee)
     fee = 1
 
     if take_fee_on_amount:
