@@ -147,7 +147,7 @@ def history_user(msg):
         history_table += ":-:|:-:\n"
         for tip in data:
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
-                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M'), tip['sender'], tip['receiver'],
+                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str(tip['finish']))
 
         msg.reply('Your history : ' + history_table)
