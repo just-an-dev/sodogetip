@@ -56,6 +56,10 @@ def main():
             mark_msg_read(msg)
             bot_command.balance_user(rpc, msg)
 
+        elif msg_body == '+history' or msg_subject == '+history':
+            mark_msg_read(msg)
+            bot_command.history_user(msg)
+
         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
             mark_msg_read(msg)
             bot_command.withdraw_user(rpc, msg)

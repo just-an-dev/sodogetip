@@ -138,3 +138,19 @@ def tip_user(rpc, msg):
         else:
             print('You must use valid amount')
             msg.reply('You must use valid amount')
+
+
+def history_user(msg):
+    if user_function.user_exist(msg.author.name):
+        data = user_function.get_user_history(msg.author.name)
+        history_table = "Date|Sender|Receiver|Amount|Action|Finish|\n"
+        history_table += ":-:|:-:\n"
+        for tip in data:
+            history_table += "%s|%s|%s|%s|%s|%s|\n" % (
+                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M'), tip['sender'], tip['receiver'],
+                str(tip['amount']), tip['action'], str(tip['finish']))
+
+        msg.reply('Your history : ' + history_table)
+    else:
+        print('user %s not registered ' % (msg.author.name))
+        msg.reply('You need %s before' % linkRegister)
