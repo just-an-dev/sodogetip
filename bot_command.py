@@ -93,7 +93,7 @@ def withdraw_user(rpc, msg):
 
 def tip_user(rpc, msg):
     print('An user mention detected ')
-    split_message = msg.body.strip().split()
+    split_message = msg.body.lower().strip().split()
     tip_index = split_message.index('+/u/sodogetiptest')
 
     if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
