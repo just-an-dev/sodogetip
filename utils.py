@@ -46,6 +46,10 @@ def get_coin_value(balance):
 
 def check_amount_valid(amount):
     if amount.isdigit() and amount >= 1:
-        return True
+        try:
+            int(amount)
+            return True
+        except UnicodeEncodeError:
+            return False
     else:
         return False
