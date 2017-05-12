@@ -36,6 +36,8 @@ def pending_tips(rpc, msg):
                 crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
 
         user_function.remove_pending_tip(msg.author.name)
+    else:
+        print ("no pendding tipping for %s " % msg.author.name)
 
 
 def balance_user(rpc, msg):
@@ -113,8 +115,10 @@ def tip_user(rpc, msg):
                                                          "tip")
 
                             print '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name)
-                            msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
-                                                               parent_comment.author.name))
+                            # if user have 'verify' in this command he will have confirmation
+                            if split_message.count('verify') or int(amount) >= 1000:
+                                msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
+                                                                   parent_comment.author.name))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
