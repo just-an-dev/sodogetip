@@ -11,6 +11,7 @@ rpc_config = {
 bot_config = {
     'user_file': 'path/to/file',
     'unregistered_tip_user': 'path/to/an/other/file',
+    'user_history_path': 'path/to/an/other/file'
 }
 
 url_get_value = {
