@@ -8,7 +8,7 @@ def get_user_balance(rpc, user):
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
-    list_unspent = rpc.listunspent(0, 99999999999, [address])
+    list_unspent = rpc.listunspent(1, 99999999999, [address])
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
 
