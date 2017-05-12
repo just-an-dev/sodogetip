@@ -31,11 +31,12 @@ def pending_tips(rpc, msg):
         for tip in pending_tips:
             # check if it's not too old & replay tipping
             limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
-            if (datetime.datetime.strptime(tip['time']) < limit_date):
+            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') < limit_date):
                 print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
                 crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
 
         user_function.remove_pending_tip(msg.author.name)
+
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
@@ -66,14 +67,17 @@ def withdraw_user(rpc, msg):
             print('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                 msg.author.name, amount, user_balance))
             msg.reply('+/u/%s your balance is too low for this withdraw ' % msg.author.name)
-        else :
+        else:
             if utils.check_amount_valid(amount):
                 receiver_address = split_message[4]
                 try:
-                    crypto.send_to(rpc, sender_address, receiver_address, amount, True)
+                    if crypto.send_to(rpc, sender_address, receiver_address, amount, True):
+                        user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
+                                                     "withdraw")
+                        msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+
                 except:
                     traceback.print_exc()
-                msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
             else:
                 print('You must use valid amount')
                 msg.reply('You must use valid amount')
@@ -104,11 +108,18 @@ def tip_user(rpc, msg):
                     # check user have address before tip
                     if user_function.user_exist(parent_comment.author.name):
                         if crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount):
+                            user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
+                                                         amount,
+                                                         "tip")
+
                             print '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name)
                             msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
                                                                parent_comment.author.name))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
+                        user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
+                                                     amount,
+                                                     "tip", False)
                         print('user %s not registered' % parent_comment.author.name)
                         msg.reply(
                             '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
