@@ -16,6 +16,7 @@ def register_user(rpc, msg):
             msg.reply(msg.author.name + ' registered, your address is ' + address)
             user_function.add_user(msg.author.name, address)
 
+            user_function.add_to_history(msg.author.name, "", "", "", "register")
             pending_tips(rpc, msg)
         else:
             print 'Error during register !'
@@ -35,11 +36,12 @@ def pending_tips(rpc, msg):
             if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') < limit_date):
                 print "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
                 crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
+            else:
+                print "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name)
 
         user_function.remove_pending_tip(msg.author.name)
     else:
         print ("no pendding tipping for %s " % msg.author.name)
-
 
 
 def balance_user(rpc, msg):
