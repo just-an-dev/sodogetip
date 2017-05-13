@@ -10,6 +10,10 @@ def get_user_balance(rpc, user):
 
     address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(1, 99999999999, [address])
+    # in case of no un-spent transaction
+    if len(list_unspent) == 0:
+        return 0
+
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
 
