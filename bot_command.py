@@ -12,7 +12,7 @@ linkRegister = '[register](http://www.reddit.com/message/compose?to=sodogetiptes
 
 def register_user(rpc, msg):
     if not user_function.user_exist(msg.author.name):
-        address = rpc.getnewaddress()
+        address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
             msg.reply(msg.author.name + ' registered, your address is ' + address)
             user_function.add_user(msg.author.name, address)
@@ -35,7 +35,8 @@ def pending_tips(rpc, msg):
             limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
             if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
-                bot_logger.logger.info("replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name))
+                bot_logger.logger.info(
+                    "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name))
                 crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
             else:
                 bot_logger.logger.info(
@@ -120,7 +121,8 @@ def tip_user(rpc, msg):
                                                          amount,
                                                          "tip")
 
-                            bot_logger.logger.info('%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
+                            bot_logger.logger.info(
+                                '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
