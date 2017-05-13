@@ -144,7 +144,7 @@ def history_user(msg):
     if user_function.user_exist(msg.author.name):
         data = user_function.get_user_history(msg.author.name)
         history_table = "Date|Sender|Receiver|Amount|Action|Finish|\n"
-        history_table += ":-:|:-:\n"
+        history_table += ":-:|:-:|:-:|:-:|:-:|:-:\n"
         for tip in data:
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
