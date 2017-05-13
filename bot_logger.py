@@ -25,4 +25,3 @@ logger.addHandler(steam_handler)
 
 logger_praw = logging.getLogger('prawcore')
 logger_praw.setLevel(logging.WARNING)
-logger.addHandler(logger_praw)
