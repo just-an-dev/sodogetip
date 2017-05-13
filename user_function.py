@@ -1,6 +1,8 @@
 import json
 
 import datetime
+
+import bot_logger
 from config import bot_config
 
 
@@ -10,14 +12,14 @@ def get_users():
         try:
             data = json.load(f)
         except ValueError:
-            print "Error on read user file"
+            bot_logger.logger.warning("Error on read user file")
             data = {}
         return data
 
 
 # save to file:
 def add_user(user, address):
-    print("Add user " + user + ' ' + address)
+    bot_logger.logger.info("Add user " + user + ' ' + address)
     data = get_users()
     with open(bot_config['user_file'], 'w') as f:
         data[user] = address
@@ -48,13 +50,13 @@ def get_unregistered_tip():
         try:
             data = json.load(f)
         except ValueError:
-            print "Error on read unregistered tip user file"
+            bot_logger.logger.warning("Error on read unregistered tip user file")
             data = {}
         return data
 
 
 def save_unregistered_tip(sender, receiver, amount):
-    print("Save tip form %s to %s " % (sender, receiver))
+    bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
     with open(bot_config['unregistered_tip_user'], 'w') as f:
         data[receiver] = []
@@ -87,16 +89,16 @@ def get_user_history(user):
             try:
                 data = json.load(f)
             except ValueError:
-                print "Error on read user file history"
+                bot_logger.logger.warning("Error on read user file history")
                 data = []
     except IOError:
-        print "Error on read user file history"
+        bot_logger.logger.warning("Error on read user file history")
         data = []
     return data
 
 
 def add_to_history(user, sender, receiver, amount, action, finish=True):
-    print("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
+    bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user, sender, receiver, amount, action, finish))
     data = get_user_history(user)
     with open(bot_config['user_history_path'] + user + '.json', 'w+') as f:

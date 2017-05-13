@@ -1,5 +1,6 @@
 import traceback
 
+import bot_logger
 import user_function
 
 
@@ -32,7 +33,7 @@ def tip_user(rpc, sender_user, receiver_user, amount_tip):
 
 
 def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
-    print "send " + amount + " to " + receiver_address + " from " + sender_address
+    bot_logger.logger.info("send %s to %s from %s" % (amount, receiver_address, sender_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
 
@@ -47,7 +48,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
         if sum(unspent_amounts) > amount:
             break
 
-    print "sum of unspend :" + str(sum(unspent_amounts))
+    bot_logger.logger.debug("sum of unspend :" + str(sum(unspent_amounts)))
 
     raw_inputs = []
     for i in range(0, len(list_unspent), 1):
@@ -56,11 +57,11 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
             "vout": list_unspent[i]['vout']
         }
         raw_inputs.append(tx)
-    print "raw input :"
-    print raw_inputs
 
-    #fee = calculate_fee(raw_inputs, None)
-    #print "fee : " + str(fee)
+    bot_logger.logger.debug("raw input : %s" % raw_inputs)
+
+    # fee = calculate_fee(raw_inputs, None)
+    # logger.debug( "fee : %s" % str(fee))
     fee = 1
 
     if take_fee_on_amount:
@@ -68,25 +69,24 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
 
-    print "return_amount : " + str(return_amount)
+    bot_logger.logger.debug("return amount : %s" % str(return_amount))
 
     if return_amount < 1:
         raw_addresses = {receiver_address: int(amount)}
     else:
         raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
 
-    print "raw addresses :"
-    print raw_addresses
+    bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 
     raw_tx = rpc.createrawtransaction(raw_inputs, raw_addresses)
-    print "raw tx :"
-    print(raw_tx)
+    bot_logger.logger.debug("raw tx : %s" % raw_tx)
 
-    print 'send ' + str(amount) + ' Doge form ' + receiver_address + ' to ' + receiver_address
+    bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
     signed = rpc.signrawtransaction(raw_tx)
     send = rpc.sendrawtransaction(signed['hex'])
     return send
+
 
 def calculate_fee(raw_inputs, raw_addresses):
     nb_input = len(raw_inputs)

@@ -2,23 +2,12 @@ import json
 import os
 import time
 import traceback
-
-import logging
-
 import praw
 from bitcoinrpc.authproxy import AuthServiceProxy
 
-from config import rpc_config, bot_config, url_get_value
-
+import bot_logger
+from config import rpc_config, bot_config, DATA_PATH
 import bot_command
-import user_function
-
-# handler = logging.StreamHandler()
-# handler.setLevel(logging.DEBUG)
-# logger = logging.getLogger('prawcore')
-# logger.setLevel(logging.DEBUG)
-# logger.addHandler(handler)
-
 import utils
 
 reddit = praw.Reddit('sodogetiptest')
@@ -39,7 +28,7 @@ def main():
 
     for msg in reddit.inbox.unread(limit=None):
 
-        print str(msg) + ' - ' + msg.author.name + ' sub : ' + msg.subject
+        bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
         msg_body = msg.body.strip()
         msg_subject = msg.subject.strip()
         split_message = msg_body.split()
@@ -76,10 +65,10 @@ def main():
         else:
             mark_msg_read(msg)
             # msg.reply('Currently not supported')
-            print 'Currently not supported'
+            bot_logger.logger.info('Currently not supported')
 
         # to not explode rate limit :)
-        print 'Make an pause !'
+        bot_logger.logger.info('Make an pause !')
         time.sleep(3)
 
 
@@ -94,5 +83,5 @@ while True:
         main()
     except:
         traceback.print_exc()
-        print('Resuming in 30sec...')
+        bot_logger.logger.error('Resuming in 30sec...')
         time.sleep(30)

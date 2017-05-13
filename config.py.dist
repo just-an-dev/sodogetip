@@ -8,6 +8,8 @@ rpc_config = {
     "doge_rpc_password": "dogecoinpassword"
 }
 
+DATA_PATH = '/data'
+
 bot_config = {
     'user_file': 'path/to/file',
     'unregistered_tip_user': 'path/to/an/other/file',
