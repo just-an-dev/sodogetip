@@ -119,7 +119,10 @@ def tip_user(rpc, msg):
                         if crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount):
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
-                                                         "tip")
+                                                         "tip send")
+                            user_function.add_to_history(parent_comment.author.name, msg.author.name, parent_comment.author.name,
+                                                         amount,
+                                                         "tip receive")
 
                             bot_logger.logger.info(
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))

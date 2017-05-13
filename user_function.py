@@ -97,13 +97,13 @@ def get_user_history(user):
     return data
 
 
-def add_to_history(user, sender, receiver, amount, action, finish=True):
+def add_to_history(user_history, sender, receiver, amount, action, finish=True):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
-        user, sender, receiver, amount, action, finish))
-    data = get_user_history(user)
-    with open(DATA_PATH+bot_config['user_history_path'] + user + '.json', 'w+') as f:
+        user_history, sender, receiver, amount, action, finish))
+    data = get_user_history(user_history)
+    with open(DATA_PATH+bot_config['user_history_path'] + user_history + '.json', 'w+') as f:
         data.append({
-            "user": user, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
+            "user": user_history, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
             "finish": finish,
             'time': datetime.datetime.now().isoformat(),
         })
