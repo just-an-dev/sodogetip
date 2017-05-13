@@ -5,22 +5,22 @@ import traceback
 import requests
 
 import bot_logger
-from config import bot_config, url_get_value
+from config import bot_config, url_get_value, DATA_PATH
 
 
 def create_user_storage():
-    if not os.path.exists(bot_config['user_file']):
+    if not os.path.exists(DATA_PATH+bot_config['user_file']):
         bot_logger.logger.info("create an empty user file")
         data = {}
-        with open(bot_config['user_file'], 'w+') as f:
+        with open(DATA_PATH+bot_config['user_file'], 'w+') as f:
             json.dump(data, f)
 
 
 def create_unregistered_tip_storage():
-    if not os.path.exists(bot_config['unregistered_tip_user']):
+    if not os.path.exists(DATA_PATH+bot_config['unregistered_tip_user']):
         bot_logger.logger.info("create an empty unregistered tip user file")
         data = {}
-        with open(bot_config['unregistered_tip_user'], 'w+') as f:
+        with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w+') as f:
             json.dump(data, f)
 
 

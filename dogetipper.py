@@ -17,8 +17,8 @@ rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
 
 
 def main():
-    if not os.path.exists(bot_config['user_history_path']):
-        os.makedirs(bot_config['user_history_path'])
+    if not os.path.exists(DATA_PATH+bot_config['user_history_path']):
+        os.makedirs(DATA_PATH+bot_config['user_history_path'])
 
     # create file if not exist (user storage)
     utils.create_user_storage()

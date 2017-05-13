@@ -3,12 +3,12 @@ import json
 import datetime
 
 import bot_logger
-from config import bot_config
+from config import bot_config, DATA_PATH
 
 
 # read file
 def get_users():
-    with open(bot_config['user_file'], 'r') as f:
+    with open(DATA_PATH+bot_config['user_file'], 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
@@ -21,7 +21,7 @@ def get_users():
 def add_user(user, address):
     bot_logger.logger.info("Add user " + user + ' ' + address)
     data = get_users()
-    with open(bot_config['user_file'], 'w') as f:
+    with open(DATA_PATH+bot_config['user_file'], 'w') as f:
         data[user] = address
         json.dump(data, f)
 
@@ -46,7 +46,7 @@ def user_exist(user):
 
 
 def get_unregistered_tip():
-    with open(bot_config['unregistered_tip_user'], 'r') as f:
+    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
@@ -58,7 +58,7 @@ def get_unregistered_tip():
 def save_unregistered_tip(sender, receiver, amount):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
-    with open(bot_config['unregistered_tip_user'], 'w') as f:
+    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w') as f:
         data[receiver] = []
         data[receiver].append({
             'amount': amount,
@@ -79,13 +79,13 @@ def get_user_pending_tip(username):
 def remove_pending_tip(username):
     unregistered_tip = get_unregistered_tip()
     del unregistered_tip[username]
-    with open(bot_config['unregistered_tip_user'], 'w+') as f:
+    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
 
 
 def get_user_history(user):
     try:
-        with open(bot_config['user_history_path'] + user + '.json', 'r') as f:
+        with open(DATA_PATH+bot_config['user_history_path'] + user + '.json', 'r') as f:
             try:
                 data = json.load(f)
             except ValueError:
@@ -101,7 +101,7 @@ def add_to_history(user, sender, receiver, amount, action, finish=True):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user, sender, receiver, amount, action, finish))
     data = get_user_history(user)
-    with open(bot_config['user_history_path'] + user + '.json', 'w+') as f:
+    with open(DATA_PATH+bot_config['user_history_path'] + user + '.json', 'w+') as f:
         data.append({
             "user": user, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
             "finish": finish,
