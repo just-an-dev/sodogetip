@@ -2,6 +2,7 @@ import traceback
 
 import bot_logger
 import user_function
+from config import bot_config
 
 
 def get_user_balance(rpc, user):
@@ -45,6 +46,10 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     unspent_vout = []
     unspent_amounts = []
 
+    # protect against spam attacks of an address having 50k UTXOs.
+    if (len(list_unspent)) > 50000:
+        return False
+
     for i in range(0, len(list_unspent), 1):
         unspent_list.append(list_unspent[i]['txid'])
         unspent_vout.append(list_unspent[i]['vout'])
@@ -57,15 +62,13 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     raw_inputs = []
     for i in range(0, len(list_unspent), 1):
         tx = {
-            "txid": str(list_unspent[i]['txid']),
-            "vout": list_unspent[i]['vout']
+            "txid": str(unspent_list[i]['txid']),
+            "vout": unspent_vout[i]['vout']
         }
         raw_inputs.append(tx)
 
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
-    # fee = calculate_fee(raw_inputs, None)
-    # logger.debug( "fee : %s" % str(fee))
     fee = 1
 
     if take_fee_on_amount:
@@ -82,6 +85,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 
+    calculate_fee(len(raw_inputs), len(raw_addresses))
     raw_tx = rpc.createrawtransaction(raw_inputs, raw_addresses)
     bot_logger.logger.debug("raw tx : %s" % raw_tx)
 
@@ -92,9 +96,15 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     return send
 
 
-def calculate_fee(raw_inputs, raw_addresses):
-    nb_input = len(raw_inputs)
-    # nb_out = len(raw_addresses)
-    nb_out = 2
-    fee = nb_input * 180 + nb_out * 34 + 10
+def calculate_fee(nb_input, nb_out):
+    size = nb_input * 180 + nb_out * 34 + 10
+    bot_logger.logger.debug("size of tx : %s" % size)
+
+    fee_rate = float(bot_config['rate_fee'])
+    fee = 1
+    if size > 1000:
+        fee = (size / 1000) * fee_rate
+
+    bot_logger.logger.debug("fee : %s" % str(fee))
+
     return fee

@@ -16,7 +16,8 @@ bot_config = {
     'user_file': 'user_files.json',
     'unregistered_tip_user': 'unregistered_tip_user.json',
     'user_history_path': 'user_history/',
-    'logs_path': 'logs/'
+    'logs_path': 'logs/',
+    'rate_fee': '1'
 }
 
 url_get_value = {
