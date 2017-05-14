@@ -157,7 +157,7 @@ def history_user(msg):
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str(tip['finish']))
 
-        msg.reply('Your history : ' + history_table)
+        msg.reply('Your history : \n\n' + history_table)
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
         msg.reply('You need %s before' % linkRegister)
