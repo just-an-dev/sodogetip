@@ -53,6 +53,7 @@ def balance_user(rpc, msg):
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         value_usd = utils.get_coin_value(balance)
         msg.reply('Your balance : ' + str(balance) + ' ( ' + str(value_usd) + '$ ) ')
+        user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
         msg.reply('You need %s before' % linkRegister)
@@ -120,7 +121,8 @@ def tip_user(rpc, msg):
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
                                                          "tip send")
-                            user_function.add_to_history(parent_comment.author.name, msg.author.name, parent_comment.author.name,
+                            user_function.add_to_history(parent_comment.author.name, msg.author.name,
+                                                         parent_comment.author.name,
                                                          amount,
                                                          "tip receive")
 
