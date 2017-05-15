@@ -25,6 +25,9 @@ def get_user_balance(rpc, user):
             if tip['sender'] == user:
                 pending_tips.append(int(tip['amount']))
 
+    bot_logger.logger.debug("pending_tips %s" % (str(sum(pending_tips))))
+    bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
+
     return int(sum(unspent_amounts) - sum(pending_tips))
 
 
