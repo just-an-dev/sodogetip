@@ -19,7 +19,7 @@ def create_user_storage():
 def create_unregistered_tip_storage():
     if not os.path.exists(DATA_PATH+bot_config['unregistered_tip_user']):
         bot_logger.logger.info("create an empty unregistered tip user file")
-        data = {}
+        data = []
         with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w+') as f:
             json.dump(data, f)
 

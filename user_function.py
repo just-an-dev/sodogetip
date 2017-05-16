@@ -1,6 +1,7 @@
 import json
 
 import datetime
+import random
 
 import bot_logger
 from config import bot_config, DATA_PATH
@@ -51,7 +52,7 @@ def get_unregistered_tip():
             data = json.load(f)
         except ValueError:
             bot_logger.logger.warning("Error on read unregistered tip user file")
-            data = {}
+            data = []
         return data
 
 
@@ -59,26 +60,22 @@ def save_unregistered_tip(sender, receiver, amount):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
     with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w') as f:
-        data[receiver] = []
-        data[receiver].append({
+        data.append({
+            'id':random.randint(0,99999999),
             'amount': amount,
+            'receiver': receiver,
             'sender': sender,
             'time': datetime.datetime.now().isoformat(),
         })
         json.dump(data, f)
 
 
-def get_user_pending_tip(username):
-    unregistered_tip = get_unregistered_tip()
-    if username in unregistered_tip.keys():
-        return unregistered_tip[username]
-    else:
-        return False
 
-
-def remove_pending_tip(username):
+def remove_pending_tip(id):
     unregistered_tip = get_unregistered_tip()
-    del unregistered_tip[username]
+    for tip, key in enumerate(unregistered_tip):
+        if tip['id'] == id:
+            del unregistered_tip[key]
     with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
 

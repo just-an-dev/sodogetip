@@ -18,34 +18,11 @@ def register_user(rpc, msg):
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
-            pending_tips(rpc, msg)
         else:
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
         msg.reply('You are already registered ')
-
-
-def pending_tips(rpc, msg):
-    # check if user have pending tips
-    pending_tips = user_function.get_user_pending_tip(msg.author.name)
-    if pending_tips != False:
-        for tip in pending_tips:
-            # check if it's not too old & replay tipping
-            limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
-
-            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
-                bot_logger.logger.info(
-                    "replay tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name))
-                crypto.tip_user(rpc, tip['sender'], msg.author.name, tip['amount'])
-            else:
-                bot_logger.logger.info(
-                    "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], msg.author.name))
-
-        user_function.remove_pending_tip(msg.author.name)
-    else:
-        bot_logger.logger.info("no pendding tipping for %s " % msg.author.name)
-
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
@@ -163,3 +140,27 @@ def history_user(msg):
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
         msg.reply('You need %s before' % linkRegister)
+
+
+def replay_remove_pending_tip(rpc):
+    # check if it's not too old & replay tipping
+    limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
+
+    # check if user have pending tips
+    list_tips = user_function.get_unregistered_tip()
+
+    if list_tips:
+        for tip in list_tips:
+            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
+                if (user_function.user_exist(tip['receiver'])):
+                    bot_logger.logger.info(
+                        "replay tipping - %s send %s to %s  " % (tip['sender'], tip['amount'],  tip['receiver']))
+                    crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+            else:
+                bot_logger.logger.info(
+                    "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], tip['receiver']))
+                user_function.remove_pending_tip(tip['id'])
+    else:
+        bot_logger.logger.info("no pendding tipping")
+
+

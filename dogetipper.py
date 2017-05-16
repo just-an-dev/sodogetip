@@ -6,6 +6,7 @@ import praw
 from bitcoinrpc.authproxy import AuthServiceProxy
 
 import bot_logger
+import user_function
 from config import rpc_config, bot_config, DATA_PATH
 import bot_command
 import utils
@@ -57,11 +58,6 @@ def main():
             mark_msg_read(msg)
             bot_command.tip_user(rpc, msg)
 
-        # only for debug
-        elif msg_body == '+pending_tips' and msg_subject == '+pending_tips':
-            mark_msg_read(msg)
-            bot_command.pending_tips(rpc, msg)
-
         else:
             mark_msg_read(msg)
             # msg.reply('Currently not supported')
@@ -70,7 +66,8 @@ def main():
         # to not explode rate limit :)
         bot_logger.logger.info('Make an pause !')
         time.sleep(3)
-
+        bot_logger.logger.info('Make clean of unregistered tips')
+        bot_command.replay_pending_tip(rpc)
 
 def mark_msg_read(msg):
     unread_messages = []
