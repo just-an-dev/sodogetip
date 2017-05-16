@@ -1,15 +1,14 @@
-import json
 import os
 import time
 import traceback
+
 import praw
 from bitcoinrpc.authproxy import AuthServiceProxy
 
-import bot_logger
-import user_function
-from config import rpc_config, bot_config, DATA_PATH
 import bot_command
+import bot_logger
 import utils
+from config import rpc_config, bot_config, DATA_PATH
 
 reddit = praw.Reddit('sodogetiptest')
 rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (

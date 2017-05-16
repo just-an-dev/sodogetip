@@ -1,20 +1,18 @@
+import datetime
 import traceback
 
-import datetime
-
-import crypto
 import bot_logger
+import crypto
+import lang
 import user_function
 import utils
-
-linkRegister = '[register](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Bregister&message=%2Bregister)'
 
 
 def register_user(rpc, msg):
     if not user_function.user_exist(msg.author.name):
         address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
-            msg.reply(msg.author.name + ' registered, your address is ' + address)
+            msg.reply(lang.message_register_success % (msg.author.name, address))
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
@@ -22,7 +20,8 @@ def register_user(rpc, msg):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
-        msg.reply('You are already registered ')
+        msg.reply(lang.message_already_registered)
+
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
@@ -33,14 +32,14 @@ def balance_user(rpc, msg):
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
-        msg.reply('You need %s before' % linkRegister)
+        msg.reply(lang.message_need_register)
 
 
 def info_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         user_function.get_user_info(msg)
     else:
-        msg.reply('You need %s before' % linkRegister)
+        msg.reply(lang.message_need_register)
 
 
 def withdraw_user(rpc, msg):
@@ -54,7 +53,7 @@ def withdraw_user(rpc, msg):
             if int(amount) >= user_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
-                msg.reply('+/u/%s your balance is too low for this withdraw ' % msg.author.name)
+                msg.reply(lang.message_balance_low_withdraw % msg.author.name)
             else:
                 receiver_address = split_message[4]
                 try:
@@ -66,10 +65,10 @@ def withdraw_user(rpc, msg):
                 except:
                     traceback.print_exc()
         else:
-            bot_logger.logger.info('You must use valid amount')
-            msg.reply('You must use valid amount')
+            bot_logger.logger.info(lang.message_invalid_amount)
+            msg.reply(lang.message_invalid_amount)
     else:
-        msg.reply('You need %s before' % linkRegister)
+        msg.reply(lang.message_need_register)
 
 
 def tip_user(rpc, msg):
@@ -89,7 +88,7 @@ def tip_user(rpc, msg):
                 if int(amount) >= user_balance:
                     bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                         msg.author.name, amount, user_balance))
-                    msg.reply('+/u/%s your balance is too low for this tip ' % msg.author.name)
+                    msg.reply(lang.message_balance_low_tip % msg.author.name)
                 else:
 
                     # check user have address before tip
@@ -117,13 +116,13 @@ def tip_user(rpc, msg):
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
                         msg.reply(
                             '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
-                                parent_comment.author.name, linkRegister)
+                                parent_comment.author.name, lang.link_register)
                         )
             else:
-                msg.reply('You need %s before' % linkRegister)
+                msg.reply(lang.message_need_register)
         else:
-            bot_logger.logger.info('You must use valid amount')
-            msg.reply('You must use valid amount')
+            bot_logger.logger.info(lang.message_invalid_amount)
+            msg.reply(lang.message_invalid_amount)
 
 
 def history_user(msg):
@@ -139,7 +138,7 @@ def history_user(msg):
         msg.reply('Your history : \n\n' + history_table)
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
-        msg.reply('You need %s before' % linkRegister)
+        msg.reply(lang.message_need_register)
 
 
 def replay_remove_pending_tip(rpc):
@@ -154,7 +153,7 @@ def replay_remove_pending_tip(rpc):
             if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
                 if (user_function.user_exist(tip['receiver'])):
                     bot_logger.logger.info(
-                        "replay tipping - %s send %s to %s  " % (tip['sender'], tip['amount'],  tip['receiver']))
+                        "replay tipping - %s send %s to %s  " % (tip['sender'], tip['amount'], tip['receiver']))
                     crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
             else:
                 bot_logger.logger.info(
@@ -162,5 +161,3 @@ def replay_remove_pending_tip(rpc):
                 user_function.remove_pending_tip(tip['id'])
     else:
         bot_logger.logger.info("no pendding tipping")
-
-

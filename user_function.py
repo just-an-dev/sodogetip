@@ -4,12 +4,13 @@ import datetime
 import random
 
 import bot_logger
+import lang
 from config import bot_config, DATA_PATH
 
 
 # read file
 def get_users():
-    with open(DATA_PATH+bot_config['user_file'], 'r') as f:
+    with open(DATA_PATH + bot_config['user_file'], 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
@@ -22,7 +23,7 @@ def get_users():
 def add_user(user, address):
     bot_logger.logger.info("Add user " + user + ' ' + address)
     data = get_users()
-    with open(DATA_PATH+bot_config['user_file'], 'w') as f:
+    with open(DATA_PATH + bot_config['user_file'], 'w') as f:
         data[user] = address
         json.dump(data, f)
 
@@ -30,7 +31,7 @@ def add_user(user, address):
 def get_user_info(msg):
     dict = get_users()
     address = dict[msg.author.name]
-    msg.reply(msg.author.name + ' your address is ' + address)
+    msg.reply(lang.message_info % (msg.author.name, address))
 
 
 def get_user_address(user):
@@ -47,7 +48,7 @@ def user_exist(user):
 
 
 def get_unregistered_tip():
-    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'r') as f:
+    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
@@ -59,9 +60,9 @@ def get_unregistered_tip():
 def save_unregistered_tip(sender, receiver, amount):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
-    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w') as f:
+    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w') as f:
         data.append({
-            'id':random.randint(0,99999999),
+            'id': random.randint(0, 99999999),
             'amount': amount,
             'receiver': receiver,
             'sender': sender,
@@ -70,19 +71,18 @@ def save_unregistered_tip(sender, receiver, amount):
         json.dump(data, f)
 
 
-
 def remove_pending_tip(id):
     unregistered_tip = get_unregistered_tip()
     for tip, key in enumerate(unregistered_tip):
         if tip['id'] == id:
             del unregistered_tip[key]
-    with open(DATA_PATH+bot_config['unregistered_tip_user'], 'w+') as f:
+    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
 
 
 def get_user_history(user):
     try:
-        with open(DATA_PATH+bot_config['user_history_path'] + user + '.json', 'r') as f:
+        with open(DATA_PATH + bot_config['user_history_path'] + user + '.json', 'r') as f:
             try:
                 data = json.load(f)
             except ValueError:
@@ -98,7 +98,7 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
     data = get_user_history(user_history)
-    with open(DATA_PATH+bot_config['user_history_path'] + user_history + '.json', 'w+') as f:
+    with open(DATA_PATH + bot_config['user_history_path'] + user_history + '.json', 'w+') as f:
         data.append({
             "user": user_history, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
             "finish": finish,
