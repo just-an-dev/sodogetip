@@ -57,8 +57,9 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     unspent_vout = []
     unspent_amounts = []
 
-    # protect against spam attacks of an address having 50k UTXOs.
-    if (len(list_unspent)) > 50000:
+    if (len(list_unspent)) > bot_config['spam_limit']:
+        # need consolidate
+        bot_logger.logger.error("Need consolidate")
         return False
 
     for i in range(0, len(list_unspent), 1):
@@ -68,7 +69,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
         if sum(unspent_amounts) > amount:
             break
 
-    bot_logger.logger.debug("sum of unspend :" + str(sum(unspent_amounts)))
+    bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
 
     raw_inputs = []
     for i in range(0, len(unspent_list), 1):
