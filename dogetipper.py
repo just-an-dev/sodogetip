@@ -74,11 +74,13 @@ class SoDogeTip():
         unread_messages = [msg]
         self.reddit.inbox.mark_read(unread_messages)
 
-    def process_pending_tip(self, msg):
-        bot_logger.logger.info('Make clean of unregistered tips')
-        bot_command.replay_remove_pending_tip(self.rpc)
+    def process_pending_tip(self):
+        while True:
+            bot_logger.logger.info('Make clean of unregistered tips')
+            bot_command.replay_remove_pending_tip(self.rpc)
+            time.sleep(60)
 
-    def anti_spamming_tx(self, msg):
+    def anti_spamming_tx(self):
         # protect against spam attacks of an address having UTXOs.
         while True:
             bot_logger.logger.info('Make clean of tx')
@@ -97,11 +99,15 @@ if __name__ == "__main__":
     while True:
         try:
             Bot = SoDogeTip()
+
             thread_master = Thread(target=Bot.main)
             thread_pending_tip = Thread(target=Bot.process_pending_tip)
+
             thread_master.start()
             thread_pending_tip.start()
+
             thread_master.join()
+            thread_pending_tip.join()
         except:
             traceback.print_exc()
             bot_logger.logger.error('Resuming in 30sec...')

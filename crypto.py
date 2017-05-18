@@ -53,31 +53,27 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
 
-    unspent_list = []
-    unspent_vout = []
     unspent_amounts = []
+    raw_inputs = []
 
-    if (len(list_unspent)) > bot_config['spam_limit']:
+    #if (len(list_unspent)) > bot_config['spam_limit']:
         # need consolidate
-        bot_logger.logger.error("Need consolidate")
-        return False
+    #    bot_logger.logger.error("Need consolidate")
+    #    return False
 
     for i in range(0, len(list_unspent), 1):
-        unspent_list.append(list_unspent[i]['txid'])
-        unspent_vout.append(list_unspent[i]['vout'])
         unspent_amounts.append(list_unspent[i]['amount'])
-        if sum(unspent_amounts) > amount:
+        # check if we have enough tx
+        if sum(unspent_amounts) < amount:
+            tx = {
+                "txid": str(list_unspent[i]['txid']),
+                "vout": list_unspent[i]['vout']
+            }
+            raw_inputs.append(tx)
+        else:
             break
 
     bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
-
-    raw_inputs = []
-    for i in range(0, len(unspent_list), 1):
-        tx = {
-            "txid": str(unspent_list[i]['txid']),
-            "vout": unspent_vout[i]['vout']
-        }
-        raw_inputs.append(tx)
 
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
