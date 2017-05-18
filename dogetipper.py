@@ -9,6 +9,7 @@ from bitcoinrpc.authproxy import AuthServiceProxy
 import bot_command
 import bot_logger
 import crypto
+import user_function
 import utils
 from config import rpc_config, bot_config, DATA_PATH
 
@@ -21,6 +22,8 @@ class SoDogeTip():
             rpc_config['doge_rpc_port']))
 
     def main(self):
+        bot_logger.logger.info('Main Bot loop !')
+
         if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
             os.makedirs(DATA_PATH + bot_config['user_history_path'])
 
@@ -85,13 +88,21 @@ class SoDogeTip():
         while True:
             bot_logger.logger.info('Make clean of tx')
             # get list of account
-            for account in self.list_account:
-                list_tx = self.rpc.listunspent(1, 99999999999, [account['address']])
-                if len(list_tx) > bot_config['spam_limit']:
-                    bot_logger.logger.info('Consolidate %s account !' % account['name'])
-                    amount = crypto.get_user_balance(self.rpc, account['name'])
-                    crypto.send_to(self.rpc, account['address'], account['address'], amount)
-            time.sleep(30)
+            list_account = user_function.get_users()
+            for account,address in list_account.items():
+                time.sleep(5) # don't flood daemon
+                list_tx = self.rpc.listunspent(1, 99999999999, [address])
+                unspent_amounts = []
+                for i in range(0, len(list_tx), 1):
+                    unspent_amounts.append(list_tx[i]['amount'])
+                    if i > 150:
+                        break
+
+                if len(list_tx) > int(bot_config['spam_limit']):
+                    bot_logger.logger.info('Consolidate %s account !' % account)
+                    amount = crypto.get_user_balance(self.rpc, account)
+                    crypto.send_to(self.rpc, address, address, sum(unspent_amounts), True)
+            time.sleep(120)
 
 
 if __name__ == "__main__":
@@ -102,12 +113,17 @@ if __name__ == "__main__":
 
             thread_master = Thread(target=Bot.main)
             thread_pending_tip = Thread(target=Bot.process_pending_tip)
+            thread_anti_spamming_tx = Thread(target=Bot.anti_spamming_tx)
 
             thread_master.start()
             thread_pending_tip.start()
+            thread_anti_spamming_tx.start()
 
             thread_master.join()
             thread_pending_tip.join()
+            thread_anti_spamming_tx.join()
+
+            bot_logger.logger.error('All bot task finished ...')
         except:
             traceback.print_exc()
             bot_logger.logger.error('Resuming in 30sec...')
