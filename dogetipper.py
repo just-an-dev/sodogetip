@@ -66,7 +66,7 @@ def main():
         bot_logger.logger.info('Make an pause !')
         time.sleep(3)
         bot_logger.logger.info('Make clean of unregistered tips')
-        bot_command.replay_pending_tip(rpc)
+        bot_command.replay_remove_pending_tip(rpc)
 
 def mark_msg_read(msg):
     unread_messages = []

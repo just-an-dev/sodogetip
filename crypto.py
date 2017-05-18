@@ -7,20 +7,36 @@ from config import bot_config
 
 def get_user_balance(rpc, user):
     pending_tips = []
+    unspent_amounts = []
+
+    address = user_function.get_user_address(user)
+    list_unspent = rpc.listunspent(1, 99999999999, [address])
+    # in case of no un-spent transaction
+    if len(list_unspent) == 0:
+        return 0
+
+    for i in range(0, len(list_unspent), 1):
+        unspent_amounts.append(list_unspent[i]['amount'])
+
+    bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
     current_balance = rpc.getbalance("reddit-%s" % user)
+    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
+
+    if int(current_balance) != int(sum(unspent_amounts)):
+        bot_logger.logger.warn("maybe an error !")
 
     # check if user have pending tips
     list_tip_unregistered = user_function.get_unregistered_tip()
-    for list_tip in list_tip_unregistered.values():
-        for tip in list_tip:
-            if tip['sender'] == user:
-                pending_tips.append(int(tip['amount']))
+    if list_tip_unregistered:
+        for list_tip in list_tip_unregistered.values():
+            for tip in list_tip:
+                if tip['sender'] == user:
+                    pending_tips.append(int(tip['amount']))
 
     bot_logger.logger.debug("pending_tips %s" % (str(sum(pending_tips))))
-    bot_logger.logger.debug("unspent_amounts %s" % (str(current_balance)))
 
-    return int(current_balance) - sum(pending_tips)
+    return int(sum(unspent_amounts) - sum(pending_tips))
 
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
@@ -55,7 +71,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     bot_logger.logger.debug("sum of unspend :" + str(sum(unspent_amounts)))
 
     raw_inputs = []
-    for i in range(0, len(list_unspent), 1):
+    for i in range(0, len(unspent_list), 1):
         tx = {
             "txid": str(unspent_list[i]['txid']),
             "vout": unspent_vout[i]['vout']
