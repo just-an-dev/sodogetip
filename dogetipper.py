@@ -22,10 +22,8 @@ class SoDogeTip():
             rpc_config['doge_rpc_port']))
 
     def main(self):
+        bot_logger.logger.info('Main Bot loop !')
         while True:
-
-            bot_logger.logger.info('Main Bot loop !')
-
             if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
                 os.makedirs(DATA_PATH + bot_config['user_history_path'])
 
@@ -71,9 +69,9 @@ class SoDogeTip():
                     # msg.reply('Currently not supported')
                     bot_logger.logger.info('Currently not supported')
 
-                # to not explode rate limit :)
-                bot_logger.logger.info('Make an pause !')
-                time.sleep(3)
+            # to not explode rate limit :)
+            bot_logger.logger.info('Make an pause !')
+            time.sleep(3)
 
     def mark_msg_read(self, msg):
         unread_messages = [msg]
