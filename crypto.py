@@ -67,14 +67,13 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
         # check if we have enough tx
-        if sum(unspent_amounts) < (float(amount) + float(fee)):
-            tx = {
-                "txid": str(list_unspent[i]['txid']),
-                "vout": list_unspent[i]['vout']
-            }
-            raw_inputs.append(tx)
-            fee = calculate_fee(len(raw_inputs), 2)
-        else:
+        tx = {
+            "txid": str(list_unspent[i]['txid']),
+            "vout": list_unspent[i]['vout']
+        }
+        raw_inputs.append(tx)
+        fee = calculate_fee(len(raw_inputs), 2)
+        if sum(unspent_amounts) > (float(amount) + float(fee)):
             break
 
     bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
