@@ -5,6 +5,7 @@ from threading import Thread
 
 import praw
 from bitcoinrpc.authproxy import AuthServiceProxy
+from praw.models import Message
 
 import bot_command
 import bot_logger
@@ -36,39 +37,42 @@ class SoDogeTip():
 
                 for msg in self.reddit.inbox.unread(limit=None):
 
-                    bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
-                    msg_body = msg.body.strip()
-                    msg_subject = msg.subject.strip()
-                    split_message = msg_body.split()
-
-                    if msg_body == '+register' and msg_subject == '+register':
-                        self.mark_msg_read(msg)
-                        bot_command.register_user(self.rpc, msg)
-
-                    elif msg_body == '+info' and msg_subject == '+info':
-                        self.mark_msg_read(msg)
-                        bot_command.info_user(self.rpc, msg)
-
-                    elif msg_body == '+balance' or msg_subject == '+balance':
-                        self.mark_msg_read(msg)
-                        bot_command.balance_user(self.rpc, msg)
-
-                    elif msg_body == '+history' or msg_subject == '+history':
-                        self.mark_msg_read(msg)
-                        bot_command.history_user(msg)
-
-                    elif split_message.count('+withdraw') and msg_subject == '+withdraw':
-                        self.mark_msg_read(msg)
-                        bot_command.withdraw_user(self.rpc, msg)
-
-                    elif split_message.count('+/u/sodogetiptest'):
-                        self.mark_msg_read(msg)
-                        bot_command.tip_user(self.rpc, msg)
-
+                    if msg is not Message:
+                        bot_logger.logger.info('Not a good message !')
                     else:
-                        self.mark_msg_read(msg)
-                        # msg.reply('Currently not supported')
-                        bot_logger.logger.info('Currently not supported')
+                        bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
+                        msg_body = msg.body.strip()
+                        msg_subject = msg.subject.strip()
+                        split_message = msg_body.split()
+
+                        if msg_body == '+register' and msg_subject == '+register':
+                            self.mark_msg_read(msg)
+                            bot_command.register_user(self.rpc, msg)
+
+                        elif msg_body == '+info' and msg_subject == '+info':
+                            self.mark_msg_read(msg)
+                            bot_command.info_user(self.rpc, msg)
+
+                        elif msg_body == '+balance' or msg_subject == '+balance':
+                            self.mark_msg_read(msg)
+                            bot_command.balance_user(self.rpc, msg)
+
+                        elif msg_body == '+history' or msg_subject == '+history':
+                            self.mark_msg_read(msg)
+                            bot_command.history_user(msg)
+
+                        elif split_message.count('+withdraw') and msg_subject == '+withdraw':
+                            self.mark_msg_read(msg)
+                            bot_command.withdraw_user(self.rpc, msg)
+
+                        elif split_message.count('+/u/sodogetiptest'):
+                            self.mark_msg_read(msg)
+                            bot_command.tip_user(self.rpc, msg)
+
+                        else:
+                            self.mark_msg_read(msg)
+                            # msg.reply('Currently not supported')
+                            bot_logger.logger.info('Currently not supported')
 
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
