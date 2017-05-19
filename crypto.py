@@ -59,15 +59,15 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     raw_inputs = []
     fee = 1
 
-    #if (len(list_unspent)) > bot_config['spam_limit']:
-        # need consolidate
+    # if (len(list_unspent)) > bot_config['spam_limit']:
+    # need consolidate
     #    bot_logger.logger.error("Need consolidate")
     #    return False
 
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
         # check if we have enough tx
-        if sum(unspent_amounts) < (float(amount)+float(fee)):
+        if sum(unspent_amounts) < (float(amount) + float(fee)):
             tx = {
                 "txid": str(list_unspent[i]['txid']),
                 "vout": list_unspent[i]['vout']
@@ -91,7 +91,11 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     if int(return_amount) < 1:
         raw_addresses = {receiver_address: int(amount)}
     else:
-        raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
+        # when consolidate tx
+        if receiver_address == sender_address:
+            raw_addresses = {receiver_address: int(amount)}
+        else:
+            raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
     bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 
