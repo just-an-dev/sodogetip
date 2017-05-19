@@ -22,56 +22,58 @@ class SoDogeTip():
             rpc_config['doge_rpc_port']))
 
     def main(self):
-        bot_logger.logger.info('Main Bot loop !')
+        while True:
 
-        if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
-            os.makedirs(DATA_PATH + bot_config['user_history_path'])
+            bot_logger.logger.info('Main Bot loop !')
 
-        # create file if not exist (user storage)
-        utils.create_user_storage()
+            if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
+                os.makedirs(DATA_PATH + bot_config['user_history_path'])
 
-        # create file if not exist (tip unregistered user )
-        utils.create_unregistered_tip_storage()
+            # create file if not exist (user storage)
+            utils.create_user_storage()
 
-        for msg in self.reddit.inbox.unread(limit=None):
+            # create file if not exist (tip unregistered user )
+            utils.create_unregistered_tip_storage()
 
-            bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
-            msg_body = msg.body.strip()
-            msg_subject = msg.subject.strip()
-            split_message = msg_body.split()
+            for msg in self.reddit.inbox.unread(limit=None):
 
-            if msg_body == '+register' and msg_subject == '+register':
-                self.mark_msg_read(msg)
-                bot_command.register_user(self.rpc, msg)
+                bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
+                msg_body = msg.body.strip()
+                msg_subject = msg.subject.strip()
+                split_message = msg_body.split()
 
-            elif msg_body == '+info' and msg_subject == '+info':
-                self.mark_msg_read(msg)
-                bot_command.info_user(self.rpc, msg)
+                if msg_body == '+register' and msg_subject == '+register':
+                    self.mark_msg_read(msg)
+                    bot_command.register_user(self.rpc, msg)
 
-            elif msg_body == '+balance' or msg_subject == '+balance':
-                self.mark_msg_read(msg)
-                bot_command.balance_user(self.rpc, msg)
+                elif msg_body == '+info' and msg_subject == '+info':
+                    self.mark_msg_read(msg)
+                    bot_command.info_user(self.rpc, msg)
 
-            elif msg_body == '+history' or msg_subject == '+history':
-                self.mark_msg_read(msg)
-                bot_command.history_user(msg)
+                elif msg_body == '+balance' or msg_subject == '+balance':
+                    self.mark_msg_read(msg)
+                    bot_command.balance_user(self.rpc, msg)
 
-            elif split_message.count('+withdraw') and msg_subject == '+withdraw':
-                self.mark_msg_read(msg)
-                bot_command.withdraw_user(self.rpc, msg)
+                elif msg_body == '+history' or msg_subject == '+history':
+                    self.mark_msg_read(msg)
+                    bot_command.history_user(msg)
 
-            elif split_message.count('+/u/sodogetiptest'):
-                self.mark_msg_read(msg)
-                bot_command.tip_user(self.rpc, msg)
+                elif split_message.count('+withdraw') and msg_subject == '+withdraw':
+                    self.mark_msg_read(msg)
+                    bot_command.withdraw_user(self.rpc, msg)
 
-            else:
-                self.mark_msg_read(msg)
-                # msg.reply('Currently not supported')
-                bot_logger.logger.info('Currently not supported')
+                elif split_message.count('+/u/sodogetiptest'):
+                    self.mark_msg_read(msg)
+                    bot_command.tip_user(self.rpc, msg)
 
-            # to not explode rate limit :)
-            bot_logger.logger.info('Make an pause !')
-            time.sleep(3)
+                else:
+                    self.mark_msg_read(msg)
+                    # msg.reply('Currently not supported')
+                    bot_logger.logger.info('Currently not supported')
+
+                # to not explode rate limit :)
+                bot_logger.logger.info('Make an pause !')
+                time.sleep(3)
 
     def mark_msg_read(self, msg):
         unread_messages = [msg]
@@ -89,8 +91,8 @@ class SoDogeTip():
             bot_logger.logger.info('Make clean of tx')
             # get list of account
             list_account = user_function.get_users()
-            for account,address in list_account.items():
-                time.sleep(5) # don't flood daemon
+            for account, address in list_account.items():
+                time.sleep(5)  # don't flood daemon
                 list_tx = self.rpc.listunspent(1, 99999999999, [address])
                 unspent_amounts = []
                 for i in range(0, len(list_tx), 1):
@@ -102,7 +104,7 @@ class SoDogeTip():
                     bot_logger.logger.info('Consolidate %s account !' % account)
                     amount = crypto.get_user_balance(self.rpc, account)
                     crypto.send_to(self.rpc, address, address, sum(unspent_amounts), True)
-            time.sleep(120)
+            time.sleep(240)
 
 
 if __name__ == "__main__":
