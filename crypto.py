@@ -1,5 +1,7 @@
 import traceback
 
+import time
+
 import bot_logger
 import user_function
 from config import bot_config
@@ -55,6 +57,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     unspent_amounts = []
     raw_inputs = []
+    fee = 1
 
     #if (len(list_unspent)) > bot_config['spam_limit']:
         # need consolidate
@@ -64,12 +67,13 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
         # check if we have enough tx
-        if sum(unspent_amounts) < amount:
+        if sum(unspent_amounts) < (float(amount)+float(fee)):
             tx = {
                 "txid": str(list_unspent[i]['txid']),
                 "vout": list_unspent[i]['vout']
             }
             raw_inputs.append(tx)
+            fee = calculate_fee(len(raw_inputs), 2)
         else:
             break
 
@@ -77,29 +81,27 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
-    fee = 1
-
     if take_fee_on_amount:
-        amount = (int(amount) - int(fee))
-
-    return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
+        return_amount = int(sum(unspent_amounts)) - (int(amount) - int(fee))
+    else:
+        return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
 
     bot_logger.logger.debug("return amount : %s" % str(return_amount))
 
-    if return_amount < 1:
+    if int(return_amount) < 1:
         raw_addresses = {receiver_address: int(amount)}
     else:
-        raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
+        raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
     bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 
-    calculate_fee(len(raw_inputs), len(raw_addresses))
     raw_tx = rpc.createrawtransaction(raw_inputs, raw_addresses)
     bot_logger.logger.debug("raw tx : %s" % raw_tx)
 
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
     signed = rpc.signrawtransaction(raw_tx)
+    time.sleep(1)
     send = rpc.sendrawtransaction(signed['hex'])
     return send
 

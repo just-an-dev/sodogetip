@@ -95,7 +95,7 @@ class SoDogeTip():
                 unspent_amounts = []
                 for i in range(0, len(list_tx), 1):
                     unspent_amounts.append(list_tx[i]['amount'])
-                    if i > 150:
+                    if i > 100:
                         break
 
                 if len(list_tx) > int(bot_config['spam_limit']):
