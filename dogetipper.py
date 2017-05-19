@@ -24,54 +24,59 @@ class SoDogeTip():
     def main(self):
         bot_logger.logger.info('Main Bot loop !')
         while True:
-            if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
-                os.makedirs(DATA_PATH + bot_config['user_history_path'])
+            try:
+                if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
+                    os.makedirs(DATA_PATH + bot_config['user_history_path'])
 
-            # create file if not exist (user storage)
-            utils.create_user_storage()
+                # create file if not exist (user storage)
+                utils.create_user_storage()
 
-            # create file if not exist (tip unregistered user )
-            utils.create_unregistered_tip_storage()
+                # create file if not exist (tip unregistered user )
+                utils.create_unregistered_tip_storage()
 
-            for msg in self.reddit.inbox.unread(limit=None):
+                for msg in self.reddit.inbox.unread(limit=None):
 
-                bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
-                msg_body = msg.body.strip()
-                msg_subject = msg.subject.strip()
-                split_message = msg_body.split()
+                    bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
+                    msg_body = msg.body.strip()
+                    msg_subject = msg.subject.strip()
+                    split_message = msg_body.split()
 
-                if msg_body == '+register' and msg_subject == '+register':
-                    self.mark_msg_read(msg)
-                    bot_command.register_user(self.rpc, msg)
+                    if msg_body == '+register' and msg_subject == '+register':
+                        self.mark_msg_read(msg)
+                        bot_command.register_user(self.rpc, msg)
 
-                elif msg_body == '+info' and msg_subject == '+info':
-                    self.mark_msg_read(msg)
-                    bot_command.info_user(self.rpc, msg)
+                    elif msg_body == '+info' and msg_subject == '+info':
+                        self.mark_msg_read(msg)
+                        bot_command.info_user(self.rpc, msg)
 
-                elif msg_body == '+balance' or msg_subject == '+balance':
-                    self.mark_msg_read(msg)
-                    bot_command.balance_user(self.rpc, msg)
+                    elif msg_body == '+balance' or msg_subject == '+balance':
+                        self.mark_msg_read(msg)
+                        bot_command.balance_user(self.rpc, msg)
 
-                elif msg_body == '+history' or msg_subject == '+history':
-                    self.mark_msg_read(msg)
-                    bot_command.history_user(msg)
+                    elif msg_body == '+history' or msg_subject == '+history':
+                        self.mark_msg_read(msg)
+                        bot_command.history_user(msg)
 
-                elif split_message.count('+withdraw') and msg_subject == '+withdraw':
-                    self.mark_msg_read(msg)
-                    bot_command.withdraw_user(self.rpc, msg)
+                    elif split_message.count('+withdraw') and msg_subject == '+withdraw':
+                        self.mark_msg_read(msg)
+                        bot_command.withdraw_user(self.rpc, msg)
 
-                elif split_message.count('+/u/sodogetiptest'):
-                    self.mark_msg_read(msg)
-                    bot_command.tip_user(self.rpc, msg)
+                    elif split_message.count('+/u/sodogetiptest'):
+                        self.mark_msg_read(msg)
+                        bot_command.tip_user(self.rpc, msg)
 
-                else:
-                    self.mark_msg_read(msg)
-                    # msg.reply('Currently not supported')
-                    bot_logger.logger.info('Currently not supported')
+                    else:
+                        self.mark_msg_read(msg)
+                        # msg.reply('Currently not supported')
+                        bot_logger.logger.info('Currently not supported')
 
-            # to not explode rate limit :)
-            bot_logger.logger.info('Make an pause !')
-            time.sleep(3)
+                # to not explode rate limit :)
+                bot_logger.logger.info('Make an pause !')
+                time.sleep(3)
+            except:
+                traceback.print_exc()
+                bot_logger.logger.error('Main Bot loop crashed...')
+                time.sleep(10)
 
     def mark_msg_read(self, msg):
         unread_messages = [msg]
