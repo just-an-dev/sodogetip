@@ -38,7 +38,7 @@ class SoDogeTip():
 
                 for msg in self.reddit.inbox.unread(limit=None):
 
-                    if msg is not Message:
+                    if not msg.author.name:
                         bot_logger.logger.info('Not a good message !')
                         msg.reply(lang.message_not_supported)
                         self.mark_msg_read(msg)
