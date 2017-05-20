@@ -10,6 +10,7 @@ from praw.models import Message
 import bot_command
 import bot_logger
 import crypto
+import lang
 import user_function
 import utils
 from config import rpc_config, bot_config, DATA_PATH
@@ -39,6 +40,7 @@ class SoDogeTip():
 
                     if msg is not Message:
                         bot_logger.logger.info('Not a good message !')
+                        msg.reply(lang.message_not_supported)
                         self.mark_msg_read(msg)
                     else:
                         bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))

@@ -28,7 +28,7 @@ def balance_user(rpc, msg):
         balance = crypto.get_user_balance(rpc, msg.author.name)
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         value_usd = utils.get_coin_value(balance)
-        msg.reply('Your balance : ' + str(balance) + ' ( ' + str(value_usd) + '$ ) ')
+        msg.reply(lang.message_balance % (str(balance), str(value_usd)))
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
@@ -60,7 +60,7 @@ def withdraw_user(rpc, msg):
                     if crypto.send_to(rpc, sender_address, receiver_address, amount, True):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
-                        msg.reply('Withdraw : ' + str(amount) + ' to ' + receiver_address)
+                        msg.reply(lang.message_withdraw % (str(amount) , receiver_address))
 
                 except:
                     traceback.print_exc()
@@ -106,8 +106,7 @@ def tip_user(rpc, msg):
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
-                                msg.reply('+/u/%s tip %s to %s' % (msg.author.name, str(amount),
-                                                                   parent_comment.author.name))
+                                msg.reply(lang.message_tip % (msg.author.name, str(amount), parent_comment.author.name))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
@@ -135,7 +134,7 @@ def history_user(msg):
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str(tip['finish']))
 
-        msg.reply('Your history : \n\n' + history_table)
+        msg.reply(lang.message_history + history_table)
     else:
         bot_logger.logger.info('user %s not registered ' % (msg.author.name))
         msg.reply(lang.message_need_register)
