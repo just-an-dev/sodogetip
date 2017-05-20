@@ -103,7 +103,9 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
+    rpc.walletpassphrase(bot_config['passphrase'], bot_config['timeout'])
     signed = rpc.signrawtransaction(raw_tx)
+    rpc.walletlock()
     time.sleep(1)
     send = rpc.sendrawtransaction(signed['hex'])
     return send
