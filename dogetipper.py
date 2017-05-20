@@ -5,7 +5,7 @@ from threading import Thread
 
 import praw
 from bitcoinrpc.authproxy import AuthServiceProxy
-from praw.models import Message
+from praw.models import Message, Comment
 
 import bot_command
 import bot_logger
@@ -21,7 +21,7 @@ class SoDogeTip():
         self.reddit = praw.Reddit('sodogetiptest')
         self.rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-            rpc_config['doge_rpc_port']))
+            rpc_config['doge_rpc_port']), timeout=120)
 
     def main(self):
         bot_logger.logger.info('Main Bot loop !')
@@ -38,7 +38,7 @@ class SoDogeTip():
 
                 for msg in self.reddit.inbox.unread(limit=None):
 
-                    if msg is not Message:
+                    if (type(msg) is not Message) and (type(msg) is not Comment):
                         bot_logger.logger.info('Not a good message !')
                         msg.reply(lang.message_not_supported)
                         self.mark_msg_read(msg)
@@ -107,7 +107,7 @@ class SoDogeTip():
                 unspent_amounts = []
                 for i in range(0, len(list_tx), 1):
                     unspent_amounts.append(list_tx[i]['amount'])
-                    if i > 100:
+                    if i > 200:
                         break
 
                 if len(list_tx) > int(bot_config['spam_limit']):
