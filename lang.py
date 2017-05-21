@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #  -*- coding: utf-8 -*-
+link_register = '[register](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Bregister&message=%2Bregister)'
+
 
 message_register_success = "Hello %s! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: %s" \
