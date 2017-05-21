@@ -33,7 +33,7 @@ def get_user_info(rpc, msg):
     dict = get_users()
     address = dict[msg.author.name]
     balance = crypto.get_user_balance(rpc, msg.author.name)
-    msg.reply(lang.message_info % (msg.author.name, balance, address) + lang.message_footer)
+    msg.reply(lang.message_info_introduction + lang.message_account_details % (msg.author.name, balance, address) + lang.message_footer)
 
 
 def get_user_address(user):
