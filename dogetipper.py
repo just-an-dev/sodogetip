@@ -54,6 +54,10 @@ class SoDogeTip():
                             self.mark_msg_read(msg)
                             bot_command.info_user(self.rpc, msg)
 
+                        elif msg_body == '+help' and msg_subject == '+help':
+                            self.mark_msg_read(msg)
+                            bot_command.help_user(self.rpc, msg)
+
                         elif msg_body == '+balance' or msg_subject == '+balance':
                             self.mark_msg_read(msg)
                             bot_command.balance_user(self.rpc, msg)
