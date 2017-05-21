@@ -20,7 +20,7 @@ def register_user(rpc, msg):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
-        msg.reply(lang.message_already_registered + lang.message_footer)
+        msg.reply(lang.message_already_registered + lang.message_account_details + lang.message_footer)
 
 
 def balance_user(rpc, msg):
@@ -31,7 +31,7 @@ def balance_user(rpc, msg):
         msg.reply(lang.message_balance % (str(balance), str(value_usd)) + lang.message_footer)
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
-        bot_logger.logger.info('user %s not registered ' % (msg.author.name) + lang.message_footer)
+        bot_logger.logger.info('user %s not registered ' % msg.author.name)
         msg.reply(lang.message_need_register + lang.message_footer)
 
 
@@ -43,7 +43,7 @@ def info_user(rpc, msg):
 
 
 def help_user(rpc, msg):
-    msg.reply(lang.message_help + lang.message_info + lang.message_footer)
+    msg.reply(lang.message_help + lang.message_account_details + lang.message_footer)
 
 
 def withdraw_user(rpc, msg):
@@ -110,7 +110,8 @@ def tip_user(rpc, msg):
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
-                                msg.reply(lang.message_tip % (msg.author.name, str(amount), parent_comment.author.name) + lang.message_footer)
+                                value_usd = utils.get_coin_value(amount)
+                                msg.reply(lang.message_tip % (msg.author.name, parent_comment.author.name, str(amount), str(value_usd)))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
@@ -122,10 +123,10 @@ def tip_user(rpc, msg):
                                 parent_comment.author.name, lang.link_register) + lang.message_footer
                         )
             else:
-                msg.reply(lang.message_need_register + lang.message_footer)
+                msg.reply(lang.message_need_register)
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
-            msg.reply(lang.message_invalid_amount + lang.message_footer)
+            msg.reply(lang.message_invalid_amount)
 
 
 def history_user(msg):
@@ -138,9 +139,9 @@ def history_user(msg):
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str(tip['finish']))
 
-        msg.reply(lang.message_history + history_table + lang.message_footer)
+        msg.reply(lang.message_history % msg.author.name + history_table + lang.message_footer)
     else:
-        bot_logger.logger.info('user %s not registered ' % (msg.author.name))
+        bot_logger.logger.info('user %s not registered ' % msg.author.name)
         msg.reply(lang.message_need_register + lang.message_footer)
 
 
