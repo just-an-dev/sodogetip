@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 message_register_success = "Hello %s! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: %s" \
                            "\n\nWondering how to get tipped Dogecoins? Participate in /r/dogecoin!" \
