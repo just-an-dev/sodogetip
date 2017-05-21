@@ -18,7 +18,7 @@ bot_config = {
     'user_history_path': 'user_history/',
     'logs_path': 'logs/',
     'rate_fee': '1',
-    'spam_limit': '200'
+    'spam_limit': '500'
 }
 
 url_get_value = {

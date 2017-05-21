@@ -119,7 +119,7 @@ def tip_user(rpc, msg):
                                                      "tip", False)
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
                         msg.reply(
-                            '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
+                            '+/u/%s need [register](%s) before can be tipped (tip saved during 3 day)' % (
                                 parent_comment.author.name, lang.link_register) + lang.message_footer
                         )
             else:
