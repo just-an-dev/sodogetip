@@ -31,7 +31,7 @@ def add_user(user, address):
 def get_user_info(msg):
     dict = get_users()
     address = dict[msg.author.name]
-    msg.reply(lang.message_info % (msg.author.name, address))
+    msg.reply(lang.message_info % (msg.author.name, address) + lang.message_footer)
 
 
 def get_user_address(user):
