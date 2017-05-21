@@ -1,5 +1,7 @@
 import traceback
 
+import time
+
 import bot_logger
 import user_function
 from config import bot_config
@@ -7,20 +9,36 @@ from config import bot_config
 
 def get_user_balance(rpc, user):
     pending_tips = []
+    unspent_amounts = []
+
+    address = user_function.get_user_address(user)
+    list_unspent = rpc.listunspent(1, 99999999999, [address])
+    # in case of no un-spent transaction
+    if len(list_unspent) == 0:
+        return 0
+
+    for i in range(0, len(list_unspent), 1):
+        unspent_amounts.append(list_unspent[i]['amount'])
+
+    bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
     current_balance = rpc.getbalance("reddit-%s" % user)
+    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
+
+    if int(current_balance) != int(sum(unspent_amounts)):
+        bot_logger.logger.warn("maybe an error !")
 
     # check if user have pending tips
     list_tip_unregistered = user_function.get_unregistered_tip()
-    for list_tip in list_tip_unregistered.values():
-        for tip in list_tip:
-            if tip['sender'] == user:
-                pending_tips.append(int(tip['amount']))
+    if list_tip_unregistered:
+        for list_tip in list_tip_unregistered.values():
+            for tip in list_tip:
+                if tip['sender'] == user:
+                    pending_tips.append(int(tip['amount']))
 
     bot_logger.logger.debug("pending_tips %s" % (str(sum(pending_tips))))
-    bot_logger.logger.debug("unspent_amounts %s" % (str(current_balance)))
 
-    return int(current_balance) - sum(pending_tips)
+    return int(sum(unspent_amounts) - sum(pending_tips))
 
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
@@ -37,56 +55,58 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
 
-    unspent_list = []
-    unspent_vout = []
     unspent_amounts = []
-
-    # protect against spam attacks of an address having 50k UTXOs.
-    if (len(list_unspent)) > 50000:
-        return False
-
-    for i in range(0, len(list_unspent), 1):
-        unspent_list.append(list_unspent[i]['txid'])
-        unspent_vout.append(list_unspent[i]['vout'])
-        unspent_amounts.append(list_unspent[i]['amount'])
-        if sum(unspent_amounts) > amount:
-            break
-
-    bot_logger.logger.debug("sum of unspend :" + str(sum(unspent_amounts)))
-
     raw_inputs = []
+    fee = 1
+
+    # if (len(list_unspent)) > bot_config['spam_limit']:
+    # need consolidate
+    #    bot_logger.logger.error("Need consolidate")
+    #    return False
+
     for i in range(0, len(list_unspent), 1):
+        unspent_amounts.append(list_unspent[i]['amount'])
+        # check if we have enough tx
         tx = {
-            "txid": str(unspent_list[i]['txid']),
-            "vout": unspent_vout[i]['vout']
+            "txid": str(list_unspent[i]['txid']),
+            "vout": list_unspent[i]['vout']
         }
         raw_inputs.append(tx)
+        fee = calculate_fee(len(raw_inputs), 2)
+        if sum(unspent_amounts) > (float(amount) + float(fee)):
+            break
+
+    bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
 
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
-    fee = 1
-
     if take_fee_on_amount:
-        amount = (int(amount) - int(fee))
-
-    return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
+        return_amount = int(sum(unspent_amounts)) - (int(amount) - int(fee))
+    else:
+        return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
 
     bot_logger.logger.debug("return amount : %s" % str(return_amount))
 
-    if return_amount < 1:
+    if int(return_amount) < 1:
         raw_addresses = {receiver_address: int(amount)}
     else:
-        raw_addresses = {receiver_address: int(amount), sender_address: return_amount}
+        # when consolidate tx
+        if receiver_address == sender_address:
+            raw_addresses = {receiver_address: int(amount)}
+        else:
+            raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
     bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
 
-    calculate_fee(len(raw_inputs), len(raw_addresses))
     raw_tx = rpc.createrawtransaction(raw_inputs, raw_addresses)
     bot_logger.logger.debug("raw tx : %s" % raw_tx)
 
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
+    rpc.walletpassphrase(bot_config['passphrase'], bot_config['timeout'])
     signed = rpc.signrawtransaction(raw_tx)
+    rpc.walletlock()
+    time.sleep(1)
     send = rpc.sendrawtransaction(signed['hex'])
     return send
 

@@ -4,6 +4,7 @@ import datetime
 import random
 
 import bot_logger
+import crypto
 import lang
 from config import bot_config, DATA_PATH
 
@@ -28,10 +29,11 @@ def add_user(user, address):
         json.dump(data, f)
 
 
-def get_user_info(msg):
+def get_user_info(rpc, msg):
     dict = get_users()
     address = dict[msg.author.name]
-    msg.reply(lang.message_info % (msg.author.name, address))
+    balance = crypto.get_user_balance(rpc, msg.author.name)
+    msg.reply(lang.message_info % (msg.author.name, balance, address) + lang.message_footer)
 
 
 def get_user_address(user):

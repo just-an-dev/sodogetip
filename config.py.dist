@@ -17,7 +17,8 @@ bot_config = {
     'unregistered_tip_user': 'unregistered_tip_user.json',
     'user_history_path': 'user_history/',
     'logs_path': 'logs/',
-    'rate_fee': '1'
+    'rate_fee': '1',
+    'spam_limit': '200'
 }
 
 url_get_value = {
