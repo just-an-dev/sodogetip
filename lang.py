@@ -19,7 +19,7 @@ message_footer = '\n\n*****' \
                '\n^Get ^Dogecoin ^address|^[+address](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Baddress&message=%2Baddress)' \
                '\n^Balance|^[+balance](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Bbalance&message=%2Bbalance)' \
                '\n^Help ^Me!|^[+help](http://www.reddit.com/message/compose?to=sodogetiptest&subject=%2Bhelp&message=%2Bhelp)' \
-               '\n\n**PROTIP:** An example tip would be: +/u/sodogetip 100 doge'
+               '\n\n**PROTIP:** An example tip would be: +/u/sodogetiptest 100 doge'
 # GARYLITTLEMORE OR SOMEONE ELSE PLS PUT A HELPFUL MESSAGE IN message_help BELOW FOR +help COMMAND
 # (put a placeholder for anything like Dogecoin addresses for me to properly code in) :)
 message_help = 'To be worked on'
