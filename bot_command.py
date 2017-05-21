@@ -37,13 +37,13 @@ def balance_user(rpc, msg):
 
 def info_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
-        user_function.get_user_info(msg)
+        user_function.get_user_info(rpc, msg)
     else:
         msg.reply(lang.message_need_register + lang.message_footer)
 
 
 def help_user(rpc, msg):
-    msg.reply(lang.message_help + lang.message_footer)
+    msg.reply(lang.message_help + lang.message_info + lang.message_footer)
 
 
 def withdraw_user(rpc, msg):
