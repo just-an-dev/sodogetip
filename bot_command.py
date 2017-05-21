@@ -92,7 +92,7 @@ def tip_user(rpc, msg):
                 if int(amount) >= user_balance:
                     bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                         msg.author.name, amount, user_balance))
-                    msg.reply(lang.message_balance_low_tip % msg.author.name + lang.message_footer)
+                    msg.reply(lang.message_balance_low_tip % (msg.author.name , parent_comment.author.name))
                 else:
 
                     # check user have address before tip
