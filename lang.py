@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 message_register_success = "Hello %s! Your account is now registered and ready to tip Dogecoins :)" \
