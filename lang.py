@@ -28,8 +28,8 @@ message_balance_low_withdraw = 'Hello %s! It seems your balance of **Ð%s** is t
 message_account_details = '\n\nHere are your account details %s!' \
                           '\n\n^very ^info | &nbsp;' \
                           '\n---|---' \
-                          '\n^Your ^Balance | %s doge' \
-                          '\n^Deposit ^Address | %s' \
+                          '\n^Your ^balance | %s doge' \
+                          '\n^Deposit ^address | %s' \
                           '\n^Withdraw | ^[+withdraw](' + link_withdraw + ')'
 message_not_supported = '**^[such ^error]**: ^That ^is ^currently ^not ^supported! ^[[help]](' + link_help + ')'
 message_balance = 'Hello %s! Your balance is: %s ($%s)'
@@ -41,9 +41,9 @@ message_footer = '\n\n*****' \
                  '\n\n^quick ^commands |&nbsp;' \
                  '\n---|---' \
                  '\n^Past ^tips|^[+history](' + link_history + ')' \
-                 '\n^Get ^Dogecoin ^address|^[+info](' + link_info + ')' \
+                 '\n^Get ^account ^details|^[+info](' + link_info + ')' \
                  '\n^Balance|^[+balance](' + link_balance + ')' \
-                 '\n^Help ^Me!|^[+help](' + link_help + ')' \
+                 '\n^Help ^me!|^[+help](' + link_help + ')' \
                  '\n\n**PROTIP:** An example tip would be: +/u/sodogetiptest 100 doge'
 
 # GARYLITTLEMORE OR SOMEONE ELSE PLS PUT A HELPFUL MESSAGE IN message_help BELOW FOR +help COMMAND
