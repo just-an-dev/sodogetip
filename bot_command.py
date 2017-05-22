@@ -20,7 +20,8 @@ def register_user(rpc, msg):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
-        msg.reply(lang.message_already_registered + lang.message_account_details + lang.message_footer)
+        address = user_function.get_user_address(msg.author.name)
+        msg.reply(lang.message_already_registered % address + lang.message_footer)
 
 
 def balance_user(rpc, msg):
@@ -57,7 +58,8 @@ def withdraw_user(rpc, msg):
             if int(amount) >= user_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
-                msg.reply(lang.message_balance_low_withdraw % (msg.author.name, str(user_balance), str(amount)) + lang.message_footer)
+                msg.reply(lang.message_balance_low_withdraw % (
+                msg.author.name, str(user_balance), str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
                 try:
@@ -111,7 +113,8 @@ def tip_user(rpc, msg):
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
                                 value_usd = utils.get_coin_value(amount)
-                                msg.reply(lang.message_tip % (msg.author.name, parent_comment.author.name, str(amount), str(value_usd)))
+                                msg.reply(lang.message_tip % (
+                                msg.author.name, parent_comment.author.name, str(amount), str(value_usd)))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
