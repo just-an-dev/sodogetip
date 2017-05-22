@@ -79,7 +79,7 @@ class SoDogeTip():
 
                         elif split_message.count('+/u/sodogetiptest'):
                             self.mark_msg_read(msg)
-                            bot_command.tip_user(self.rpc_main, msg)
+                            bot_command.tip_user(self.rpc_main, self.reddit, msg)
 
                         else:
                             self.mark_msg_read(msg)
