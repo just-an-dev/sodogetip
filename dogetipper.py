@@ -22,7 +22,7 @@ class SoDogeTip():
 
         self.rpc_main = AuthServiceProxy("http://%s:%s@%s:%s" % (
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-            rpc_config['doge_rpc_port']))
+            rpc_config['doge_rpc_port']), timeout=120)
 
         self.rpc_antispam = AuthServiceProxy("http://%s:%s@%s:%s" % (
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
