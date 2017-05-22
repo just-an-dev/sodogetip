@@ -20,8 +20,9 @@ def register_user(rpc, msg):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
+        balance = crypto.get_user_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_already_registered % address + lang.message_footer)
+        msg.reply(lang.message_already_registered + lang.message_account_details % (msg.author.name, address, balance) + lang.message_footer)
 
 
 def balance_user(rpc, msg):
