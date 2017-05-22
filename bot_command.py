@@ -57,7 +57,7 @@ def withdraw_user(rpc, msg):
             if int(amount) >= user_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
-                msg.reply(lang.message_balance_low_withdraw % (msg.author.name, user_balance, amount) + lang.message_footer)
+                msg.reply(lang.message_balance_low_withdraw % (msg.author.name, str(user_balance), str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
                 try:
