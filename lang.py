@@ -35,7 +35,7 @@ message_not_supported = '**^[such ^error]**: ^That ^is ^currently ^not ^supporte
 message_balance = 'Hello %s! Your balance is: %s ($%s)'
 message_history = 'Hello %s! Here is your transaction history: \n\n'
 message_tip = '**^[wow ^so ^verify]**: ^/u/%s ^-> ^/u/%s ^**Ð%s** ^**doge (%s)** ^[[help]](' + link_help + ')'
-message_withdraw = 'Withdraw : %s to %s'
+message_withdraw = '**^[wow ^so ^verify]**: ^/u/%s ^-> ^%s ^**Ð%s** ^**doge (%s)** ^[[help]](' + link_help + ')'
 message_footer = '\n\n*****' \
                  '\n\nNew to Dogecoin or sodogetip? Ask the community any questions on /r/dogecoin!' \
                  '\n\n^quick ^commands |&nbsp;' \
