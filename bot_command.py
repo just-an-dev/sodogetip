@@ -43,7 +43,7 @@ def info_user(rpc, msg):
 
 
 def help_user(rpc, msg):
-    msg.reply(lang.message_help + lang.message_account_details + lang.message_footer)
+    msg.reply(lang.message_help + lang.message_footer)
 
 
 def withdraw_user(rpc, msg):
