@@ -83,13 +83,14 @@ def withdraw_user(rpc, msg):
         msg.reply(lang.message_need_register % msg.author.name + lang.message_footer)
 
 
-def tip_user(rpc, msg):
+def tip_user(rpc, reddit, msg):
     bot_logger.logger.info('An user mention detected ')
     split_message = msg.body.lower().strip().split()
     tip_index = split_message.index('+/u/sodogetiptest')
 
     if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
         amount = split_message[tip_index + 1]
+        value_usd = utils.get_coin_value(amount)
 
         if utils.check_amount_valid(amount):
             parent_comment = msg.parent()
@@ -118,7 +119,6 @@ def tip_user(rpc, msg):
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
-                                value_usd = utils.get_coin_value(amount)
                                 msg.reply(lang.message_tip % (msg.author.name, parent_comment.author.name, str(amount), str(value_usd)))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
@@ -126,10 +126,9 @@ def tip_user(rpc, msg):
                                                      amount,
                                                      "tip", False)
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
-                        msg.reply(
-                            '+/u/%s need [register](%s) before can be tipped (tip saved during 3 day)' % (
-                                parent_comment.author.name, lang.link_register) + lang.message_footer
-                        )
+                        msg.reply(lang.message_recipient_register % parent_comment.author.name)
+                        reddit.redditor(parent_comment.author.name).message(lang.message_recipient_need_register_title % str(amount), lang.message_recipient_need_register_message % (parent_comment.author.name, msg.author.name, str(amount), str(value_usd)))
+
             else:
                 msg.reply(lang.message_need_register % msg.author.name)
         else:
