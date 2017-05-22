@@ -31,8 +31,7 @@ def get_user_balance(rpc, user):
     # check if user have pending tips
     list_tip_unregistered = user_function.get_unregistered_tip()
     if list_tip_unregistered:
-        for list_tip in list_tip_unregistered.values():
-            for tip in list_tip:
+        for tip in list_tip_unregistered:
                 if tip['sender'] == user:
                     pending_tips.append(int(tip['amount']))
 
@@ -77,7 +76,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
             break
 
     bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
-
+    bot_logger.logger.debug("fee : %s" % str(fee))
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
     if take_fee_on_amount:
@@ -113,13 +112,11 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
 def calculate_fee(nb_input, nb_out):
     size = nb_input * 180 + nb_out * 34 + 10
-    bot_logger.logger.debug("size of tx : %s" % size)
+    #bot_logger.logger.debug("size of tx : %s" % size)
 
     fee_rate = float(bot_config['rate_fee'])
     fee = 1
     if size > 1000:
         fee = (size / 1000) * fee_rate
-
-    bot_logger.logger.debug("fee : %s" % str(fee))
 
     return fee

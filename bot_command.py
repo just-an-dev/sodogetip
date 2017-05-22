@@ -43,7 +43,7 @@ def info_user(rpc, msg):
 
 
 def help_user(rpc, msg):
-    msg.reply(lang.message_help + lang.message_account_details + lang.message_footer)
+    msg.reply(lang.message_help + lang.message_footer)
 
 
 def withdraw_user(rpc, msg):
@@ -92,7 +92,7 @@ def tip_user(rpc, msg):
                 if int(amount) >= user_balance:
                     bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                         msg.author.name, amount, user_balance))
-                    msg.reply(lang.message_balance_low_tip % msg.author.name + lang.message_footer)
+                    msg.reply(lang.message_balance_low_tip % (msg.author.name , parent_comment.author.name))
                 else:
 
                     # check user have address before tip
@@ -119,7 +119,7 @@ def tip_user(rpc, msg):
                                                      "tip", False)
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
                         msg.reply(
-                            '+/u/%s need %s before can be tipped (tip saved during 3 day)' % (
+                            '+/u/%s need [register](%s) before can be tipped (tip saved during 3 day)' % (
                                 parent_comment.author.name, lang.link_register) + lang.message_footer
                         )
             else:
