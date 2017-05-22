@@ -19,7 +19,12 @@ from config import rpc_config, bot_config, DATA_PATH
 class SoDogeTip():
     def __init__(self):
         self.reddit = praw.Reddit('sodogetiptest')
-        self.rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
+
+        self.rpc_main = AuthServiceProxy("http://%s:%s@%s:%s" % (
+            rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
+            rpc_config['doge_rpc_port']))
+
+        self.rpc_antispam = AuthServiceProxy("http://%s:%s@%s:%s" % (
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
             rpc_config['doge_rpc_port']), timeout=120)
 
@@ -50,19 +55,19 @@ class SoDogeTip():
 
                         if msg_body == '+register' and msg_subject == '+register':
                             self.mark_msg_read(msg)
-                            bot_command.register_user(self.rpc, msg)
+                            bot_command.register_user(self.rpc_main, msg)
 
                         elif msg_body == '+info' and msg_subject == '+info':
                             self.mark_msg_read(msg)
-                            bot_command.info_user(self.rpc, msg)
+                            bot_command.info_user(self.rpc_main, msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
                             self.mark_msg_read(msg)
-                            bot_command.help_user(self.rpc, msg)
+                            bot_command.help_user(self.rpc_main, msg)
 
                         elif msg_body == '+balance' or msg_subject == '+balance':
                             self.mark_msg_read(msg)
-                            bot_command.balance_user(self.rpc, msg)
+                            bot_command.balance_user(self.rpc_main, msg)
 
                         elif msg_body == '+history' or msg_subject == '+history':
                             self.mark_msg_read(msg)
@@ -70,11 +75,11 @@ class SoDogeTip():
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             self.mark_msg_read(msg)
-                            bot_command.withdraw_user(self.rpc, msg)
+                            bot_command.withdraw_user(self.rpc_main, msg)
 
                         elif split_message.count('+/u/sodogetiptest'):
                             self.mark_msg_read(msg)
-                            bot_command.tip_user(self.rpc, msg)
+                            bot_command.tip_user(self.rpc_main, msg)
 
                         else:
                             self.mark_msg_read(msg)
@@ -96,7 +101,7 @@ class SoDogeTip():
     def process_pending_tip(self):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.rpc)
+            bot_command.replay_remove_pending_tip(self.rpc_main)
             time.sleep(60)
 
     def anti_spamming_tx(self):
@@ -107,7 +112,7 @@ class SoDogeTip():
             list_account = user_function.get_users()
             for account, address in list_account.items():
                 time.sleep(5)  # don't flood daemon
-                list_tx = self.rpc.listunspent(1, 99999999999, [address])
+                list_tx = self.rpc_antispam.listunspent(1, 99999999999, [address])
                 unspent_amounts = []
                 for i in range(0, len(list_tx), 1):
                     unspent_amounts.append(list_tx[i]['amount'])
@@ -116,8 +121,8 @@ class SoDogeTip():
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    amount = crypto.get_user_balance(self.rpc, account)
-                    crypto.send_to(self.rpc, address, address, sum(unspent_amounts), True)
+                    amount = crypto.get_user_balance(self.rpc_antispam, account)
+                    crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 
 
