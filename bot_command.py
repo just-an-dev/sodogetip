@@ -28,7 +28,7 @@ def balance_user(rpc, msg):
         balance = crypto.get_user_balance(rpc, msg.author.name)
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         value_usd = utils.get_coin_value(balance)
-        msg.reply(lang.message_balance % (str(balance), str(value_usd)) + lang.message_footer)
+        msg.reply(lang.message_balance % (msg.author.name, str(balance), str(value_usd)) + lang.message_footer)
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
