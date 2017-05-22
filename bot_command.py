@@ -57,14 +57,14 @@ def withdraw_user(rpc, msg):
             if int(amount) >= user_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
-                msg.reply(lang.message_balance_low_withdraw % msg.author.name + lang.message_footer)
+                msg.reply(lang.message_balance_low_withdraw % (msg.author.name, user_balance, amount) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
                 try:
                     if crypto.send_to(rpc, sender_address, receiver_address, amount, True):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
-                        msg.reply(lang.message_withdraw % (str(amount) , receiver_address) + lang.message_footer)
+                        msg.reply(lang.message_withdraw % (str(amount), receiver_address) + lang.message_footer)
 
                 except:
                     traceback.print_exc()
@@ -92,7 +92,7 @@ def tip_user(rpc, msg):
                 if int(amount) >= user_balance:
                     bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                         msg.author.name, amount, user_balance))
-                    msg.reply(lang.message_balance_low_tip % (msg.author.name , parent_comment.author.name))
+                    msg.reply(lang.message_balance_low_tip % msg.author.name)
                 else:
 
                     # check user have address before tip
