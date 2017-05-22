@@ -20,7 +20,7 @@ message_need_register = 'Hello %s! You need to register an account before you ca
                         '\n\n3. Receive the successful register message' \
                         '\n\nThe successful register message will contain your Dogecoin address to your tipping account.'
 message_invalid_amount = '**^[such ^error]**: ^The ^tip ^amount ^must ^be ^at ^least ^1 ^doge. ^[[help]](' + link_help + ')'
-message_balance_low_tip = '**^[such ^error]**: ^/u/%s ^-> ^/u/%s\'s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](' + link_help + ')'
+message_balance_low_tip = '**^[such ^error]**: ^/u/%s\'s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](' + link_help + ')'
 message_already_registered = 'You are already registered! Here are your account details:'
 message_balance_low_withdraw = 'Hello %s! It seems your balance of **Ð%s** is too low for this withdraw amount of **Ð%s**.' \
                                '\n\n[Want to try again?](' + link_withdraw + ')'
