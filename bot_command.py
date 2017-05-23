@@ -50,8 +50,7 @@ def help_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         balance = crypto.get_user_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_help + lang.message_account_details % (
-        msg.author.name, address, str(balance)) + lang.message_footer)
+        msg.reply(lang.message_help + lang.message_account_details.render(username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
     else:
         msg.reply(lang.message_need_register.render(username=msg.author.name) + lang.message_footer)
 
