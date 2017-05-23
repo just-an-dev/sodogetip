@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 #  -*- coding: utf-8 -*-
+
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from jinja2 import Template
 
 link_register = "https://www.reddit.com/message/compose?to=sodogetiptest&subject=\%2Bregister&message=\%2Bregister"
@@ -26,7 +31,7 @@ message_invalid_amount = "**^[such ^error]**: ^The ^tip ^amount ^must ^be ^at ^l
 message_balance_low_tip = Template("**^[such ^error]**: ^/u/{{ username }}\"s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")")
 message_already_registered = "You are already registered!"
 message_balance_low_withdraw = Template("Hello {{ username }} ! It seems your balance of **Ð{{ user_balance }}** is too low for this withdraw amount of **Ð{{ amount }}**." \
-                               "\n\n[Want to try again?](" + link_withdraw + ")")
+                                        "\n\n[Want to try again?](" + link_withdraw + ")")
 
 message_account_details = Template("\n\nHere are your account details {{ username }} !" \
                           "\n\n^very ^info | &nbsp;" \
