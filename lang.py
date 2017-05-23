@@ -23,10 +23,10 @@ message_need_register = Template("Hello {{ username }} ! You need to register an
                         "\n\nThe successful register message will contain your Dogecoin address to your tipping account.")
 
 message_invalid_amount = "**^[such ^error]**: ^The ^tip ^amount ^must ^be ^at ^least ^1 ^doge. ^[[help]](" + link_help + ")"
-message_balance_low_tip = "**^[such ^error]**: ^/u/%s\"s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")"
+message_balance_low_tip = Template("**^[such ^error]**: ^/u/{{ username }}\"s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")")
 message_already_registered = "You are already registered!"
-message_balance_low_withdraw = "Hello {{ username }} ! It seems your balance of **Ð%s** is too low for this withdraw amount of **Ð%s**." \
-                               "\n\n[Want to try again?](" + link_withdraw + ")"
+message_balance_low_withdraw = Template("Hello {{ username }} ! It seems your balance of **Ð{{ user_balance }}** is too low for this withdraw amount of **Ð{{ amount }}**." \
+                               "\n\n[Want to try again?](" + link_withdraw + ")")
 
 message_account_details = Template("\n\nHere are your account details {{ username }} !" \
                           "\n\n^very ^info | &nbsp;" \
@@ -35,10 +35,10 @@ message_account_details = Template("\n\nHere are your account details {{ usernam
                           "\n^Deposit ^address | {{ address }} " \
                           "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
 message_not_supported = "**^[such ^error]**: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
-message_balance = "Hello {{ username }} ! Your balance is: %s ($%s)"
-message_history = "Hello {{ username }} ! Here is your transaction history: \n\n"
-message_tip = "**^[wow ^so ^verify]**: ^/u/%s ^-> ^/u/%s ^**Ð%s** ^**doge (%s)** ^[[help]](" + link_help + ")"
-message_withdraw = "**^[wow ^so ^verify]**: ^/u/%s ^-> ^%s ^**Ð%s** ^**doge (%s)** ^[[help]](" + link_help + ")"
+message_balance = Template("Hello {{ username }} ! Your balance is: {{ balance }} (${{ value_usd }})")
+message_history = Template("Hello {{ username }} ! Here is your transaction history: \n\n")
+message_tip = Template("**^[wow ^so ^verify]**: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^**Ð{{ amount }}** ^**doge (${{ value_usd }})** ^[[help]](" + link_help + ")")
+message_withdraw = Template("**^[wow ^so ^verify]**: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^**Ð{{ amount }}** ^**doge (${{ value_usd }})** ^[[help]](" + link_help + ")")
 message_footer = "\n\n*****" \
                  "\n\nNew to Dogecoin or sodogetip? Ask the community any questions on /r/dogecoin!" \
                  "\n\n^quick ^commands |&nbsp;" \
@@ -55,11 +55,11 @@ message_help = "To tip someone: \n\n Reply to their comment or post with: +/u/so
                "\n\nReplace 100 with whatever amount you want to tip" \
                "\n\n*****"
 
-message_recipient_register = "**^[such ^error]**: ^/u/%s ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips ^(this ^tip ^has ^been ^saved ^for ^3 ^days) ^[[help]](" + link_help + ")"
-message_recipient_need_register_title = "Someone sent you a Dogecoin tip of Ð%s, and you need to register to receive it!"
-message_recipient_need_register_message = "Hello {{ username }} ! You need to register an account before you can receive **{{ amount_receive }}\"s** Dogecoin tip of **Ð%s doge ($%s)**." \
+message_recipient_register = "**^[such ^error]**: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips ^(this ^tip ^has ^been ^saved ^for ^3 ^days) ^[[help]](" + link_help + ")"
+message_recipient_need_register_title = Template("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")
+message_recipient_need_register_message =  Template("Hello {{ username }} ! You need to register an account before you can receive **{{ sender }}\"s** Dogecoin tip of **Ð{{ amount }} doge (${{ value_usd }})**." \
                         "\n\nTo register an account:" \
                         "\n\n1. [Click here](" + link_register + ") to send a pre-filled +register message" \
                         "\n\n2. Click the \"Send\" button" \
                         "\n\n3. Receive the successful register message" \
-                        "\n\nThe successful register message will contain your Dogecoin address to your tipping account."
+                        "\n\nThe successful register message will contain your Dogecoin address to your tipping account.")
