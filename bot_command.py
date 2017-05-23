@@ -12,7 +12,7 @@ def register_user(rpc, msg):
     if not user_function.user_exist(msg.author.name):
         address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
-            msg.reply(lang.message_register_success % (msg.author.name, address) + lang.message_footer)
+            msg.reply(lang.message_register_success.render(username=msg.author.name, address=address) + lang.message_footer)
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
@@ -22,8 +22,8 @@ def register_user(rpc, msg):
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
         balance = crypto.get_user_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_already_registered + lang.message_account_details % (
-        msg.author.name, address, str(balance)) + lang.message_footer)
+        msg.reply(lang.message_already_registered + lang.message_account_details.render(
+            username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
 
 
 def balance_user(rpc, msg):
