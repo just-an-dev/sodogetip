@@ -131,7 +131,7 @@ def tip_user(rpc, reddit, msg):
                                                      amount,
                                                      "tip", False)
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
-                        msg.reply(lang.message_recipient_register % parent_comment.author.name)
+                        msg.reply(lang.message_recipient_register.render(username=parent_comment.author.name))
 
                         reddit.redditor(parent_comment.author.name).message(
                             lang.message_recipient_need_register_title.render(amount=str(amount)),

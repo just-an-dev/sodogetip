@@ -60,7 +60,7 @@ message_help = "To tip someone: \n\n Reply to their comment or post with: +/u/so
                "\n\nReplace 100 with whatever amount you want to tip" \
                "\n\n*****"
 
-message_recipient_register = "**^[such ^error]**: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips ^(this ^tip ^has ^been ^saved ^for ^3 ^days) ^[[help]](" + link_help + ")"
+message_recipient_register = Template("**^[such ^error]**: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips ^(this ^tip ^has ^been ^saved ^for ^3 ^days) ^[[help]](" + link_help + ")")
 message_recipient_need_register_title = Template("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")
 message_recipient_need_register_message =  Template("Hello {{ username }} ! You need to register an account before you can receive **{{ sender }}\"s** Dogecoin tip of **Ð{{ amount }} doge (${{ value_usd }})**." \
                         "\n\nTo register an account:" \
