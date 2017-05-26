@@ -46,7 +46,7 @@ message_balance = Template("Hello {{ username }}! Your balance is: {{ balance }}
 message_history = Template("Hello {{ username }}! Here is your transaction history: \n\n")
 message_tip = Template("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw = Template("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
-message_footer = "\n\n____*" \
+message_footer = "\n\n*****" \
                  "\n\nNew to Dogecoin or " + name + "? Ask the community any questions on /r/dogecoin!" \
                  "\n\n^quick ^commands |&nbsp;" \
                  "\n---|---" \
@@ -60,7 +60,7 @@ message_footer = "\n\n____*" \
 # (put a placeholder for anything like Dogecoin addresses for me to properly code in) :)
 message_help = "To tip someone: \n\n Reply to their comment or post with: +/u/" + name + " 100 doge" \
                "\n\nReplace 100 with whatever amount you want to tip" \
-               "\n\n____*"
+               "\n\n*****"
 
 message_recipient_register = Template("__^[such ^error]__: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips ^(this ^tip ^has ^been ^saved ^for ^3 ^days) ^[[help]](" + link_help + ")")
 message_recipient_need_register_title = Template("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")
