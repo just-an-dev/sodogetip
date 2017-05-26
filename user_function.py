@@ -33,7 +33,8 @@ def get_user_info(rpc, msg):
     dict = get_users()
     address = dict[msg.author.name]
     balance = crypto.get_user_balance(rpc, msg.author.name)
-    msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance), address=address) + lang.message_footer)
+    msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance),
+                                                  address=address) + lang.message_footer)
 
 
 def get_user_address(user):
@@ -75,8 +76,8 @@ def save_unregistered_tip(sender, receiver, amount):
 
 def remove_pending_tip(id):
     unregistered_tip = get_unregistered_tip()
-    for tip, key in enumerate(unregistered_tip):
-        if tip['id'] == id:
+    for key, tip in enumerate(unregistered_tip):
+        if int(tip['id']) == int(id):
             del unregistered_tip[key]
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
