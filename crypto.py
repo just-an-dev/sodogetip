@@ -50,7 +50,7 @@ def tip_user(rpc, sender_user, receiver_user, amount_tip):
 
 
 def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
-    bot_logger.logger.info("send %s to %s from %s" % (amount, receiver_address, sender_address))
+    bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
 

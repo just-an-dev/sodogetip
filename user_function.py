@@ -75,9 +75,9 @@ def save_unregistered_tip(sender, receiver, amount):
 
 def remove_pending_tip(id):
     unregistered_tip = get_unregistered_tip()
-    for tip, key in enumerate(unregistered_tip):
+    for tip in unregistered_tip:
         if tip['id'] == id:
-            del unregistered_tip[key]
+            del tip
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
 
