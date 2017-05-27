@@ -16,13 +16,13 @@ link_history = "https://www.reddit.com/message/compose?to=" + name + "&subject=%
 link_info = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Binfo&message=%2Binfo"
 link_balance = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Bbalance&message=%2Bbalance"
 
-message_register_success = Template("Hello {{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
+message_register_success = Template("Hello /u/{{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: {{ address }}" \
                            "\n\nWondering how to get tipped Dogecoins? Participate in /r/dogecoin!" \
                            "\n\nIf you need help using me (such as tipping people), you can send me a +help message [here](" + link_help + ") to receive a getting started guide." \
                            "\n\n__DID YOU KNOW?:__ Unlike other tip bots, this one is non-profit and maintained by the community. Checkmate!")
 
-message_need_register = Template("Hello {{ username }}! You need to register an account before you can use me." \
+message_need_register = Template("Hello /u/{{ username }}! You need to register an account before you can use me." \
                         "\n\nTo register an account:" \
                         "\n\n1. [Click here](" + link_register + ") to send a pre-filled +register message" \
                         "\n\n2. Click the \"Send\" button" \
@@ -31,19 +31,23 @@ message_need_register = Template("Hello {{ username }}! You need to register an 
 
 message_invalid_amount = "__^[such ^error]__: ^The ^tip ^amount ^must ^be ^at ^least ^1 ^doge. ^[[help]](" + link_help + ")"
 message_balance_low_tip = Template("__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")")
+message_balance_pending_tip = Template("__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^must ^wait ^for ^pending ^tips ^to ^be ^confirmed ^before ^sending ^this ^tip ^amount ^[[help]](" + link_help + ")")
 message_already_registered = "You are already registered!"
-message_balance_low_withdraw = Template("Hello {{ username }}! It seems your balance of __Ð{{ user_balance }}__ is too low for this withdraw amount of __Ð{{ amount }}__." \
+message_balance_low_withdraw = Template("Hello /u/{{ username }}! It seems your balance of __Ð{{ user_balance }}__ is too low for this withdraw amount of __Ð{{ amount }}__." \
                                         "\n\n[Want to try again?](" + link_withdraw + ")")
 
-message_account_details = Template("\n\nHere are your account details {{ username }} !" \
-                          "\n\n^very ^info | &nbsp;" \
-                          "\n---|---" \
-                          "\n^Your ^balance | {{ balance }} doge" \
-                          "\n^Deposit ^address | {{ address }} " \
-                          "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
+message_account_details = Template("\n\nHere are your account details /u/{{ username }}!" \
+                            "\n\n^very ^info | &nbsp;" \
+                            "\n---|---" \
+                            "\n^Your ^balance | ^{{ balance }} ^doge ^(${{ balance_value_usd }})" \
+                            "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})"
+                            "\n^Deposit ^address | ^{{ address }}" \
+                            "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
-message_balance = Template("Hello {{ username }}! Your balance is: {{ balance }} (${{ value_usd }})")
-message_history = Template("Hello {{ username }}! Here is your transaction history: \n\n")
+message_balance = Template("Hello /u/{{ username }}!" \
+                           "\n\nYour balance is: {{ balance }} (${{ balance_value_usd }})" \
+                           "\n\nYour pending balance is: {{ pendingbalance }} (${{ pending_value_usd }})")
+message_history = Template("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = Template("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw = Template("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_footer = "\n\n*****" \
@@ -64,7 +68,7 @@ message_help = "To tip someone: \n\n Reply to their comment or post with: +/u/" 
 
 message_recipient_register = Template("__^[such ^error]__: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips. __^\(this ^tip ^has ^been ^saved ^for ^3 ^days)__ ^[[help]](" + link_help + ")")
 message_recipient_need_register_title = Template("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")
-message_recipient_need_register_message =  Template("Hello {{ username }}! You need to register an account before you can receive __{{ sender }}\'s__ Dogecoin tip of __Ð{{ amount }} doge (${{ value_usd }})__." \
+message_recipient_need_register_message =  Template("Hello /u/{{ username }}! You need to register an account before you can receive __{{ sender }}\'s__ Dogecoin tip of __Ð{{ amount }} doge (${{ value_usd }})__." \
                         "\n\nTo register an account:" \
                         "\n\n1. [Click here](" + link_register + ") to send a pre-filled +register message" \
                         "\n\n2. Click the \"Send\" button" \
