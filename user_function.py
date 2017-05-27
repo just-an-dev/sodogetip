@@ -65,7 +65,7 @@ def get_unregistered_tip():
         return data
 
 
-def save_unregistered_tip(sender, receiver, amount):
+def save_unregistered_tip(sender, receiver, amount, messagefullname):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w') as f:
@@ -74,6 +74,7 @@ def save_unregistered_tip(sender, receiver, amount):
             'amount': amount,
             'receiver': receiver,
             'sender': sender,
+            'message_fullname': messagefullname,
             'time': datetime.datetime.now().isoformat(),
         })
         json.dump(data, f)
