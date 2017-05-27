@@ -33,7 +33,8 @@ def get_user_info(rpc, msg):
     dict = get_users()
     address = dict[msg.author.name]
     balance = crypto.get_user_balance(rpc, msg.author.name)
-    msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance), address=address) + lang.message_footer)
+    msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance),
+                                                  address=address) + lang.message_footer)
 
 
 def get_user_address(user):
@@ -75,9 +76,9 @@ def save_unregistered_tip(sender, receiver, amount):
 
 def remove_pending_tip(id):
     unregistered_tip = get_unregistered_tip()
-    for tip in unregistered_tip:
-        if tip['id'] == id:
-            del tip
+    for key, tip in enumerate(unregistered_tip):
+        if int(tip['id']) == int(id):
+            del unregistered_tip[key]
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)
 
@@ -107,3 +108,15 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True):
             'time': datetime.datetime.now().isoformat(),
         })
         json.dump(data, f)
+
+
+def get_balance_unregistered_tip(user):
+    pending_tips = []
+
+    list_tip_unregistered = get_unregistered_tip()
+    if list_tip_unregistered:
+        for tip in list_tip_unregistered:
+            if tip['sender'] == user:
+                pending_tips.append(int(tip['amount']))
+
+    return int(sum(pending_tips))

@@ -65,11 +65,11 @@ class SoDogeTip():
                             self.mark_msg_read(msg)
                             bot_command.help_user(self.rpc_main, msg)
 
-                        elif msg_body == '+balance' or msg_subject == '+balance':
+                        elif msg_body == '+balance' and msg_subject == '+balance':
                             self.mark_msg_read(msg)
                             bot_command.balance_user(self.rpc_main, msg)
 
-                        elif msg_body == '+history' or msg_subject == '+history':
+                        elif msg_body == '+history' and msg_subject == '+history':
                             self.mark_msg_read(msg)
                             bot_command.history_user(msg)
 

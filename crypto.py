@@ -8,7 +8,6 @@ from config import bot_config
 
 
 def get_user_balance(rpc, user):
-    pending_tips = []
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
@@ -29,16 +28,11 @@ def get_user_balance(rpc, user):
         bot_logger.logger.warn("maybe an error !")
 
     # check if user have pending tips
-    list_tip_unregistered = user_function.get_unregistered_tip()
-    if list_tip_unregistered:
-        for tip in list_tip_unregistered:
-                if tip['sender'] == user:
-                    pending_tips.append(int(tip['amount']))
+    pending_tips = user_function.get_balance_unregistered_tip(user)
 
-    bot_logger.logger.debug("pending_tips %s" % (str(sum(pending_tips))))
+    bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
-    return int(sum(unspent_amounts) - sum(pending_tips))
-
+    return int(sum(unspent_amounts) - int(pending_tips))
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
     sender_address = user_function.get_user_address(sender_user)
@@ -58,11 +52,6 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     raw_inputs = []
     fee = 1
 
-    # if (len(list_unspent)) > bot_config['spam_limit']:
-    # need consolidate
-    #    bot_logger.logger.error("Need consolidate")
-    #    return False
-
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
         # check if we have enough tx
@@ -80,7 +69,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
     if take_fee_on_amount:
-        return_amount = int(sum(unspent_amounts)) - (int(amount) - int(fee))
+        return_amount = int(sum(unspent_amounts)) - int(int(amount) - int(fee))
     else:
         return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
 
@@ -91,7 +80,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     else:
         # when consolidate tx
         if receiver_address == sender_address:
-            raw_addresses = {receiver_address: int(amount)}
+            raw_addresses = {receiver_address: int(int(amount) - int(fee) )}
         else:
             raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
