@@ -173,8 +173,9 @@ def replay_remove_pending_tip(rpc):
             if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
                 if (user_function.user_exist(tip['receiver'])):
                     bot_logger.logger.info(
-                        "replay tipping - %s send %s to %s  " % (tip['sender'], tip['amount'], tip['receiver']))
+                        "replay tipping %s - %s send %s to %s  " % (str(tip['id']),tip['sender'], tip['amount'], tip['receiver']))
                     crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+                    user_function.remove_pending_tip(tip['id'])
             else:
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], tip['receiver']))
