@@ -7,7 +7,7 @@ import user_function
 from config import bot_config
 
 
-def get_user_balance(rpc, user):
+def get_user_confirmed_balance(rpc, user):
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
@@ -33,6 +33,28 @@ def get_user_balance(rpc, user):
     bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
     return int(sum(unspent_amounts) - int(pending_tips))
+
+def get_user_unconfirmed_balance(rpc, user):
+    unspent_amounts = []
+
+    address = user_function.get_user_address(user)
+    list_unspent = rpc.listunspent(0, 0, [address])
+    # in case of no unconfirmed transactions
+    if len(list_unspent) == 0:
+        return 0
+
+    for i in range(0, len(list_unspent), 1):
+        unspent_amounts.append(list_unspent[i]['amount'])
+
+    bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
+
+    current_balance = rpc.getbalance("reddit-%s" % user)
+    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
+
+    if int(current_balance) != int(sum(unspent_amounts)):
+        bot_logger.logger.warn("maybe an error !")
+
+    return int(sum(unspent_amounts))
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
     sender_address = user_function.get_user_address(sender_user)

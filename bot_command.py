@@ -20,19 +20,19 @@ def register_user(rpc, msg):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
-        balance = crypto.get_user_balance(rpc, msg.author.name)
+        balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_already_registered + lang.message_account_details.render(
-            username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
+        msg.reply(lang.message_already_registered + lang.message_account_details.render(username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
 
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
-        balance = crypto.get_user_balance(rpc, msg.author.name)
+        balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        pendingbalance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
-        value_usd = utils.get_coin_value(balance)
-        msg.reply(lang.message_balance.render(
-            username=msg.author.name, balance=str(balance), value_usd=str(value_usd)) + lang.message_footer)
+        balance_value_usd = utils.get_coin_value(balance)
+        pending_value_usd = utils.get_coin_value(pendingbalance)
+        msg.reply(lang.message_balance.render(username=msg.author.name, balance=str(balance), balance_value_usd=str(balance_value_usd), pendingbalance=str(pendingbalance), pending_value_usd=str(pending_value_usd)) + lang.message_footer)
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
@@ -48,7 +48,7 @@ def info_user(rpc, msg):
 
 def help_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
-        balance = crypto.get_user_balance(rpc, msg.author.name)
+        balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
         msg.reply(lang.message_help + lang.message_account_details.render(username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
     else:
@@ -61,7 +61,7 @@ def withdraw_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         sender_address = user_function.get_user_address(msg.author.name)
         amount = split_message[1]
-        user_balance = crypto.get_user_balance(rpc, msg.author.name)
+        user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         if utils.check_amount_valid(amount):
             if int(amount) >= user_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
@@ -101,11 +101,15 @@ def tip_user(rpc, reddit, msg):
             if user_function.user_exist(msg.author.name):
 
                 # check we have enough
-                user_balance = crypto.get_user_balance(rpc, msg.author.name)
+                user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+                user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
                 if int(amount) >= user_balance:
-                    bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
-                        msg.author.name, str(amount), str(user_balance)))
-                    msg.reply(lang.message_balance_low_tip.render(username=msg.author.name))
+                    if int(amount) < (user_balance + user_pending_balance):
+                        msg.reply(lang.message_balance_pending_tip.render(username=msg.author.name))
+                    else:
+                        bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
+                            msg.author.name, str(amount), str(user_balance)))
+                        msg.reply(lang.message_balance_low_tip.render(username=msg.author.name))
                 else:
 
                     # check user have address before tip
