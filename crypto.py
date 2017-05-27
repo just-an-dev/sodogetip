@@ -8,7 +8,6 @@ from config import bot_config
 
 
 def get_user_balance(rpc, user):
-    pending_tips = []
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
@@ -29,16 +28,11 @@ def get_user_balance(rpc, user):
         bot_logger.logger.warn("maybe an error !")
 
     # check if user have pending tips
-    list_tip_unregistered = user_function.get_unregistered_tip()
-    if list_tip_unregistered:
-        for tip in list_tip_unregistered:
-                if tip['sender'] == user:
-                    pending_tips.append(int(tip['amount']))
+    pending_tips = user_function.get_balance_unregistered_tip(user)
 
-    bot_logger.logger.debug("pending_tips %s" % (str(sum(pending_tips))))
+    bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
-    return int(sum(unspent_amounts) - sum(pending_tips))
-
+    return int(sum(unspent_amounts) - int(pending_tips))
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
     sender_address = user_function.get_user_address(sender_user)

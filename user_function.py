@@ -108,3 +108,15 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True):
             'time': datetime.datetime.now().isoformat(),
         })
         json.dump(data, f)
+
+
+def get_balance_unregistered_tip(user):
+    pending_tips = []
+
+    list_tip_unregistered = get_unregistered_tip()
+    if list_tip_unregistered:
+        for tip in list_tip_unregistered:
+            if tip['sender'] == user:
+                pending_tips.append(int(tip['amount']))
+
+    return int(sum(pending_tips))
