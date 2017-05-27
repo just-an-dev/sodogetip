@@ -101,7 +101,7 @@ class SoDogeTip():
     def process_pending_tip(self):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.rpc_main)
+            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit)
             time.sleep(60)
 
     def anti_spamming_tx(self):

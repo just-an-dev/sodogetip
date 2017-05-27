@@ -4,6 +4,7 @@ import traceback
 import bot_logger
 import crypto
 import lang
+import re
 import user_function
 import utils
 
@@ -130,7 +131,7 @@ def tip_user(rpc, reddit, msg):
                                 msg.reply(lang.message_tip.render(
                                     sender=msg.author.name, receiver=parent_comment.author.name, amount=str(amount), value_usd=str(value_usd)))
                     else:
-                        user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount)
+                        user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount, msg.fullname)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                      amount,
                                                      "tip", False)
@@ -165,7 +166,8 @@ def history_user(msg):
         msg.reply(lang.message_need_register.render(username=msg.author.name) + lang.message_footer)
 
 
-def replay_remove_pending_tip(rpc):
+# Resend tips to previously unregistered users that are now registered
+def replay_remove_pending_tip(rpc, reddit):
     # check if it's not too old & replay tipping
     limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
@@ -180,6 +182,15 @@ def replay_remove_pending_tip(rpc):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (str(tip['id']),tip['sender'], tip['amount'], tip['receiver']))
                     crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+
+                    value_usd = utils.get_coin_value(tip['amount'])
+
+                    msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
+
+                    msg = reddit.inbox.message(msg_id)
+                    msg.reply(lang.message_tip.render(
+                        sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
+
                     user_function.remove_pending_tip(tip['id'])
                 else:
                     bot_logger.logger.info("replay check for %s - user %s not registered " % (str(tip['id']) , tip['receiver']))
