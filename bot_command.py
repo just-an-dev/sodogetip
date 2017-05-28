@@ -185,11 +185,11 @@ def replay_remove_pending_tip(rpc, reddit):
 
                     value_usd = utils.get_coin_value(tip['amount'])
 
-                    msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
-
-                    msg = reddit.inbox.message(msg_id)
-                    msg.reply(lang.message_tip.render(
-                        sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
+                    if 'message_fullname' in tip.keys():
+                        msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
+                        msg = reddit.inbox.message(msg_id)
+                        msg.reply(lang.message_tip.render(
+                            sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
 
                     user_function.remove_pending_tip(tip['id'])
                 else:
