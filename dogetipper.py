@@ -51,7 +51,7 @@ class SoDogeTip():
                         bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
                         msg_body = msg.body.strip()
                         msg_subject = msg.subject.strip()
-                        split_message = msg_body.split()
+                        split_message = msg_body.lower().split()
 
                         if msg_body == '+register' and msg_subject == '+register':
                             self.mark_msg_read(msg)
