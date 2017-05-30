@@ -158,9 +158,14 @@ def history_user(msg):
         history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
         history_table += "---|---|---|---|:-:|:-:\n"
         for tip in data:
+            str_finish = "Pending"
+
+            if tip['finish'] :
+                str_finish = "Successful"
+
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
-                str(tip['amount']), tip['action'], str(tip['finish']))
+                str(tip['amount']), tip['action'], str_finish)
 
         msg.reply(lang.message_history.render(username=msg.author.name) + history_table + lang.message_footer)
     else:
