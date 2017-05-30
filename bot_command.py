@@ -1,6 +1,8 @@
 import datetime
 import traceback
 
+from praw.models import Comment
+
 import bot_logger
 import crypto
 import lang
@@ -182,16 +184,16 @@ def replay_remove_pending_tip(rpc, reddit):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (str(tip['id']),tip['sender'], tip['amount'], tip['receiver']))
                     crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+                    user_function.remove_pending_tip(tip['id'])
 
                     value_usd = utils.get_coin_value(tip['amount'])
 
                     if 'message_fullname' in tip.keys():
                         msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
-                        msg = reddit.submission(id=msg_id)
+                        msg = Comment(reddit, msg_id)
                         msg.reply(lang.message_tip.render(
                             sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
 
-                    user_function.remove_pending_tip(tip['id'])
                 else:
                     bot_logger.logger.info("replay check for %s - user %s not registered " % (str(tip['id']) , tip['receiver']))
             else:
