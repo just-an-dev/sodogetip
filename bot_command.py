@@ -72,7 +72,7 @@ def withdraw_user(rpc, msg):
             else:
                 receiver_address = split_message[4]
                 try:
-                    if crypto.send_to(rpc, sender_address, receiver_address, amount, True):
+                    if crypto.send_to(rpc, sender_address, receiver_address, amount):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
                         value_usd = utils.get_coin_value(amount)
