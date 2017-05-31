@@ -54,38 +54,38 @@ class SoDogeTip():
                         split_message = msg_body.lower().split()
 
                         if msg_body == '+register' and msg_subject == '+register':
-                            self.mark_msg_read(msg)
                             bot_command.register_user(self.rpc_main, msg)
+                            self.mark_msg_read(msg)
 
                         elif msg_body == '+info' and msg_subject == '+info':
-                            self.mark_msg_read(msg)
                             bot_command.info_user(self.rpc_main, msg)
+                            self.mark_msg_read(msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
-                            self.mark_msg_read(msg)
                             bot_command.help_user(self.rpc_main, msg)
+                            self.mark_msg_read(msg)
 
                         elif msg_body == '+balance' and msg_subject == '+balance':
-                            self.mark_msg_read(msg)
                             bot_command.balance_user(self.rpc_main, msg)
+                            self.mark_msg_read(msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
-                            self.mark_msg_read(msg)
                             bot_command.history_user(msg)
+                            self.mark_msg_read(msg)
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
-                            self.mark_msg_read(msg)
                             bot_command.withdraw_user(self.rpc_main, msg)
-
+                            self.mark_msg_read(msg)
+                            
                         elif split_message.count('+/u/sodogetiptest'):
-                            self.mark_msg_read(msg)
                             bot_command.tip_user(self.rpc_main, self.reddit, msg)
-
-                        else:
                             self.mark_msg_read(msg)
+                            
+                        else:
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
-
+                            self.mark_msg_read(msg)
+                            
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
                 time.sleep(3)
