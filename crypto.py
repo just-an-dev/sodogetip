@@ -48,11 +48,8 @@ def get_user_unconfirmed_balance(rpc, user):
 
     bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
 
-    current_balance = rpc.getbalance("reddit-%s" % user)
-    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
-
-    if int(current_balance) != int(sum(unspent_amounts)):
-        bot_logger.logger.warn("maybe an error !")
+    unconfirmed_balance = rpc.getbalance("reddit-%s" % user)
+    bot_logger.logger.debug("unconfirmed_balance %s" % (str(int(unconfirmed_balance))))
 
     return int(sum(unspent_amounts))
 
