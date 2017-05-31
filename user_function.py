@@ -1,6 +1,7 @@
 import datetime
 import json
 import random
+from tinydb import TinyDB, Query
 
 import bot_logger
 from config import bot_config, DATA_PATH
@@ -40,64 +41,46 @@ def user_exist(user):
 
 
 def get_unregistered_tip():
-    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'r') as f:
-        try:
-            data = json.load(f)
-        except ValueError:
-            bot_logger.logger.warning("Error on read unregistered tip user file")
-            data = []
-        return data
+    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    data = db.all()
+    return data
 
 
 def save_unregistered_tip(sender, receiver, amount, message_fullname):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
-    data = get_unregistered_tip()
-    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w') as f:
-        data.append({
-            'id': random.randint(0, 99999999),
-            'amount': amount,
-            'receiver': receiver,
-            'sender': sender,
-            'message_fullname': message_fullname,
-            'time': datetime.datetime.now().isoformat(),
-        })
-        json.dump(data, f)
+    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    db.insert({
+        'id': random.randint(0, 99999999),
+        'amount': amount,
+        'receiver': receiver,
+        'sender': sender,
+        'message_fullname': message_fullname,
+        'time': datetime.datetime.now().isoformat(),
+    })
 
 
 def remove_pending_tip(id_tip):
-    unregistered_tip = get_unregistered_tip()
-    for key, tip in enumerate(unregistered_tip):
-        if int(tip['id']) == int(id_tip):
-            del unregistered_tip[key]
-    with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
-        json.dump(unregistered_tip, f)
+    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    tip = Query()
+    db.remove(tip.id == id_tip)
 
 
 def get_user_history(user):
-    try:
-        with open(DATA_PATH + bot_config['user_history_path'] + user + '.json', 'r') as f:
-            try:
-                data = json.load(f)
-            except ValueError:
-                bot_logger.logger.warning("Error on read user file history")
-                data = []
-    except IOError:
-        bot_logger.logger.warning("Error on read user file history")
-        data = []
+    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
+    data = db.all()
     return data
 
 
 def add_to_history(user_history, sender, receiver, amount, action, finish=True):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
-    data = get_user_history(user_history)
-    with open(DATA_PATH + bot_config['user_history_path'] + user_history + '.json', 'w+') as f:
-        data.append({
-            "user": user_history, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
-            "finish": finish,
-            'time': datetime.datetime.now().isoformat(),
-        })
-        json.dump(data, f)
+
+    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
+    db.insert({
+        "user": user_history, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
+        "finish": finish,
+        'time': datetime.datetime.now().isoformat(),
+    })
 
 
 def get_balance_unregistered_tip(user):
