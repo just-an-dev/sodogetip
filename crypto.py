@@ -8,14 +8,27 @@ import user_function
 from config import bot_config
 
 
-def get_user_confirmed_balance(rpc, user):
+def get_user_balance(rpc, user):
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
-    list_unspent = rpc.listunspent(1, 99999999999, [address])
-    # in case of no un-spent transaction
-    if len(list_unspent) == 0:
+    # list_unspent = rpc.listunspent(1, 99999999999, [address])
+    list_unspent_all = rpc.listunspent(0, 99999999999, [address])
+    list_unspent = rpc.listunspent(0, 99999999999, [address])
+    if len(list_unspent_all) == 0:
         return 0
+    # in case of no un-spent transaction
+    for i in range(len(list_unspent_all)):
+        trans = rpc.decoderawtransaction(rpc.getrawtransaction(list_unspent_all[i]['txid']))
+        for v_in in range(0, len(trans['vin']), 1):
+            vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][v_in]['txid']))
+            for item in range(0, len(vin['vout']), 1):
+                for addr in range(0, len(vin['vout'][item]['scriptPubKey']['addresses']), 1):
+                    if vin['vout'][item]['scriptPubKey']['addresses'][addr] in user_function.get_users().values():
+                        continue
+                    else:
+                        list_unspent = rpc.listunspent(1, 99999999999, [address])
+                        continue
 
     for i in range(0, len(list_unspent), 1):
         unspent_amounts.append(list_unspent[i]['amount'])
@@ -35,24 +48,6 @@ def get_user_confirmed_balance(rpc, user):
 
     return int(sum(unspent_amounts) - int(pending_tips))
 
-def get_user_unconfirmed_balance(rpc, user):
-    unspent_amounts = []
-
-    address = user_function.get_user_address(user)
-    list_unspent = rpc.listunspent(0, 0, [address])
-    # in case of no unconfirmed transactions
-    if len(list_unspent) == 0:
-        return 0
-
-    for i in range(0, len(list_unspent), 1):
-        unspent_amounts.append(list_unspent[i]['amount'])
-
-    bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
-
-    unconfirmed_balance = rpc.getbalance("reddit-%s" % user)
-    bot_logger.logger.debug("unconfirmed_balance %s" % (str(int(unconfirmed_balance))))
-
-    return int(sum(unspent_amounts))
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
     sender_address = user_function.get_user_address(sender_user)
@@ -66,7 +61,23 @@ def tip_user(rpc, sender_user, receiver_user, amount_tip):
 def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
-    list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
+    # list_unspent = rpc.listunspent(1, 99999999999, [address])
+    list_unspent_all = rpc.listunspent(0, 99999999999, [address])
+    list_unspent = rpc.listunspent(0, 99999999999, [address])
+    if len(list_unspent_all) == 0:
+        return 0
+    # in case of no un-spent transaction
+    for i in range(len(list_unspent_all)):
+        trans = rpc.decoderawtransaction(rpc.getrawtransaction(list_unspent_all[i]['txid']))
+        for v_in in range(0, len(trans['vin']), 1):
+            vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][v_in]['txid']))
+            for item in range(0, len(vin['vout']), 1):
+                for addr in range(0, len(vin['vout'][item]['scriptPubKey']['addresses']), 1):
+                    if vin['vout'][item]['scriptPubKey']['addresses'][addr] in user_function.get_users().values():
+                        continue
+                    else:
+                        list_unspent = rpc.listunspent(1, 99999999999, [address])
+                        continue
 
     unspent_amounts = []
     raw_inputs = []
@@ -100,7 +111,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     else:
         # when consolidate tx
         if receiver_address == sender_address:
-            raw_addresses = {receiver_address: int(int(amount) - int(fee) )}
+            raw_addresses = {receiver_address: int(int(amount) - int(fee))}
         else:
             raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
