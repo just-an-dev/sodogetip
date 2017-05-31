@@ -15,7 +15,8 @@ def register_user(rpc, msg):
     if not user_function.user_exist(msg.author.name):
         address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
-            msg.reply(lang.message_register_success.render(username=msg.author.name, address=address) + lang.message_footer)
+            msg.reply(
+                lang.message_register_success.render(username=msg.author.name, address=address) + lang.message_footer)
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
@@ -25,7 +26,9 @@ def register_user(rpc, msg):
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_already_registered + lang.message_account_details.render(username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
+        msg.reply(lang.message_already_registered + lang.message_account_details.render(username=msg.author.name,
+                                                                                        address=address, balance=str(
+                balance)) + lang.message_footer)
 
 
 def balance_user(rpc, msg):
@@ -35,7 +38,10 @@ def balance_user(rpc, msg):
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pendingbalance)
-        msg.reply(lang.message_balance.render(username=msg.author.name, balance=str(balance), balance_value_usd=str(balance_value_usd), pendingbalance=str(pendingbalance), pending_value_usd=str(pending_value_usd)) + lang.message_footer)
+        msg.reply(lang.message_balance.render(username=msg.author.name, balance=str(balance),
+                                              balance_value_usd=str(balance_value_usd),
+                                              pendingbalance=str(pendingbalance),
+                                              pending_value_usd=str(pending_value_usd)) + lang.message_footer)
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
@@ -44,7 +50,19 @@ def balance_user(rpc, msg):
 
 def info_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
-        user_function.get_user_info(rpc, msg)
+        address = user_function.get_user_address(msg.author.name)
+        balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        pendingbalance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+
+        balance_value_usd = utils.get_coin_value(balance)
+        pending_value_usd = utils.get_coin_value(pendingbalance)
+
+        msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance),
+                                                      balance_value_usd=str(balance_value_usd),
+                                                      pendingbalance=str(pendingbalance),
+                                                      pending_value_usd=str(pending_value_usd),
+                                                      address=address) + lang.message_footer)
+
     else:
         msg.reply(lang.message_need_register.render(username=msg.author.name) + lang.message_footer)
 
@@ -53,7 +71,8 @@ def help_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(lang.message_help + lang.message_account_details.render(username=msg.author.name, address=address, balance=str(balance)) + lang.message_footer)
+        msg.reply(lang.message_help + lang.message_account_details.render(username=msg.author.name, address=address,
+                                                                          balance=str(balance)) + lang.message_footer)
     else:
         msg.reply(lang.message_need_register.render(username=msg.author.name) + lang.message_footer)
 
@@ -79,7 +98,8 @@ def withdraw_user(rpc, msg):
                                                      "withdraw")
                         value_usd = utils.get_coin_value(amount)
                         msg.reply(lang.message_withdraw.render(
-                            username=msg.author.name, receiver_address=receiver_address, amount=str(amount), value_usd=str(value_usd)) + lang.message_footer)
+                            username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
+                            value_usd=str(value_usd)) + lang.message_footer)
 
                 except:
                     traceback.print_exc()
@@ -107,6 +127,7 @@ def tip_user(rpc, reddit, msg):
                 user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
                 user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
                 if int(amount) >= user_balance:
+                    # not enough for tip
                     if int(amount) < (user_balance + user_pending_balance):
                         msg.reply(lang.message_balance_pending_tip.render(username=msg.author.name))
                     else:
@@ -131,19 +152,26 @@ def tip_user(rpc, reddit, msg):
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply(lang.message_tip.render(
-                                    sender=msg.author.name, receiver=parent_comment.author.name, amount=str(amount), value_usd=str(value_usd)))
+                                    sender=msg.author.name, receiver=parent_comment.author.name, amount=str(amount),
+                                    value_usd=str(value_usd)))
                     else:
-                        user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount, msg.fullname)
+                        user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount,
+                                                            msg.fullname)
                         user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                      amount,
-                                                     "tip", False)
+                                                     "tip send", False)
+                        user_function.add_to_history(parent_comment.author.name, msg.author.name,
+                                                     parent_comment.author.name,
+                                                     amount,
+                                                     "tip receive", False)
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
                         msg.reply(lang.message_recipient_register.render(username=parent_comment.author.name))
 
                         reddit.redditor(parent_comment.author.name).message(
                             lang.message_recipient_need_register_title.render(amount=str(amount)),
                             lang.message_recipient_need_register_message.render(
-                                username=parent_comment.author.name, sender=msg.author.name, amount=str(amount), value_usd=str(value_usd)))
+                                username=parent_comment.author.name, sender=msg.author.name, amount=str(amount),
+                                value_usd=str(value_usd)))
 
             else:
                 msg.reply(lang.message_need_register.render(username=msg.author.name))
@@ -160,7 +188,7 @@ def history_user(msg):
         for tip in data:
             str_finish = "Pending"
 
-            if tip['finish'] :
+            if tip['finish']:
                 str_finish = "Successful"
 
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
@@ -183,11 +211,12 @@ def replay_remove_pending_tip(rpc, reddit):
 
     if list_tips:
         for tip in list_tips:
-            bot_logger.logger.info( "replay tipping check for %s" % str(tip['id']))
+            bot_logger.logger.info("replay tipping check for %s" % str(tip['id']))
             if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
                 if (user_function.user_exist(tip['receiver'])):
                     bot_logger.logger.info(
-                        "replay tipping %s - %s send %s to %s  " % (str(tip['id']),tip['sender'], tip['amount'], tip['receiver']))
+                        "replay tipping %s - %s send %s to %s  " % (
+                            str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
                     crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
                     user_function.remove_pending_tip(tip['id'])
 
@@ -197,10 +226,12 @@ def replay_remove_pending_tip(rpc, reddit):
                         msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
                         msg = Comment(reddit, msg_id)
                         msg.reply(lang.message_tip.render(
-                            sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
+                            sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']),
+                            value_usd=str(value_usd)))
 
                 else:
-                    bot_logger.logger.info("replay check for %s - user %s not registered " % (str(tip['id']) , tip['receiver']))
+                    bot_logger.logger.info(
+                        "replay check for %s - user %s not registered " % (str(tip['id']), tip['receiver']))
             else:
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], tip['receiver']))

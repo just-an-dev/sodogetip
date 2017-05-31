@@ -30,18 +30,6 @@ def add_user(user, address):
         json.dump(data, f)
 
 
-def get_user_info(rpc, msg):
-    dict = get_users()
-    address = dict[msg.author.name]
-    balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-    pendingbalance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-
-    balance_value_usd = utils.get_coin_value(balance)
-    pending_value_usd = utils.get_coin_value(pendingbalance)
-
-    msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance), balance_value_usd=str(balance_value_usd), pendingbalance=str(pendingbalance), pending_value_usd=str(pending_value_usd), address=address) + lang.message_footer)
-
-
 def get_user_address(user):
     dict = get_users()
     return dict[user]
