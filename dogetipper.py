@@ -76,16 +76,17 @@ class SoDogeTip():
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             bot_command.withdraw_user(self.rpc_main, msg)
                             self.mark_msg_read(msg)
-                            
+
                         elif split_message.count('+/u/sodogetiptest'):
                             bot_command.tip_user(self.rpc_main, self.reddit, msg)
                             self.mark_msg_read(msg)
-                            
+
                         else:
+                            self.mark_msg_read(msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
                             self.mark_msg_read(msg)
-                            
+
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
                 time.sleep(3)
