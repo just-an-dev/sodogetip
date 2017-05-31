@@ -1,12 +1,8 @@
-import json
-
 import datetime
+import json
 import random
 
 import bot_logger
-import crypto
-import lang
-import utils
 from config import bot_config, DATA_PATH
 
 
@@ -31,13 +27,13 @@ def add_user(user, address):
 
 
 def get_user_address(user):
-    dict = get_users()
-    return dict[user]
+    user_list = get_users()
+    return user_list[user]
 
 
 def user_exist(user):
-    dict = get_users()
-    if user in dict.keys():
+    user_list = get_users()
+    if user in user_list.keys():
         return True
     else:
         return False
@@ -53,7 +49,7 @@ def get_unregistered_tip():
         return data
 
 
-def save_unregistered_tip(sender, receiver, amount, messagefullname):
+def save_unregistered_tip(sender, receiver, amount, message_fullname):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
     data = get_unregistered_tip()
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w') as f:
@@ -62,16 +58,16 @@ def save_unregistered_tip(sender, receiver, amount, messagefullname):
             'amount': amount,
             'receiver': receiver,
             'sender': sender,
-            'message_fullname': messagefullname,
+            'message_fullname': message_fullname,
             'time': datetime.datetime.now().isoformat(),
         })
         json.dump(data, f)
 
 
-def remove_pending_tip(id):
+def remove_pending_tip(id_tip):
     unregistered_tip = get_unregistered_tip()
     for key, tip in enumerate(unregistered_tip):
-        if int(tip['id']) == int(id):
+        if int(tip['id']) == int(id_tip):
             del unregistered_tip[key]
     with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
         json.dump(unregistered_tip, f)

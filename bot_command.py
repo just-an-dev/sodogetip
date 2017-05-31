@@ -33,15 +33,20 @@ def register_user(rpc, msg):
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
+
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        pendingbalance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
+
         balance_value_usd = utils.get_coin_value(balance)
-        pending_value_usd = utils.get_coin_value(pendingbalance)
+        pending_value_usd = utils.get_coin_value(pending_balance)
+
         msg.reply(lang.message_balance.render(username=msg.author.name, balance=str(balance),
                                               balance_value_usd=str(balance_value_usd),
-                                              pendingbalance=str(pendingbalance),
+                                              pendingbalance=str(pending_balance),
                                               pending_value_usd=str(pending_value_usd)) + lang.message_footer)
+
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
@@ -52,14 +57,14 @@ def info_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         address = user_function.get_user_address(msg.author.name)
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        pendingbalance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
 
         balance_value_usd = utils.get_coin_value(balance)
-        pending_value_usd = utils.get_coin_value(pendingbalance)
+        pending_value_usd = utils.get_coin_value(pending_balance)
 
         msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance),
                                                       balance_value_usd=str(balance_value_usd),
-                                                      pendingbalance=str(pendingbalance),
+                                                      pendingbalance=str(pending_balance),
                                                       pending_value_usd=str(pending_value_usd),
                                                       address=address) + lang.message_footer)
 
@@ -237,4 +242,4 @@ def replay_remove_pending_tip(rpc, reddit):
                     "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], tip['receiver']))
                 user_function.remove_pending_tip(tip['id'])
     else:
-        bot_logger.logger.info("no pendding tipping")
+        bot_logger.logger.info("no pending tipping")

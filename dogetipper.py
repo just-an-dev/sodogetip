@@ -76,16 +76,17 @@ class SoDogeTip():
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             bot_command.withdraw_user(self.rpc_main, msg)
                             self.mark_msg_read(msg)
-                            
+
                         elif split_message.count('+/u/sodogetiptest'):
                             bot_command.tip_user(self.rpc_main, self.reddit, msg)
                             self.mark_msg_read(msg)
-                            
+
                         else:
+                            self.mark_msg_read(msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
                             self.mark_msg_read(msg)
-                            
+
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
                 time.sleep(3)
@@ -121,7 +122,7 @@ class SoDogeTip():
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
+                    #amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 
