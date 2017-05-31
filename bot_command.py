@@ -1,6 +1,8 @@
 import datetime
 import traceback
 
+from praw.models import Comment
+
 import bot_logger
 import crypto
 import lang
@@ -72,7 +74,7 @@ def withdraw_user(rpc, msg):
             else:
                 receiver_address = split_message[4]
                 try:
-                    if crypto.send_to(rpc, sender_address, receiver_address, amount, True):
+                    if crypto.send_to(rpc, sender_address, receiver_address, amount):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
                         value_usd = utils.get_coin_value(amount)
@@ -156,9 +158,14 @@ def history_user(msg):
         history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
         history_table += "---|---|---|---|:-:|:-:\n"
         for tip in data:
+            str_finish = "Pending"
+
+            if tip['finish'] :
+                str_finish = "Successful"
+
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
-                str(tip['amount']), tip['action'], str(tip['finish']))
+                str(tip['amount']), tip['action'], str_finish)
 
         msg.reply(lang.message_history.render(username=msg.author.name) + history_table + lang.message_footer)
     else:
@@ -192,6 +199,15 @@ def replay_remove_pending_tip(rpc, reddit):
                         sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
 
                     user_function.remove_pending_tip(tip['id'])
+
+                    value_usd = utils.get_coin_value(tip['amount'])
+
+                    if 'message_fullname' in tip.keys():
+                        msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
+                        msg = Comment(reddit, msg_id)
+                        msg.reply(lang.message_tip.render(
+                            sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']), value_usd=str(value_usd)))
+
                 else:
                     bot_logger.logger.info("replay check for %s - user %s not registered " % (str(tip['id']) , tip['receiver']))
             else:

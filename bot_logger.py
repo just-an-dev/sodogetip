@@ -12,6 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 logging.getLogger('requests').setLevel(logging.WARNING)
 logging.getLogger('prawcore').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 formatter_file = logging.Formatter('%(asctime)s :: %(levelname)s :: %(name)s :: %(pathname)s:%(lineno)s :: %(message)s')
 formatter_output = logging.Formatter('%(asctime)s -  - %(levelname)s - %(message)s')
