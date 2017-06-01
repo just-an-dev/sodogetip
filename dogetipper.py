@@ -14,12 +14,13 @@ import crypto
 import lang
 import user_function
 import utils
-from config import rpc_config, bot_config, DATA_PATH, wallet_passphrase
+import config
+from config import rpc_config, bot_config, DATA_PATH
 
 
 class SoDogeTip():
     def __init__(self):
-        self.reddit = praw.Reddit('sodogetiptest')
+        self.reddit = praw.Reddit(config.bot_name)
 
         self.rpc_main = AuthServiceProxy("http://%s:%s@%s:%s" % (
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
     # enter user passphrase
-    wallet_passphrase = getpass.getpass("wallet passphrase : ")
+    config.wallet_passphrase = getpass.getpass("wallet passphrase : ")
 
     while True:
         try:

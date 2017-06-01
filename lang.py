@@ -6,15 +6,15 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 from jinja2 import Template
+import config
 
-name = 'sodogetiptest'
 
-link_register = "https://www.reddit.com/message/compose?to=" + name + "&subject=\%2Bregister&message=\%2Bregister"
-link_help = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Bhelp&message=%2Bhelp"
-link_withdraw = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Bwithdraw&message=%2Bwithdraw%20AMOUNT%20doge%20to%20ADDRESS"
-link_history = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Bhistory&message=%2Bhistory"
-link_info = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Binfo&message=%2Binfo"
-link_balance = "https://www.reddit.com/message/compose?to=" + name + "&subject=%2Bbalance&message=%2Bbalance"
+link_register = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=\%2Bregister&message=\%2Bregister"
+link_help = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bhelp&message=%2Bhelp"
+link_withdraw = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bwithdraw&message=%2Bwithdraw%20AMOUNT%20doge%20to%20ADDRESS"
+link_history = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bhistory&message=%2Bhistory"
+link_info = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Binfo&message=%2Binfo"
+link_balance = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bbalance&message=%2Bbalance"
 
 message_register_success = Template("Hello /u/{{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: {{ address }}" \
@@ -51,18 +51,18 @@ message_history = Template("Hello /u/{{ username }}! Here is your transaction hi
 message_tip = Template("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw = Template("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_footer = "\n\n*****" \
-                 "\n\nNew to Dogecoin or " + name + "? Ask the community any questions on /r/dogecoin!" \
+                 "\n\nNew to Dogecoin or " + config.bot_name + "? Ask the community any questions on /r/dogecoin!" \
                  "\n\n^quick ^commands |&nbsp;" \
                  "\n---|---" \
                  "\n^Past ^tips|^[+history](" + link_history + ")" \
                  "\n^Get ^account ^details|^[+info](" + link_info + ")" \
                  "\n^Balance|^[+balance](" + link_balance + ")" \
                  "\n^Help ^me!|^[+help](" + link_help + ")" \
-                 "\n\n__PROTIP:__ An example tip would be: +/u/" + name + " 100 doge"
+                 "\n\n__PROTIP:__ An example tip would be: +/u/" + config.bot_name + " 100 doge"
 
 # GARYLITTLEMORE OR SOMEONE ELSE PLS PUT A HELPFUL MESSAGE IN message_help BELOW FOR +help COMMAND
 # (put a placeholder for anything like Dogecoin addresses for me to properly code in) :)
-message_help = Template("""First of all, Welcome to Doge and the DogeTipBot!\n\nThe community is extremely important to us, and we\'re always happy to see new faces and help them get excited about the most fun and social coin out there.\n\nTo learn more about Doge in general, you might want to check out /r/dogecoin, where I\'m sure you\'ll find someone willing to talk your ears off about the coin.\n\nUnlike most tipping services, the DogeTipBot is "on chain" and transparent. What this means is that we gave up the ability to send tips super quickly in exchange for your money being verifiably yours.\n\nThis is your wallet ID: {{ address }}\n\nYou can verify the funds are actually deposited by clicking on that link, which shows your balance using block chain explorer.\n\nHow to use the DogeTipBot:\n\nTo tip someone:\n\nReply to their Reddit comment, or Reddit post with: +""" + name + """ [number of doges] doge\n\nFor example:\n\n +""" + name +""" 100 doge\n\nWill tip the poster you are commenting on with 100 Dogecoins. Wow!""")
+message_help = Template("""First of all, Welcome to Doge and the DogeTipBot!\n\nThe community is extremely important to us, and we\'re always happy to see new faces and help them get excited about the most fun and social coin out there.\n\nTo learn more about Doge in general, you might want to check out /r/dogecoin, where I\'m sure you\'ll find someone willing to talk your ears off about the coin.\n\nUnlike most tipping services, the DogeTipBot is "on chain" and transparent. What this means is that we gave up the ability to send tips super quickly in exchange for your money being verifiably yours.\n\nThis is your wallet ID: {{ address }}\n\nYou can verify the funds are actually deposited by clicking on that link, which shows your balance using block chain explorer.\n\nHow to use the DogeTipBot:\n\nTo tip someone:\n\nReply to their Reddit comment, or Reddit post with: +""" + config.bot_name + """ [number of doges] doge\n\nFor example:\n\n +""" + config.bot_name + """ 100 doge\n\nWill tip the poster you are commenting on with 100 Dogecoins. Wow!""")
 
 message_recipient_register = Template("__^[such ^error]__: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips. __^\(this ^tip ^has ^been ^saved ^for ^3 ^days)__ ^[[help]](" + link_help + ")")
 message_recipient_need_register_title = Template("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")

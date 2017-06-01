@@ -12,7 +12,8 @@ rpc_config = {
 
 DATA_PATH = '/data/'
 
-wallet_passphrase = ""
+wallet_passphrase = "yourpassphrase"
+bot_name = "sodogetiptest"
 
 bot_config = {
     'user_file': 'user_files.json',
