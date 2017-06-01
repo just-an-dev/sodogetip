@@ -12,6 +12,8 @@ rpc_config = {
 
 DATA_PATH = '/data/'
 
+wallet_passphrase = ""
+
 bot_config = {
     'user_file': 'user_files.json',
     'unregistered_tip_user': 'unregistered_tip_user.json',
@@ -19,6 +21,7 @@ bot_config = {
     'logs_path': 'logs/',
     'rate_fee': '1',
     'spam_limit': '500'
+    'timeout': '30'
 }
 
 url_get_value = {

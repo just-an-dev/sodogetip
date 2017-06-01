@@ -1,3 +1,4 @@
+import getpass
 import os
 import time
 import traceback
@@ -13,7 +14,7 @@ import crypto
 import lang
 import user_function
 import utils
-from config import rpc_config, bot_config, DATA_PATH
+from config import rpc_config, bot_config, DATA_PATH, wallet_passphrase
 
 
 class SoDogeTip():
@@ -129,6 +130,10 @@ class SoDogeTip():
 
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
+
+    # enter user passphrase
+    wallet_passphrase = getpass.getpass("wallet passphrase : ")
+
     while True:
         try:
             Bot = SoDogeTip()
