@@ -6,7 +6,6 @@ import bot_logger
 import config
 import user_function
 from config import bot_config
-from dogetipper import wallet_passphrase
 
 
 def get_user_confirmed_balance(rpc, user):
@@ -36,7 +35,6 @@ def get_user_confirmed_balance(rpc, user):
 
     return int(sum(unspent_amounts) - int(pending_tips))
 
-
 def get_user_unconfirmed_balance(rpc, user):
     unspent_amounts = []
 
@@ -55,7 +53,6 @@ def get_user_unconfirmed_balance(rpc, user):
     bot_logger.logger.debug("unconfirmed_balance %s" % (str(int(unconfirmed_balance))))
 
     return int(sum(unspent_amounts))
-
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip):
     sender_address = user_function.get_user_address(sender_user)
@@ -103,7 +100,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     else:
         # when consolidate tx
         if receiver_address == sender_address:
-            raw_addresses = {receiver_address: int(int(amount) - int(fee))}
+            raw_addresses = {receiver_address: int(int(amount) - int(fee) )}
         else:
             raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
 
@@ -114,7 +111,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
-    rpc.walletpassphrase(config.wallet_passphrase, bot_config['timeout'])
+    rpc.walletpassphrase(wallet_passphrase, bot_config['timeout'])
     signed = rpc.signrawtransaction(raw_tx)
     rpc.walletlock()
     time.sleep(1)

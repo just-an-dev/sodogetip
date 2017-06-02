@@ -17,6 +17,7 @@ import utils
 import config
 from config import rpc_config, bot_config, DATA_PATH
 
+global wallet_passphrase
 
 class SoDogeTip():
     def __init__(self):
@@ -132,8 +133,7 @@ class SoDogeTip():
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
-    # enter user passphrase
-    config.wallet_passphrase = getpass.getpass("wallet passphrase : ")
+    config.init_passphrase()
 
     while True:
         try:
