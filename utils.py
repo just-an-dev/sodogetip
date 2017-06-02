@@ -46,7 +46,7 @@ def get_coin_value(balance):
 
 
 def check_amount_valid(amount):
-    if amount.isdigit() and amount >= 1 and is_whole(amount):
+    if amount.isdigit() and amount >= 1 and is_whole(int(amount)):
         try:
             int(amount)
             return True
