@@ -66,13 +66,13 @@ def info_user(rpc, msg):
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
-        msg.reply(lang.message_account_details.render(username=msg.author.name, balance=str(balance),
+        msg.reply(Template(lang.message_account_details+ lang.message_footer ).render(username=msg.author.name, balance=str(balance),
                                                       balance_value_usd=str(balance_value_usd),
                                                       pendingbalance=str(pending_balance),
                                                       pending_value_usd=str(pending_value_usd),
                                                       spendablebalance=str(spendable_balance),
                                                       spendable_value_usd=str(spendable_value_usd),
-                                                      address=address) + lang.message_footer)
+                                                      address=address) )
 
     else:
         msg.reply(Template(lang.message_need_register+ lang.message_footer).render(username=msg.author.name))
