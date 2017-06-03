@@ -126,7 +126,7 @@ def withdraw_user(rpc, msg):
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
     else:
-        msg.reply(Template(lang.message_need_register).render(username=msg.author.name) + lang.message_footer)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
 def tip_user(rpc, reddit, msg):
