@@ -1,6 +1,13 @@
 
 ## sample of config file
 
+import getpass
+
+def init_passphrase():
+    # enter user passphrase
+    global wallet_passphrase
+    wallet_passphrase = getpass.getpass("wallet passphrase : ")
+
 rpc_config = {
     "doge_rpc_port": "22545",
     "doge_rpc_host": "127.0.0.1",
