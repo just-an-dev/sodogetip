@@ -141,7 +141,7 @@ def tip_user(rpc, reddit, msg):
 
         if utils.check_amount_valid(amount):
             parent_comment = msg.parent()
-            if user_function.user_exist(msg.author.name):
+            if user_function.user_exist(msg.author.name) and msg.author.name != parent_comment.author.name:
 
                 # check we have enough
                 user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
