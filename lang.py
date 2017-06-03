@@ -35,11 +35,12 @@ message_already_registered = "You are already registered!"
 message_balance_low_withdraw = ("Hello /u/{{ username }}! It seems your balance of __Ð{{ user_balance }}__ is too low for this withdraw amount of __Ð{{ amount }}__." \
                                         "\n\n[Want to try again?](" + link_withdraw + ")")
 
-message_account_details = ("\n\nHere are your account details /u/{{ username }}!" \
+message_account_details = Template("\n\nHere are your account details /u/{{ username }}!" \
                             "\n\n^very ^info | &nbsp;" \
                             "\n---|---" \
                             "\n^Your ^balance | ^{{ balance }} ^doge ^(${{ balance_value_usd }})" \
                             "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})"
+                            "\n^Your ^spendable ^balance | ^{{ spendablebalance }} ^doge (${{ spendable_value_usd }})"
                             "\n^Deposit ^address | ^{{ address }}" \
                             "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
