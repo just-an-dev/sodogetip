@@ -96,7 +96,7 @@ def withdraw_user(rpc, msg):
         sender_address = user_function.get_user_address(msg.author.name)
         amount = split_message[1]
         user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-		user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
+        user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
         if utils.check_amount_valid(amount):
             if int(amount) >= user_balance + user_spendable_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
@@ -142,7 +142,7 @@ def tip_user(rpc, reddit, msg):
                 user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + user_balance
                 if int(amount) >= user_spendable_balance:
                     # not enough for tip
-                    if int(amount) < (user_balance + user_pending_balance):
+                    if int(amount) < (user_spendable_balance + user_pending_balance):
                         msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
                     else:
                         bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
