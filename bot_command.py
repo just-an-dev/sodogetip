@@ -110,9 +110,9 @@ def withdraw_user(rpc, msg):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
                         value_usd = utils.get_coin_value(amount)
-                        msg.reply(lang.message_withdraw.render(
+                        msg.reply(Template(lang.message_withdraw + lang.message_footer) .render(
                             username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
-                            value_usd=str(value_usd)) + lang.message_footer)
+                            value_usd=str(value_usd)))
 
                 except:
                     traceback.print_exc()
@@ -120,7 +120,7 @@ def withdraw_user(rpc, msg):
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
     else:
-        msg.reply(lang.message_need_register.render(username=msg.author.name) + lang.message_footer)
+        msg.reply(Template(lang.message_need_register).render(username=msg.author.name) + lang.message_footer)
 
 
 def tip_user(rpc, reddit, msg):
