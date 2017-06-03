@@ -38,16 +38,18 @@ def balance_user(rpc, msg):
 
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-
+        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
 
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
-
+        spendable_value_usd = utils.get_coin_value(spendable_balance)
         msg.reply(Template(lang.message_balance + lang.message_footer).render(username=msg.author.name, balance=str(balance),
                                               balance_value_usd=str(balance_value_usd),
                                               pendingbalance=str(pending_balance),
-                                              pending_value_usd=str(pending_value_usd)) )
+                                              pending_value_usd=str(pending_value_usd),
+                                              spendablebalance=str(spendable_balance),
+                                              spendable_value_usd=str(spendable_value_usd)))
 
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
@@ -135,7 +137,8 @@ def tip_user(rpc, reddit, msg):
                 # check we have enough
                 user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
                 user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-                if int(amount) >= user_balance:
+                user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + user_balance
+                if int(amount) >= user_spendable_balance:
                     # not enough for tip
                     if int(amount) < (user_balance + user_pending_balance):
                         msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
