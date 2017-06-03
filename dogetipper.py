@@ -115,7 +115,7 @@ class SoDogeTip():
             # get list of account
             list_account = user_function.get_users()
             for account, address in list_account.items():
-                time.sleep(5)  # don't flood daemon
+                time.sleep(1)  # don't flood daemon
                 list_tx = self.rpc_antispam.listunspent(1, 99999999999, [address])
                 unspent_amounts = []
                 for i in range(0, len(list_tx), 1):
