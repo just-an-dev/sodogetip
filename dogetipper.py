@@ -78,7 +78,7 @@ class SoDogeTip():
                             bot_command.withdraw_user(self.rpc_main, msg)
                             self.mark_msg_read(msg)
 
-                        elif split_message.count('+/u/sodogetiptest'):
+                        elif split_message.count('+/u/' + config.bot_name):
                             bot_command.tip_user(self.rpc_main, self.reddit, msg)
                             self.mark_msg_read(msg)
 
