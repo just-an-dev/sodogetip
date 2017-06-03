@@ -40,12 +40,14 @@ message_account_details = ("\n\nHere are your account details /u/{{ username }}!
                             "\n---|---" \
                             "\n^Your ^balance | ^{{ balance }} ^doge ^(${{ balance_value_usd }})" \
                             "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})"
+                            "\n^Your ^spendable ^balance | ^{{ spendablebalance }} ^doge (${{ spendable_value_usd }})"
                             "\n^Deposit ^address | ^{{ address }}" \
                             "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
 message_balance = ("Hello /u/{{ username }}!" \
-                           "\n\nYour balance is: {{ balance }} (${{ balance_value_usd }})" \
-                           "\n\nYour pending balance is: {{ pendingbalance }} (${{ pending_value_usd }})")
+                           "\n\nYour confirmed balance is: {{ balance }} (${{ balance_value_usd }})" \
+                           "\n\nYour unconfirmed balance is: {{ pendingbalance }} (${{ pending_value_usd }})"
+                           "\n\nYour spendable balance is: {{ spendablebalance }} (${{ spendable_value_usd}})")
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw = ("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")

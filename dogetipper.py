@@ -17,6 +17,7 @@ import utils
 import config
 from config import rpc_config, bot_config, DATA_PATH
 
+
 class SoDogeTip():
     def __init__(self):
         self.reddit = praw.Reddit(config.bot_name)

@@ -18,7 +18,8 @@ def register_user(rpc, msg):
         address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
             msg.reply(
-                Template(lang.message_register_success + lang.message_footer).render(username=msg.author.name, address=address))
+                Template(lang.message_register_success + lang.message_footer).render(username=msg.author.name,
+                                                                                     address=address))
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
@@ -28,9 +29,10 @@ def register_user(rpc, msg):
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(Template(lang.message_already_registered + lang.message_account_details+ lang.message_footer).render(username=msg.author.name,
-                                                                                        address=address, balance=str(
-                balance)) )
+        msg.reply(Template(lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
+            username=msg.author.name,
+            address=address, balance=str(balance))
+        )
 
 
 def balance_user(rpc, msg):
@@ -38,16 +40,19 @@ def balance_user(rpc, msg):
 
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-
+        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
 
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
-
-        msg.reply(Template(lang.message_balance + lang.message_footer).render(username=msg.author.name, balance=str(balance),
-                                              balance_value_usd=str(balance_value_usd),
-                                              pendingbalance=str(pending_balance),
-                                              pending_value_usd=str(pending_value_usd)) )
+        spendable_value_usd = utils.get_coin_value(spendable_balance)
+        msg.reply(
+            Template(lang.message_balance + lang.message_footer).render(username=msg.author.name, balance=str(balance),
+                                                                        balance_value_usd=str(balance_value_usd),
+                                                                        pendingbalance=str(pending_balance),
+                                                                        pending_value_usd=str(pending_value_usd),
+                                                                        spendablebalance=str(spendable_balance),
+                                                                        spendable_value_usd=str(spendable_value_usd)))
 
         user_function.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
@@ -60,29 +65,34 @@ def info_user(rpc, msg):
         address = user_function.get_user_address(msg.author.name)
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-
+        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
-
-        msg.reply(Template(lang.message_account_details+ lang.message_footer).render(username=msg.author.name, balance=str(balance),
-                                                      balance_value_usd=str(balance_value_usd),
-                                                      pendingbalance=str(pending_balance),
-                                                      pending_value_usd=str(pending_value_usd),
-                                                      address=address) )
+        spendable_value_usd = utils.get_coin_value(spendable_balance)
+        msg.reply(Template(lang.message_account_details + lang.message_footer).render(
+            username=msg.author.name,
+            balance=str(balance),
+            balance_value_usd=str(balance_value_usd),
+            pendingbalance=str(pending_balance),
+            pending_value_usd=str(pending_value_usd),
+            spendablebalance=str(spendable_balance),
+            spendable_value_usd=str(spendable_value_usd),
+            address=address))
 
     else:
-        msg.reply(Template(lang.message_need_register+ lang.message_footer).render(username=msg.author.name))
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
 def help_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(Template(lang.message_help + lang.message_account_details+ lang.message_footer).render(username=msg.author.name, address=address,
-                                                                              balance=str(
-                                                                                  balance)))
+        msg.reply(Template(lang.message_help + lang.message_account_details + lang.message_footer).render(
+            username=msg.author.name, address=address,
+            balance=str(
+                balance)))
     else:
-        msg.reply(Template(lang.message_need_register+ lang.message_footer).render(username=msg.author.name))
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
 def withdraw_user(rpc, msg):
@@ -92,13 +102,13 @@ def withdraw_user(rpc, msg):
         sender_address = user_function.get_user_address(msg.author.name)
         amount = split_message[1]
         user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
         if utils.check_amount_valid(amount):
-            if int(amount) >= user_balance:
+            if int(amount) >= user_balance + user_spendable_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
-                msg.reply(Template(lang.message_balance_low_withdraw+ lang.message_footer).render(
-                    username=msg.author.name, user_balance=str(user_balance),
-                    amount=str(amount)))
+                msg.reply(lang.message_balance_low_withdraw.render(
+                    username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
                 try:
@@ -106,25 +116,26 @@ def withdraw_user(rpc, msg):
                         user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                      "withdraw")
                         value_usd = utils.get_coin_value(amount)
-                        msg.reply(Template(lang.message_withdraw+ lang.message_footer).render(
+                        msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
                             username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
-                            value_usd=str(value_usd)) )
+                            value_usd=str(value_usd)))
 
                 except:
                     traceback.print_exc()
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
-            msg.reply(Template(lang.message_invalid_amount + lang.message_footer).render())
+            msg.reply(lang.message_invalid_amount + lang.message_footer)
     else:
-        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name) )
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
 def tip_user(rpc, reddit, msg):
     bot_logger.logger.info('An user mention detected ')
     split_message = msg.body.lower().strip().split()
-    tip_index = split_message.index('+/u/' + config.bot_name)
+    tip_index = split_message.index(str('+/u/' + config.bot_name))
 
-    if split_message[tip_index] == ('+/u/' + config.bot_name) and split_message[tip_index + 2] == 'doge':
+    if split_message[tip_index] == str('+/u/' + config.bot_name) and split_message[tip_index + 2] == 'doge':
+
         amount = split_message[tip_index + 1]
         value_usd = utils.get_coin_value(amount)
 
@@ -135,9 +146,10 @@ def tip_user(rpc, reddit, msg):
                 # check we have enough
                 user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
                 user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
-                if int(amount) >= user_balance:
+                user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + user_balance
+                if int(amount) >= user_spendable_balance:
                     # not enough for tip
-                    if int(amount) < (user_balance + user_pending_balance):
+                    if int(amount) < (user_spendable_balance + user_pending_balance):
                         msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
                     else:
                         bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
