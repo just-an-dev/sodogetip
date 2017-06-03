@@ -5,6 +5,7 @@ from jinja2 import Template
 from praw.models import Comment
 
 import bot_logger
+import config
 import crypto
 import lang
 import re
@@ -121,9 +122,9 @@ def withdraw_user(rpc, msg):
 def tip_user(rpc, reddit, msg):
     bot_logger.logger.info('An user mention detected ')
     split_message = msg.body.lower().strip().split()
-    tip_index = split_message.index('+/u/sodogetiptest')
+    tip_index = split_message.index('+/u/' + config.bot_name)
 
-    if split_message[tip_index] == '+/u/sodogetiptest' and split_message[tip_index + 2] == 'doge':
+    if split_message[tip_index] == ('+/u/' + config.bot_name') and split_message[tip_index + 2] == 'doge':
         amount = split_message[tip_index + 1]
         value_usd = utils.get_coin_value(amount)
 
