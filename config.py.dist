@@ -1,13 +1,6 @@
 
 ## sample of config file
 
-import getpass
-
-def init_passphrase():
-    # enter user passphrase
-    global wallet_passphrase
-    wallet_passphrase = getpass.getpass("wallet passphrase : ")
-
 rpc_config = {
     "doge_rpc_port": "22545",
     "doge_rpc_host": "127.0.0.1",
@@ -15,7 +8,7 @@ rpc_config = {
     "doge_rpc_password": "dogecoinpassword"
 }
 
-## with ending /
+# with ending /
 
 DATA_PATH = '/data/'
 
@@ -33,5 +26,6 @@ bot_config = {
 
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
-    "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD'
+    "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD',
+    "cryptonator": 'https://api.cryptonator.com/api/full/doge-usd'
 }

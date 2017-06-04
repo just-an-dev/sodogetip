@@ -132,7 +132,7 @@ class SoDogeTip():
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
-    config.init_passphrase()
+    crypto.init_passphrase()
 
     while True:
         try:
