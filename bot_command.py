@@ -103,7 +103,7 @@ def withdraw_user(rpc, msg):
         amount = split_message[1]
         user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
-        if utils.check_amount_valid(amount):
+        if utils.check_amount_valid(amount) and split_message[4] != sender_address:
             if int(amount) >= user_balance + user_spendable_balance:
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
@@ -122,6 +122,8 @@ def withdraw_user(rpc, msg):
 
                 except:
                     traceback.print_exc()
+        elif split_message[4] == sender_address:
+            msg.reply(lang.message_withdraw_to_self + lang.message_footer)
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
@@ -197,7 +199,8 @@ def tip_user(rpc, reddit, msg):
                                 lang.message_recipient_need_register_message).render(
                                 username=parent_comment.author.name, sender=msg.author.name, amount=str(amount),
                                 value_usd=str(value_usd)))
-
+            elif user_function.user_exist(msg.author.name) and (msg.author.name == parent_comment.author.name):
+                msg.reply(Template(lang.message_tipping_yourself).render(username=msg.author.name))
             else:
                 msg.reply(Template(lang.message_need_register).render(username=msg.author.name))
         else:
