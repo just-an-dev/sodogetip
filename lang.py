@@ -73,3 +73,4 @@ message_recipient_need_register_message =  ("Hello /u/{{ username }}! You need t
                         "\n\n2. Click the \"Send\" button" \
                         "\n\n3. Receive the successful register message" \
                         "\n\nThe successful register message will contain your Dogecoin address to your tipping account.")
+message_tipping yourself = ("__^[such ^error]__: ^wow ^plz ^no ^tip ^self")
