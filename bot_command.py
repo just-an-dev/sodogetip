@@ -159,7 +159,8 @@ def tip_user(rpc, reddit, msg):
 
                     # check user have address before tip
                     if user_function.user_exist(parent_comment.author.name):
-                        if crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount):
+                        txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount)
+                        if txid:
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
                                                          "tip send")
@@ -174,7 +175,8 @@ def tip_user(rpc, reddit, msg):
                             if split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply(Template(lang.message_tip).render(
                                     sender=msg.author.name, receiver=parent_comment.author.name, amount=str(amount),
-                                    value_usd=str(value_usd)))
+                                    value_usd=str(value_usd), txid=txid
+                                ))
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount,
                                                             msg.fullname)
@@ -240,7 +242,7 @@ def replay_remove_pending_tip(rpc, reddit):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
-                    crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
                     user_function.remove_pending_tip(tip['id'])
 
                     value_usd = utils.get_coin_value(tip['amount'])
@@ -250,7 +252,7 @@ def replay_remove_pending_tip(rpc, reddit):
                         msg = Comment(reddit, msg_id)
                         msg.reply(Template(lang.message_tip).render(
                             sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']),
-                            value_usd=str(value_usd)))
+                            value_usd=str(value_usd), txid=txid))
 
                 else:
                     bot_logger.logger.info(
