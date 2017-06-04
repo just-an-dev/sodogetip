@@ -71,7 +71,7 @@ def get_user_history(user):
     return data
 
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=True):
+def add_to_history(user_history, sender, receiver, amount, action, finish=True, txid = ""):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
 
@@ -79,9 +79,10 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True):
     db.insert({
         "user": user_history, "sender": sender, "receiver": receiver, "amount": amount, "action": action,
         "finish": finish,
+        "txid": txid,
         'time': datetime.datetime.now().isoformat(),
     })
-
+    
 
 def get_balance_unregistered_tip(user):
     pending_tips = []
