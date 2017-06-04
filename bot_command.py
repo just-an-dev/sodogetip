@@ -163,11 +163,11 @@ def tip_user(rpc, reddit, msg):
                         if txid:
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
-                                                         "tip send")
+                                                         "tip send",txid)
                             user_function.add_to_history(parent_comment.author.name, msg.author.name,
                                                          parent_comment.author.name,
                                                          amount,
-                                                         "tip receive")
+                                                         "tip receive",txid)
 
                             bot_logger.logger.info(
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
