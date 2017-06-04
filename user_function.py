@@ -43,6 +43,7 @@ def user_exist(user):
 def get_unregistered_tip():
     db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
     data = db.all()
+    db.close()
     return data
 
 
@@ -57,17 +58,20 @@ def save_unregistered_tip(sender, receiver, amount, message_fullname):
         'message_fullname': message_fullname,
         'time': datetime.datetime.now().isoformat(),
     })
+    db.close()
 
 
 def remove_pending_tip(id_tip):
     db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
     tip = Query()
     db.remove(tip.id == id_tip)
+    db.close()
 
 
 def get_user_history(user):
     db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
     data = db.all()
+    db.close()
     return data
 
 
@@ -82,7 +86,8 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True, 
         "txid": txid,
         'time': datetime.datetime.now().isoformat(),
     })
-    
+    db.close()
+
 
 def get_balance_unregistered_tip(user):
     pending_tips = []
