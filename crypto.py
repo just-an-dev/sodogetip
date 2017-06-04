@@ -189,7 +189,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
 
 def calculate_fee(nb_input, nb_out):
-    size = nb_input * 180 + nb_out * 34 + 10
+    size = calculate_size(nb_input, nb_out)
     # bot_logger.logger.debug("size of tx : %s" % size)
 
     fee_rate = float(bot_config['rate_fee'])
@@ -198,3 +198,7 @@ def calculate_fee(nb_input, nb_out):
         fee = (size / 1000) * fee_rate
 
     return fee
+
+
+def calculate_size(nb_input, nb_out):
+    return nb_input * 180 + nb_out * 34 + 10
