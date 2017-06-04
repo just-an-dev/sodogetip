@@ -61,3 +61,8 @@ def is_whole(x):
         return True
     else:
         return False
+
+
+def mark_msg_read(reddit, msg):
+    unread_messages = [msg]
+    reddit.inbox.mark_read(unread_messages)
