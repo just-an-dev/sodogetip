@@ -134,7 +134,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
         }
         raw_inputs.append(tx)
         fee = calculate_fee(len(raw_inputs), 2)
-        if sum(unspent_amounts) > (float(amount) + float(fee)):
+        if sum(unspent_amounts) > (float(amount) + float(fee)) and (calculate_size(len(raw_inputs), 2) >= 750):
             break
 
     list_unspent = rpc.listunspent(0, 0, [sender_address])
