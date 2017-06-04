@@ -3,6 +3,7 @@ import os
 import traceback
 
 import requests
+from tinydb import TinyDB
 
 import bot_logger
 from config import bot_config, url_get_value, DATA_PATH
@@ -19,9 +20,8 @@ def create_user_storage():
 def create_unregistered_tip_storage():
     if not os.path.exists(DATA_PATH + bot_config['unregistered_tip_user']):
         bot_logger.logger.info("create an empty unregistered tip user file")
-        data = []
-        with open(DATA_PATH + bot_config['unregistered_tip_user'], 'w+') as f:
-            json.dump(data, f)
+        db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+        db.close()
 
 
 def get_coin_value(balance):
@@ -46,7 +46,7 @@ def get_coin_value(balance):
 
 
 def check_amount_valid(amount):
-    if amount.isdigit() and amount >= 1 and is_whole(amount):
+    if amount.isdigit() and amount >= 1 and is_whole(int(amount)):
         try:
             int(amount)
             return True
@@ -61,3 +61,8 @@ def is_whole(x):
         return True
     else:
         return False
+
+
+def mark_msg_read(reddit, msg):
+    unread_messages = [msg]
+    reddit.inbox.mark_read(unread_messages)

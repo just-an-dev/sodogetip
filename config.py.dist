@@ -8,9 +8,11 @@ rpc_config = {
     "doge_rpc_password": "dogecoinpassword"
 }
 
-## with ending /
+# with ending /
 
 DATA_PATH = '/data/'
+
+bot_name = "sodogetiptest"
 
 bot_config = {
     'user_file': 'user_files.json',
@@ -19,9 +21,11 @@ bot_config = {
     'logs_path': 'logs/',
     'rate_fee': '1',
     'spam_limit': '500'
+    'timeout': '30'
 }
 
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
-    "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD'
+    "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD',
+    "cryptonator": 'https://api.cryptonator.com/api/full/doge-usd'
 }
