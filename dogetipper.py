@@ -54,7 +54,7 @@ class SoDogeTip():
                         msg_subject = msg.subject.strip()
                         split_message = msg_body.lower().split()
 
-                        if msg_body == '+register' and msg_subject == '+register':
+                        if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
                             bot_command.register_user(self.rpc_main, msg)
                             utils.mark_msg_read(self.reddit, msg)
 

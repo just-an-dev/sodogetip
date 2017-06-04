@@ -123,7 +123,7 @@ def withdraw_user(rpc, msg):
                 except:
                     traceback.print_exc()
         elif split_message[4] == sender_address:
-            msg.reply(lang.message_withdraw_to_self + lang.message_footer)
+            msg.reply(lang.message_withdraw_self + lang.message_footer)
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
@@ -200,7 +200,7 @@ def tip_user(rpc, reddit, msg):
                                 username=parent_comment.author.name, sender=msg.author.name, amount=str(amount),
                                 value_usd=str(value_usd)))
             elif user_function.user_exist(msg.author.name) and (msg.author.name == parent_comment.author.name):
-                msg.reply(Template(lang.message_tipping_yourself).render(username=msg.author.name))
+                msg.reply(Template(lang.message_recipient_self).render(username=msg.author.name))
             else:
                 msg.reply(Template(lang.message_need_register).render(username=msg.author.name))
         else:
