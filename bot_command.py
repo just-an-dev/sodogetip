@@ -197,7 +197,8 @@ def tip_user(rpc, reddit, msg):
                                 lang.message_recipient_need_register_message).render(
                                 username=parent_comment.author.name, sender=msg.author.name, amount=str(amount),
                                 value_usd=str(value_usd)))
-
+            elif user_function.user_exist(msg.author.name) and (msg.author.name == parent_comment.author.name):
+                msg.reply(Template(lang.tipping_yourself).render(username=msg.author.name))
             else:
                 msg.reply(Template(lang.message_need_register).render(username=msg.author.name))
         else:
