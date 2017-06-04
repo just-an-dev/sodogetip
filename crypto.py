@@ -134,7 +134,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
         }
         raw_inputs.append(tx)
         fee = calculate_fee(len(raw_inputs), 2)
-        if sum(unspent_amounts) > (float(amount) + float(fee)):
+        if sum(unspent_amounts) > (float(amount) + float(fee)) and (calculate_size(len(raw_inputs), 2) >= 750):
             break
 
     list_unspent = rpc.listunspent(0, 0, [sender_address])
@@ -155,6 +155,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
     bot_logger.logger.debug("fee : %s" % str(fee))
+    bot_logger.logger.debug("size : %s" % str(calculate_size(len(raw_inputs), 2)))
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
     if take_fee_on_amount:
@@ -189,7 +190,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
 
 def calculate_fee(nb_input, nb_out):
-    size = nb_input * 180 + nb_out * 34 + 10
+    size = calculate_size(nb_input, nb_out)
     # bot_logger.logger.debug("size of tx : %s" % size)
 
     fee_rate = float(bot_config['rate_fee'])
@@ -198,3 +199,7 @@ def calculate_fee(nb_input, nb_out):
         fee = (size / 1000) * fee_rate
 
     return fee
+
+
+def calculate_size(nb_input, nb_out):
+    return nb_input * 180 + nb_out * 34 + 10

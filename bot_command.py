@@ -123,7 +123,7 @@ def withdraw_user(rpc, msg):
                 except:
                     traceback.print_exc()
         elif split_message[4] == sender_address:
-            msg.reply(lang.message_withdraw_self + lang.message_footer)
+            msg.reply(lang.message_withdraw_to_self + lang.message_footer)
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
