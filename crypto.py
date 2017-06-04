@@ -155,6 +155,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
     bot_logger.logger.debug("fee : %s" % str(fee))
+    bot_logger.logger.debug("size : %s" % str(calculate_size(len(raw_inputs), 2)))
     bot_logger.logger.debug("raw input : %s" % raw_inputs)
 
     if take_fee_on_amount:
