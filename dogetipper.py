@@ -134,8 +134,8 @@ if __name__ == "__main__":
             Bot = SoDogeTip()
 
             thread_master = Thread(target=Bot.main)
-            thread_pending_tip = Thread(target=Bot.process_pending_tip)
-            thread_anti_spamming_tx = Thread(target=Bot.anti_spamming_tx)
+            thread_pending_tip = Thread(name='pending_tip',target=Bot.process_pending_tip)
+            thread_anti_spamming_tx = Thread(name='anti_spam',target=Bot.anti_spamming_tx)
 
             thread_master.start()
             thread_pending_tip.start()
