@@ -45,11 +45,10 @@ def register_user(rpc, msg):
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
-
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
-        bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
 
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
@@ -143,6 +142,7 @@ def withdraw_user(rpc, msg, failover_time):
 
 def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
+    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     # create an Tip
     tip = models.Tip()
@@ -159,33 +159,33 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
         # update receiver
         tip.set_receiver(msg.parent().author.name)
+
         if user_function.user_exist(tip.sender) and (tip.sender != tip.receiver):
 
-                # check we have enough
-                user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-                user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+            # check we have enough
+            user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+            user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
 
-                user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
-                bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
+            user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
+            bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
-                # in failover we need to use only user_balance
-                if int(tip.amount) >= user_spendable_balance:
-                    # not enough for tip
-                    if int(tip.amount) < user_pending_balance:
-                        msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
-                    else:
-                        bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
-                            msg.author.name, str(tip.amount), str(user_balance)))
-                        msg.reply(Template(lang.message_balance_low_tip).render(username=msg.author.name))
+            # in failover we need to use only user_balance
+            if int(tip.amount) >= user_spendable_balance:
+                # not enough for tip
+                if int(tip.amount) < user_pending_balance:
+                    msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
                 else:
+                    bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
+                        msg.author.name, str(tip.amount), str(user_balance)))
+                    msg.reply(Template(lang.message_balance_low_tip).render(username=msg.author.name))
+            else:
 
                 value_usd = utils.get_coin_value(tip.amount)
-
                 # check user have address before tip
                 if user_function.user_exist(tip.receiver):
-                    tip.tx_id = crypto.tip_user(rpc, tip.sender, tip.receiver, tip.amount, tx_queue,
-                                               failover_time)
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender, tip.receiver, tip.amount, tx_queue, failover_time)
                     if tip.tx_id:
+                        bot_logger.logger.info('%s tip %s to %s' % (tip.sender, str(tip.amount), tip.receiver))
                         tip.finish = True
 
                         # add to sender history
@@ -199,8 +199,6 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                                                      tip.amount,
                                                      "tip receive", tip.tx_id)
 
-                        bot_logger.logger.info(
-                            '%s tip %s to %s' % (tip.sender, str(tip.amount), tip.receiver))
                         # if user have 'verify' in this command he will have confirmation
                         if tip.verify:
                             msg.reply(Template(lang.message_tip).render(
@@ -208,18 +206,14 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                                 value_usd=str(value_usd), txid=tip.tx_id
                             ))
                 else:
+                    bot_logger.logger.info('user %s not registered' % tip.receiver)
+
                     user_function.save_unregistered_tip(tip.sender, tip.receiver, tip.amount,
                                                         msg.fullname)
-                    user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
-                                                 tip.amount,
-                                                 "tip send", False)
-                    user_function.add_to_history(tip.receiver, tip.sender,
-                                                 tip.receiver,
-                                                 tip.amount,
-                                                 "tip receive", False)
-                    bot_logger.logger.info('user %s not registered' % tip.receiver)
+
                     msg.reply(Template(lang.message_recipient_register).render(username=tip.receiver))
 
+                    # send MP to user who has been tipped and haven't account
                     reddit.redditor(tip.receiver).message(
                         Template(
                             lang.message_recipient_need_register_title).render(amount=str(tip.amount)),
@@ -227,6 +221,17 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                             lang.message_recipient_need_register_message).render(
                             username=tip.receiver, sender=tip.sender, amount=str(tip.amount),
                             value_usd=str(value_usd)))
+
+                # add to sender history
+                user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
+                                             tip.amount,
+                                             "tip send", tip.tx_id)
+
+                # add to receiver history
+                user_function.add_to_history(tip.receiver, tip.sender,
+                                             tip.receiver,
+                                             tip.amount,
+                                             "tip receive", tip.tx_id)
 
         elif user_function.user_exist(tip.sender) and (tip.sender == tip.receiver):
             msg.reply(Template(lang.message_recipient_self).render(username=tip.sender))

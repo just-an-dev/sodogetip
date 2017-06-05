@@ -89,7 +89,6 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
-                            utils.mark_msg_read(self.reddit, msg)
 
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
@@ -122,7 +121,6 @@ class SoDogeTip():
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    # amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 

@@ -49,9 +49,10 @@ def get_unregistered_tip():
 
 def save_unregistered_tip(sender, receiver, amount, message_fullname):
     bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
+    id_entry = random.randint(0, 99999999)
     db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
     db.insert({
-        'id': random.randint(0, 99999999),
+        'id': id_entry,
         'amount': amount,
         'receiver': receiver,
         'sender': sender,
@@ -59,6 +60,7 @@ def save_unregistered_tip(sender, receiver, amount, message_fullname):
         'time': datetime.datetime.now().isoformat(),
     })
     db.close()
+    return id_entry
 
 
 def remove_pending_tip(id_tip):
@@ -75,7 +77,7 @@ def get_user_history(user):
     return data
 
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id =""):
+def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id=""):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
 
