@@ -143,10 +143,6 @@ def withdraw_user(rpc, msg, failover_time):
 
 def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
-    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
-
-    split_message = msg.body.lower().strip().split()
-    tip_index = split_message.index(str('+/u/' + config.bot_name))
 
     # create an Tip
     tip = models.Tip()
@@ -154,7 +150,6 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
     # update sender
     tip.sender = msg.author.name
-
 
     if utils.check_amount_valid(tip.amount):
 
@@ -188,34 +183,37 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
                 # check user have address before tip
                 if user_function.user_exist(tip.receiver):
-                    tip.tx_id = crypto.tip_user(rpc, msg.author.name, tip.receiver, tip.amount, tx_queue,
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender, tip.receiver, tip.amount, tx_queue,
                                                failover_time)
                     if tip.tx_id:
                         tip.finish = True
 
-                        user_function.add_to_history(msg.author.name, msg.author.name, tip.receiver,
+                        # add to sender history
+                        user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
                                                      tip.amount,
                                                      "tip send", tip.tx_id)
-                        user_function.add_to_history(tip.receiver, msg.author.name,
+
+                        # add to receiver history
+                        user_function.add_to_history(tip.receiver, tip.sender,
                                                      tip.receiver,
                                                      tip.amount,
                                                      "tip receive", tip.tx_id)
 
                         bot_logger.logger.info(
-                            '%s tip %s to %s' % (msg.author.name, str(tip.amount), tip.receiver))
+                            '%s tip %s to %s' % (tip.sender, str(tip.amount), tip.receiver))
                         # if user have 'verify' in this command he will have confirmation
                         if tip.verify:
                             msg.reply(Template(lang.message_tip).render(
-                                sender=msg.author.name, receiver=tip.receiver, amount=str(tip.amount),
+                                sender=tip.sender, receiver=tip.receiver, amount=str(tip.amount),
                                 value_usd=str(value_usd), txid=tip.tx_id
                             ))
                 else:
-                    user_function.save_unregistered_tip(msg.author.name, tip.receiver, tip.amount,
+                    user_function.save_unregistered_tip(tip.sender, tip.receiver, tip.amount,
                                                         msg.fullname)
-                    user_function.add_to_history(msg.author.name, msg.author.name, tip.receiver,
+                    user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
                                                  tip.amount,
                                                  "tip send", False)
-                    user_function.add_to_history(tip.receiver, msg.author.name,
+                    user_function.add_to_history(tip.receiver, tip.sender,
                                                  tip.receiver,
                                                  tip.amount,
                                                  "tip receive", False)
@@ -227,13 +225,13 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                             lang.message_recipient_need_register_title).render(amount=str(tip.amount)),
                         Template(
                             lang.message_recipient_need_register_message).render(
-                            username=tip.receiver, sender=msg.author.name, amount=str(tip.amount),
+                            username=tip.receiver, sender=tip.sender, amount=str(tip.amount),
                             value_usd=str(value_usd)))
 
-        elif user_function.user_exist(msg.author.name) and (msg.author.name == tip.receiver):
-            msg.reply(Template(lang.message_recipient_self).render(username=msg.author.name))
+        elif user_function.user_exist(tip.sender) and (tip.sender == tip.receiver):
+            msg.reply(Template(lang.message_recipient_self).render(username=tip.sender))
         else:
-            msg.reply(Template(lang.message_need_register).render(username=msg.author.name))
+            msg.reply(Template(lang.message_need_register).render(username=tip.sender))
     else:
         bot_logger.logger.info(lang.message_invalid_amount)
         msg.reply(lang.message_invalid_amount)
