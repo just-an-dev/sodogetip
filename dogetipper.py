@@ -30,7 +30,7 @@ class SoDogeTip():
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
             rpc_config['doge_rpc_port']), timeout=120)
 
-    def main(self):
+    def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
         while True:
             try:
@@ -81,7 +81,7 @@ class SoDogeTip():
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.rpc_main, self.reddit, msg)
+                            bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue)
 
                         else:
                             utils.mark_msg_read(self.reddit, msg)
@@ -124,14 +124,14 @@ class SoDogeTip():
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 
-    def double_spend_check(self):
+    def double_spend_check(self, tx_queue, failover_time):
         already_done = []
         while True:
             time.sleep(1)
-            sent_tx = crypto.send_to(send)
+            sent_tx = tx_queue.get()
             print(sent_tx)
             if sent_tx not in already_done:
-                tx_info = requests.get(utils.url_get_value['blockcypher'] + sent_tx).json()
+                tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
                 already_done.append(sent_tx)
                 print(tx_info["double_spend"])
                 if tx_info["double_spend"] is False:
