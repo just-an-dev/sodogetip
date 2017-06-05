@@ -146,7 +146,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
     # create an Tip
     tip = models.Tip()
-    tip.parse_message(msg.body)
+    tip.parse_message(msg.body, rpc)
 
     # update sender
     tip.set_sender(msg.author.name)
