@@ -109,17 +109,16 @@ def get_user_unconfirmed_balance(rpc, user):
     return int(sum(unspent_amounts))
 
 
-def tip_user(rpc, sender_user, receiver_user, amount_tip):
+def tip_user(rpc, sender_user, receiver_user, amount_tip, tx_queue):
     sender_address = user_function.get_user_address(sender_user)
     receiver_address = user_function.get_user_address(receiver_user)
     try:
-        return send_to(rpc, sender_address, receiver_address, amount_tip)
+        return send_to(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
     except:
         traceback.print_exc()
 
 
-def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
-    Bot = SoDogeTip()
+def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue= None):
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
@@ -191,8 +190,12 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     signed = rpc.signrawtransaction(raw_tx)
     rpc.walletlock()
     send = rpc.sendrawtransaction(signed['hex'])
-    time.sleep(4)
-    Bot.double_spend_check.already_done.clear()
+
+    # add tx id in queue for double spend check
+    if tx_queue is not None :
+        time.sleep(4)
+        tx_queue.put(send)
+
     return send
 
 

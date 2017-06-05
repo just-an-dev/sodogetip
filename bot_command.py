@@ -135,7 +135,7 @@ def withdraw_user(rpc, msg):
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
-def tip_user(rpc, reddit, msg):
+def tip_user(rpc, reddit, msg, tx_queue):
     bot_logger.logger.info('An user mention detected ')
     split_message = msg.body.lower().strip().split()
     tip_index = split_message.index(str('+/u/' + config.bot_name))
@@ -165,7 +165,7 @@ def tip_user(rpc, reddit, msg):
 
                     # check user have address before tip
                     if user_function.user_exist(parent_comment.author.name):
-                        txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount)
+                        txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount, tx_queue)
                         if txid:
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
