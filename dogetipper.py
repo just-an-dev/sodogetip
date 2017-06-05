@@ -81,7 +81,7 @@ class SoDogeTip():
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue)
+                            bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
 
                         else:
                             utils.mark_msg_read(self.reddit, msg)
@@ -125,18 +125,20 @@ class SoDogeTip():
             time.sleep(240)
 
     def double_spend_check(self, tx_queue, failover_time):
-        already_done = []
         while True:
             time.sleep(1)
             sent_tx = tx_queue.get()
-            print(sent_tx)
-            if sent_tx not in already_done:
+            bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
+            try:
                 tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
-                already_done.append(sent_tx)
-                print(tx_info["double_spend"])
                 if tx_info["double_spend"] is False:
-                    print('wow')
-                    continue
-                else:
+                    # check we are not in safe mode
+                    if time.time() > failover_time + 86400:
+                        bot_logger.logger.warn('Safe mode Disabled')
+                        failover_time = 0
+
+                elif tx_info["double_spend"] is True:
+                    bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
                     failover_time = time.time()
-                    return True
+            except:
+                traceback.print_exc()
