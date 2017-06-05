@@ -2,6 +2,8 @@ import getpass
 import time
 import traceback
 
+import logging
+
 import bot_logger
 import user_function
 from config import bot_config
@@ -181,7 +183,10 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
+    logging.disable(logging.DEBUG)
     rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    logging.disable(logging.NOTSET)
+
     signed = rpc.signrawtransaction(raw_tx)
     rpc.walletlock()
     time.sleep(1)
