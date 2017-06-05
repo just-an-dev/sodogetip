@@ -10,6 +10,7 @@ from dogetipper import SoDogeTip
 if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
+    # get wallet pass phrase from user input
     crypto.init_passphrase()
 
     while True:
