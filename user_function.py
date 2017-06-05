@@ -75,19 +75,19 @@ def get_user_history(user):
     return data
 
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id =""):
+def add_to_history(user_history, action, tip=None):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
-        user_history, sender, receiver, amount, action, finish))
-
+        user_history, tip.sender, tip.receiver, tip.amount, action, tip.finish))
+    # TODO : bug on tip = None
     db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
     db.insert({
         "user": user_history,
-        "sender": sender,
-        "receiver": receiver,
-        "amount": amount,
+        "sender": tip.sender,
+        "receiver": tip.receiver,
+        "amount": tip.amount,
         "action": action,
-        "finish": finish,
-        "tx_id": tx_id,
+        "finish": tip.finish,
+        "tx_id": tip.tx_id,
         'time': datetime.datetime.now().isoformat(),
     })
     db.close()
