@@ -5,7 +5,7 @@ import traceback
 import bot_logger
 import user_function
 from config import bot_config
-
+from dogetipper import SoDogeTip
 
 def init_passphrase():
     # enter user passphrase
@@ -117,6 +117,7 @@ def tip_user(rpc, sender_user, receiver_user, amount_tip):
 
 
 def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False):
+    Bot = SoDogeTip()
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
@@ -184,8 +185,9 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
     signed = rpc.signrawtransaction(raw_tx)
     rpc.walletlock()
-    time.sleep(1)
     send = rpc.sendrawtransaction(signed['hex'])
+    time.sleep(4)
+    Bot.double_spend_check.already_done.clear()
     return send
 
 

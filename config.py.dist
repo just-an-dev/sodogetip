@@ -27,5 +27,6 @@ bot_config = {
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
     "cryptocompare": 'https://www.cryptocompare.com/api/data/price?fsym=DOGE&tsyms=USD',
-    "cryptonator": 'https://api.cryptonator.com/api/full/doge-usd'
+    "cryptonator": 'https://api.cryptonator.com/api/full/doge-usd',
+    "blockcypher": 'https://api.blockcypher.com/v1/doge/main/txs/'
 }

@@ -18,16 +18,19 @@ if __name__ == "__main__":
             Bot = SoDogeTip()
 
             thread_master = Thread(target=Bot.main)
-            thread_pending_tip = Thread(name='pending_tip',target=Bot.process_pending_tip)
-            thread_anti_spamming_tx = Thread(name='anti_spam',target=Bot.anti_spamming_tx)
+            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip)
+            thread_anti_spamming_tx = Thread(name='anti_spam', target=Bot.anti_spamming_tx)
+            thread_double_spend_check = Thread(name='double_spend_check', target=Bot.double_spend_check)
 
             thread_master.start()
             thread_pending_tip.start()
             thread_anti_spamming_tx.start()
+            thread_double_spend_check.start()
 
             thread_master.join()
             thread_pending_tip.join()
             thread_anti_spamming_tx.join()
+            thread_double_spend_check.join()
 
             bot_logger.logger.error('All bot task finished ...')
         except:

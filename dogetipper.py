@@ -4,6 +4,7 @@ import traceback
 from threading import Thread
 
 import praw
+import requests
 from bitcoinrpc.authproxy import AuthServiceProxy
 from praw.models import Message, Comment
 
@@ -119,8 +120,23 @@ class SoDogeTip():
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    #amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
+                    # amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 
-
+    def double_spend_check(self):
+        already_done = []
+        while True:
+            time.sleep(1)
+            sent_tx = crypto.send_to(send)
+            print(sent_tx)
+            if sent_tx not in already_done:
+                tx_info = requests.get(utils.url_get_value['blockcypher'] + sent_tx).json()
+                already_done.append(sent_tx)
+                print(tx_info["double_spend"])
+                if tx_info["double_spend"] is False:
+                    print('wow')
+                    continue
+                else:
+                    failover_time = time.time()
+                    return True
