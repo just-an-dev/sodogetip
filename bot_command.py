@@ -149,7 +149,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     tip.parse_message(msg.body)
 
     # update sender
-    tip.sender = msg.author.name
+    tip.set_sender(msg.author.name)
 
     if utils.check_amount_valid(tip.amount):
 
@@ -158,7 +158,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
             tip.verify = True
 
         # update receiver
-        tip.receiver = models.User(msg.parent().author.name)
+        tip.set_receiver(msg.parent().author.name)
         if user_function.user_exist(tip.sender) and (tip.sender != tip.receiver):
 
                 # check we have enough

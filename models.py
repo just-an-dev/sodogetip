@@ -33,6 +33,13 @@ class Tip(object):
         if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
             self.amount = randint(1, int(self.amount[:6]))
 
+    def set_sender(self,sender_username):
+        self.sender = User(sender_username)
+
+    def set_receiver(self, receiver_username):
+        self.receiver = User(receiver_username)
+
+
 
 class User(object):
     """Class to represent an user"""
