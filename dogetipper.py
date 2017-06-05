@@ -12,6 +12,7 @@ import bot_logger
 import config
 import crypto
 import lang
+import models
 import user_function
 import utils
 from config import rpc_config, bot_config, DATA_PATH
@@ -49,13 +50,17 @@ class SoDogeTip():
                         msg.reply(lang.message_not_supported)
                         utils.mark_msg_read(self.reddit, msg)
                     else:
+                        user = models.User(msg.author.name)
+                        action = models.Action(user)
+
                         bot_logger.logger.info("%s - %s sub : %s" % (str(msg), msg.author.name, msg.subject))
                         msg_body = msg.body.strip()
                         msg_subject = msg.subject.strip()
                         split_message = msg_body.lower().split()
 
                         if msg_body == '+register' and msg_subject == '+register':
-                            bot_command.register_user(self.rpc_main, msg)
+                            action.action = "register"
+                            bot_command.register_user(self.rpc_main, msg, action)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+info' and msg_subject == '+info':
@@ -67,7 +72,8 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+balance' and msg_subject == '+balance':
-                            bot_command.balance_user(self.rpc_main, msg)
+                            action.action = "balance"
+                            bot_command.balance_user(self.rpc_main, msg, action)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
@@ -87,6 +93,13 @@ class SoDogeTip():
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
                             utils.mark_msg_read(self.reddit, msg)
+
+                        if action.output_message is not None:
+                            msg.reply(action.output_message)
+
+                        # if we make an action known save to history
+                        if action.action is not None:
+                            user_function.add_to_history(action)
 
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')

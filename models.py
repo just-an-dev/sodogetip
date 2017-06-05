@@ -1,8 +1,12 @@
 import re
 
+import crypto
+import user_function
+
 
 class Tip(object):
     """Class to represent a tip of user"""
+
     def __init__(self):
         self.receiver = None
         self.amount = None
@@ -26,6 +30,26 @@ class Tip(object):
 
 class Action(object):
     """Class to represent an action made by user"""
-    def __init__(self):
+
+    def __init__(self, user):
+        # user who make action, must be an User Object
+        self.user = user
         self.action = None
         self.tip = None
+        # extra info can be added for history
+        self.extra = None
+
+        # response string of message
+        self.output_message = None
+
+
+class User(object):
+    """Class to represent an user"""
+
+    def __init__(self, user, rpc = None):
+        self.username = user
+        self.address = None
+
+        if user_function.user_exist(self.username):
+            self.address = user_function.get_user_address(self.username)
+

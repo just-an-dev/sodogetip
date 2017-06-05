@@ -15,29 +15,31 @@ import user_function
 import utils
 
 
-def register_user(rpc, msg):
-    if not user_function.user_exist(msg.author.name):
-        address = rpc.getnewaddress("reddit-%s" % msg.author.name)
-        if address:
-            msg.reply(
-                Template(lang.message_register_success + lang.message_footer).render(username=msg.author.name,
-                                                                                     address=address))
-            user_function.add_user(msg.author.name, address)
+def register_user(rpc, msg, action):
+    if not user_function.user_exist(action.user):
 
-            user_function.add_to_history(msg.author.name, "register")
+        address = rpc.getnewaddress("reddit-%s" % action.user)
+        if address:
+            user_function.add_user(action.user, address)
+            action.output_message = Template(lang.message_register_success + lang.message_footer).render(
+                username=action.user, address=address)
         else:
+            action.extra = {'error-register': True}
             bot_logger.logger.warning('Error during register !')
     else:
-        bot_logger.logger.info('%s are already registered ' % msg.author.name)
-        balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        address = user_function.get_user_address(msg.author.name)
-        msg.reply(Template(lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
-            username=msg.author.name,
-            address=address, balance=str(balance))
-        )
+        action.extra = {'already-register': True}
+
+        bot_logger.logger.info('%s are already registered ' % action.user)
+
+        balance = crypto.get_user_confirmed_balance(rpc, action.user)
+
+        action.output_message = Template(
+            lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
+            username=action.user,
+            address=action.user.address, balance=str(balance))
 
 
-def balance_user(rpc, msg):
+def balance_user(rpc, msg, action):
     if user_function.user_exist(msg.author.name):
 
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
@@ -56,7 +58,7 @@ def balance_user(rpc, msg):
                                                                         spendablebalance=str(spendable_balance),
                                                                         spendable_value_usd=str(spendable_value_usd)))
 
-        user_function.add_to_history(msg.author.name, "balance", balance)
+        action.extra = {'balance': balance}
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
