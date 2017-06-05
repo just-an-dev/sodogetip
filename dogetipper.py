@@ -89,7 +89,6 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
-                            utils.mark_msg_read(self.reddit, msg)
 
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')

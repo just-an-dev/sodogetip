@@ -1,7 +1,7 @@
 import re
 from random import randint
 
-import crypto
+import config
 import user_function
 import utils
 
@@ -18,7 +18,7 @@ class Tip(object):
         self.tx_id = None
 
     def parse_message(self, message_to_parse, rpc):
-        p = re.compile('(\+\/u\/sodogetiptest)\s?(@?[0-9a-zA-Z]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s(verify)?')
+        p = re.compile('(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s(verify)?')
         m = p.search(message_to_parse.lower().strip())
         # Group 1 is +/u/sodogetiptest
         # Group 2 is either blank(tip to the commentor), an address, or a user
@@ -36,11 +36,11 @@ class Tip(object):
         # to support send tip to username
         if '/u/' in self.receiver:
             self.receiver = User(self.receiver[:3])
-        if '@' in self.receiver:
+        elif '@' in self.receiver:
             self.receiver = User(self.receiver[:1])
 
         # to support send tip to an address
-        if len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid']:
+        elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid']:
             self.receiver = User("address" + self.receiver)
             self.receiver.address = self.receiver
 
