@@ -1,7 +1,9 @@
 import re
+from random import randint
 
 import crypto
 import user_function
+import utils
 
 
 class Tip(object):
@@ -26,6 +28,10 @@ class Tip(object):
         # Group 4 is doge
         # Group 5 is either blank(no verify message) or verify(verify message)
         self.verify = True if (m.group(5) == "verify") else False
+
+        # to support any type of randomXXX amount
+        if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
+            self.amount = randint(1, int(self.amount[:6]))
 
 
 class User(object):
