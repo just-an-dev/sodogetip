@@ -9,6 +9,7 @@ import user_function
 from config import bot_config
 from dogetipper import SoDogeTip
 
+
 def init_passphrase():
     # enter user passphrase
     global wallet_passphrase
@@ -109,16 +110,24 @@ def get_user_unconfirmed_balance(rpc, user):
     return int(sum(unspent_amounts))
 
 
-def tip_user(rpc, sender_user, receiver_user, amount_tip, tx_queue):
+def tip_user(rpc, sender_user, receiver_user, amount_tip, tx_queue, failover_time):
     sender_address = user_function.get_user_address(sender_user)
     receiver_address = user_function.get_user_address(receiver_user)
-    try:
-        return send_to(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
-    except:
-        traceback.print_exc()
+
+    if time.time() > failover_time + 86400:
+        try:
+            return send_to(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
+        except:
+            traceback.print_exc()
+    else:
+        bot_logger.logger.info("tip send in safe mode")
+        try:
+            return send_to_failover(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
+        except:
+            traceback.print_exc()
 
 
-def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue= None):
+def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue=None):
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
@@ -192,7 +201,69 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     send = rpc.sendrawtransaction(signed['hex'])
 
     # add tx id in queue for double spend check
-    if tx_queue is not None :
+    if tx_queue is not None:
+        time.sleep(4)
+        tx_queue.put(send)
+
+    return send
+
+
+def send_to_failover(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue=None):
+    bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
+
+    list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
+
+    unspent_amounts = []
+    raw_inputs = []
+    fee = 1
+
+    for i in range(0, len(list_unspent), 1):
+        unspent_amounts.append(list_unspent[i]['amount'])
+        # check if we have enough tx
+        tx = {
+            "txid": str(list_unspent[i]['txid']),
+            "vout": list_unspent[i]['vout']
+        }
+        raw_inputs.append(tx)
+        fee = calculate_fee(len(raw_inputs), 2)
+        if sum(unspent_amounts) > (float(amount) + float(fee)) and (calculate_size(len(raw_inputs), 2) >= 750):
+            break
+
+    bot_logger.logger.debug("sum of unspend : " + str(sum(unspent_amounts)))
+    bot_logger.logger.debug("fee : %s" % str(fee))
+    bot_logger.logger.debug("size : %s" % str(calculate_size(len(raw_inputs), 2)))
+    bot_logger.logger.debug("raw input : %s" % raw_inputs)
+
+    if take_fee_on_amount:
+        return_amount = int(sum(unspent_amounts)) - int(int(amount) - int(fee))
+    else:
+        return_amount = int(sum(unspent_amounts)) - int(amount) - int(fee)
+
+    bot_logger.logger.debug("return amount : %s" % str(return_amount))
+
+    if int(return_amount) < 1:
+        raw_addresses = {receiver_address: int(amount)}
+    else:
+        # when consolidate tx
+        if receiver_address == sender_address:
+            raw_addresses = {receiver_address: int(int(amount) - int(fee))}
+        else:
+            raw_addresses = {receiver_address: int(amount), sender_address: int(return_amount)}
+
+    bot_logger.logger.debug("raw addresses : %s" % raw_addresses)
+
+    raw_tx = rpc.createrawtransaction(raw_inputs, raw_addresses)
+    bot_logger.logger.debug("raw tx : %s" % raw_tx)
+
+    bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
+
+    rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    signed = rpc.signrawtransaction(raw_tx)
+    rpc.walletlock()
+    send = rpc.sendrawtransaction(signed['hex'])
+
+    # add tx id in queue for double spend check
+    if tx_queue is not None:
         time.sleep(4)
         tx_queue.put(send)
 
