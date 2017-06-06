@@ -147,3 +147,4 @@ class SoDogeTip():
                     failover_time = time.time()
             except:
                 traceback.print_exc()
+            bot_logger.logger.debug('failover_time : %s' % failover_time)
