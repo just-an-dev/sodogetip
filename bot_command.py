@@ -141,6 +141,8 @@ def withdraw_user(rpc, msg, failover_time):
 
 def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
+    bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+
     split_message = msg.body.lower().strip().split()
     tip_index = split_message.index(str('+/u/' + config.bot_name))
 
