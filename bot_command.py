@@ -1,3 +1,4 @@
+import time
 import datetime
 import traceback
 
@@ -116,7 +117,7 @@ def withdraw_user(rpc, msg, failover_time):
                     username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
-                if datetime.time.time() > failover_time + 86400:
+                if time.time() > failover_time + 86400:
                     send = crypto.send_to(rpc, sender_address, receiver_address, amount)
                 else:
                     send = crypto.send_to_failover(rpc, sender_address, receiver_address, amount)
@@ -238,7 +239,7 @@ def history_user(msg):
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_remove_pending_tip(rpc, reddit):
+def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
     # check if it's not too old & replay tipping
     limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
@@ -253,7 +254,7 @@ def replay_remove_pending_tip(rpc, reddit):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
-                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'], tx_queue, failover_time)
                     user_function.remove_pending_tip(tip['id'])
 
                     value_usd = utils.get_coin_value(tip['amount'])

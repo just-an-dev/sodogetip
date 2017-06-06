@@ -32,6 +32,8 @@ class SoDogeTip():
 
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
+        bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+
         while True:
             try:
                 if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
@@ -77,7 +79,7 @@ class SoDogeTip():
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.withdraw_user(self.rpc_main, msg)
+                            bot_command.withdraw_user(self.rpc_main, msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
@@ -97,10 +99,10 @@ class SoDogeTip():
                 bot_logger.logger.error('Main Bot loop crashed...')
                 time.sleep(10)
 
-    def process_pending_tip(self):
+    def process_pending_tip(self,tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit)
+            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit, tx_queue, failover_time)
             time.sleep(60)
 
     def anti_spamming_tx(self):
@@ -126,6 +128,7 @@ class SoDogeTip():
 
     def double_spend_check(self, tx_queue, failover_time):
         while True:
+            bot_logger.logger.info('Check double spend')
             time.sleep(1)
             sent_tx = tx_queue.get()
             bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
