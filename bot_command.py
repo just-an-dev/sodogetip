@@ -23,6 +23,10 @@ def register_user(rpc, msg):
             user_function.add_user(msg.author.name, address)
 
             user_function.add_to_history(msg.author.name, "", "", "", "register")
+
+            # create a backup of wallet
+            rpc.backupwallet(
+                config.backup_wallet_path + "backup_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".dat")
         else:
             bot_logger.logger.warning('Error during register !')
     else:
