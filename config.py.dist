@@ -13,6 +13,7 @@ rpc_config = {
 DATA_PATH = '/data/'
 
 bot_name = "sodogetiptest"
+backup_wallet_path = "/path/of/wallet/backup/"
 
 bot_config = {
     'user_file': 'user_files.json',
