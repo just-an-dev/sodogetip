@@ -134,7 +134,7 @@ class SoDogeTip():
             bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
             try:
                 #tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
-                tx_info = []
+                tx_info = {}
                 tx_info["double_spend"] = True
                 if tx_info["double_spend"] is False:
                     # check we are not in safe mode
