@@ -1,3 +1,4 @@
+import time
 import datetime
 import traceback
 
@@ -11,6 +12,7 @@ import lang
 import re
 import user_function
 import utils
+import dogetipper
 
 
 def register_user(rpc, msg):
@@ -99,7 +101,7 @@ def help_user(rpc, msg):
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
-def withdraw_user(rpc, msg):
+def withdraw_user(rpc, msg, failover_time):
     split_message = msg.body.strip().split()
 
     if user_function.user_exist(msg.author.name):
@@ -115,17 +117,19 @@ def withdraw_user(rpc, msg):
                     username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
-                try:
-                    if crypto.send_to(rpc, sender_address, receiver_address, amount):
-                        user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
-                                                     "withdraw")
-                        value_usd = utils.get_coin_value(amount)
-                        msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
-                            username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
-                            value_usd=str(value_usd)))
+                if time.time() > failover_time + 86400:
+                    send = crypto.send_to(rpc, sender_address, receiver_address, amount)
+                else:
+                    send = crypto.send_to_failover(rpc, sender_address, receiver_address, amount)
 
-                except:
-                    traceback.print_exc()
+                if send:
+                    user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
+                                                 "withdraw")
+                    value_usd = utils.get_coin_value(amount)
+                    msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
+                        username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
+                        value_usd=str(value_usd)))
+
         elif split_message[4] == sender_address:
             msg.reply(lang.message_withdraw_to_self + lang.message_footer)
         else:
@@ -135,7 +139,7 @@ def withdraw_user(rpc, msg):
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
-def tip_user(rpc, reddit, msg):
+def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
     split_message = msg.body.lower().strip().split()
     tip_index = split_message.index(str('+/u/' + config.bot_name))
@@ -165,15 +169,16 @@ def tip_user(rpc, reddit, msg):
 
                     # check user have address before tip
                     if user_function.user_exist(parent_comment.author.name):
-                        txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount)
+                        txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount, tx_queue,
+                                               failover_time)
                         if txid:
                             user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
-                                                         "tip send",txid)
+                                                         "tip send", txid)
                             user_function.add_to_history(parent_comment.author.name, msg.author.name,
                                                          parent_comment.author.name,
                                                          amount,
-                                                         "tip receive",txid)
+                                                         "tip receive", txid)
 
                             bot_logger.logger.info(
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
@@ -234,7 +239,7 @@ def history_user(msg):
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_remove_pending_tip(rpc, reddit):
+def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
     # check if it's not too old & replay tipping
     limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
@@ -249,7 +254,7 @@ def replay_remove_pending_tip(rpc, reddit):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
-                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'])
+                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'], tx_queue, failover_time)
                     user_function.remove_pending_tip(tip['id'])
 
                     value_usd = utils.get_coin_value(tip['amount'])

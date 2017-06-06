@@ -4,6 +4,7 @@ import traceback
 from threading import Thread
 
 import praw
+import requests
 from bitcoinrpc.authproxy import AuthServiceProxy
 from praw.models import Message, Comment
 
@@ -29,8 +30,10 @@ class SoDogeTip():
             rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
             rpc_config['doge_rpc_port']), timeout=120)
 
-    def main(self):
+    def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
+        bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+
         while True:
             try:
                 if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
@@ -76,11 +79,11 @@ class SoDogeTip():
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.withdraw_user(self.rpc_main, msg)
+                            bot_command.withdraw_user(self.rpc_main, msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.rpc_main, self.reddit, msg)
+                            bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
 
                         else:
                             utils.mark_msg_read(self.reddit, msg)
@@ -96,10 +99,10 @@ class SoDogeTip():
                 bot_logger.logger.error('Main Bot loop crashed...')
                 time.sleep(10)
 
-    def process_pending_tip(self):
+    def process_pending_tip(self,tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit)
+            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit, tx_queue, failover_time)
             time.sleep(60)
 
     def anti_spamming_tx(self):
@@ -119,8 +122,26 @@ class SoDogeTip():
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    #amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
+                    # amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
             time.sleep(240)
 
+    def double_spend_check(self, tx_queue, failover_time):
+        while True:
+            bot_logger.logger.info('Check double spend')
+            time.sleep(1)
+            sent_tx = tx_queue.get()
+            bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
+            try:
+                tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
+                if tx_info["double_spend"] is False:
+                    # check we are not in safe mode
+                    if time.time() > failover_time + 86400:
+                        bot_logger.logger.warn('Safe mode Disabled')
+                        failover_time = 0
 
+                elif tx_info["double_spend"] is True:
+                    bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
+                    failover_time = time.time()
+            except:
+                traceback.print_exc()
