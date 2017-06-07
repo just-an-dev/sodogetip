@@ -117,7 +117,7 @@ def withdraw_user(rpc, msg, failover_time):
                     username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
-                if time.time() > failover_time + 86400:
+                if time.time() > int(failover_time.value) + 86400:
                     send = crypto.send_to(rpc, sender_address, receiver_address, amount)
                 else:
                     send = crypto.send_to_failover(rpc, sender_address, receiver_address, amount)
@@ -141,7 +141,7 @@ def withdraw_user(rpc, msg, failover_time):
 
 def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
-    bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     split_message = msg.body.lower().strip().split()
     tip_index = split_message.index(str('+/u/' + config.bot_name))
