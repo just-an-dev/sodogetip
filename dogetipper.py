@@ -35,6 +35,8 @@ class SoDogeTip():
         bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
 
         while True:
+            bot_logger.logger.debug('main failover_time : %s' % failover_time)
+
             try:
                 if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
                     os.makedirs(DATA_PATH + bot_config['user_history_path'])
@@ -128,6 +130,8 @@ class SoDogeTip():
 
     def double_spend_check(self, tx_queue, failover_time):
         while True:
+            bot_logger.logger.debug('last failover_time : %s' % failover_time)
+
             bot_logger.logger.info('Check double spend')
             time.sleep(1)
             sent_tx = tx_queue.get()
