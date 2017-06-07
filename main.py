@@ -21,12 +21,12 @@ if __name__ == "__main__":
 
             Bot = SoDogeTip()
 
-            thread_master = Thread(target=Bot.main, args=(tx_queue, failover_time))
-            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip,args=(tx_queue, failover_time))
+            thread_master = Thread(target=Bot.main, args=(tx_queue, failover_time,))
+            thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip,args=(tx_queue, failover_time,))
             thread_anti_spamming_tx = Thread(name='anti_spam', target=Bot.anti_spamming_tx)
             thread_double_spend_check = Thread(name='double_spend_check',
                                                target=Bot.double_spend_check,
-                                               args=(tx_queue, failover_time))
+                                               args=(tx_queue, failover_time,))
 
             thread_master.start()
             thread_pending_tip.start()
