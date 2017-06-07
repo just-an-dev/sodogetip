@@ -143,6 +143,7 @@ def withdraw_user(rpc, msg, failover_time):
 
 def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
+    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     # create an Tip
     tip = models.Tip()
@@ -159,32 +160,32 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
         # update receiver
         tip.set_receiver(msg.parent().author.name)
+
         if user_function.user_exist(tip.sender) and (tip.sender != tip.receiver):
 
-                # check we have enough
-                user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-                user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+            # check we have enough
+            user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+            user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
 
-                user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
-                bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
+            user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
+            bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
-                # in failover we need to use only user_balance
-                if int(tip.amount) >= user_spendable_balance:
-                    # not enough for tip
-                    if int(tip.amount) < user_pending_balance:
-                        msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
-                    else:
-                        bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
-                            msg.author.name, str(tip.amount), str(user_balance)))
-                        msg.reply(Template(lang.message_balance_low_tip).render(username=msg.author.name))
+            # in failover we need to use only user_balance
+            if int(tip.amount) >= user_spendable_balance:
+                # not enough for tip
+                if int(tip.amount) < user_pending_balance:
+                    msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
                 else:
+                    bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
+                        msg.author.name, str(tip.amount), str(user_balance)))
+                    msg.reply(Template(lang.message_balance_low_tip).render(username=msg.author.name))
+            else:
 
                 value_usd = utils.get_coin_value(tip.amount)
-
                 # check user have address before tip
                 if user_function.user_exist(tip.receiver):
                     tip.tx_id = crypto.tip_user(rpc, tip.sender, tip.receiver, tip.amount, tx_queue,
-                                               failover_time)
+                                                failover_time)
                     if tip.tx_id:
                         tip.finish = True
 
