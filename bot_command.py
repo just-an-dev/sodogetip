@@ -147,7 +147,6 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     if split_message[tip_index] == str('+/u/' + config.bot_name) and split_message[tip_index + 2] == 'doge':
 
         amount = split_message[tip_index + 1]
-        value_usd = utils.get_coin_value(amount)
 
         if utils.check_amount_valid(amount):
             parent_comment = msg.parent()
@@ -166,6 +165,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                             msg.author.name, str(amount), str(user_balance)))
                         msg.reply(Template(lang.message_balance_low_tip).render(username=msg.author.name))
                 else:
+
+                    value_usd = utils.get_coin_value(amount)
 
                     # check user have address before tip
                     if user_function.user_exist(parent_comment.author.name):
