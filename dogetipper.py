@@ -32,7 +32,6 @@ class SoDogeTip():
 
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
-        bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
         while True:
             bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
@@ -130,8 +129,6 @@ class SoDogeTip():
 
     def double_spend_check(self, tx_queue, failover_time):
         while True:
-            bot_logger.logger.debug('last failover_time : %s' % str(failover_time.value))
-
             bot_logger.logger.info('Check double spend')
             time.sleep(1)
             sent_tx = tx_queue.get()

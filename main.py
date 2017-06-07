@@ -31,12 +31,12 @@ if __name__ == "__main__":
 
             thread_master.start()
             thread_pending_tip.start()
-            thread_anti_spamming_tx.start()
+            #thread_anti_spamming_tx.start()
             thread_double_spend_check.start()
 
             thread_master.join()
             thread_pending_tip.join()
-            thread_anti_spamming_tx.join()
+            #thread_anti_spamming_tx.join()
             thread_double_spend_check.join()
 
             bot_logger.logger.error('All bot task finished ...')
