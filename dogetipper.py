@@ -32,10 +32,10 @@ class SoDogeTip():
 
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
-        bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+        bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
         while True:
-            bot_logger.logger.debug('main failover_time : %s' % failover_time)
+            bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
                 if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
@@ -130,7 +130,7 @@ class SoDogeTip():
 
     def double_spend_check(self, tx_queue, failover_time):
         while True:
-            bot_logger.logger.debug('last failover_time : %s' % failover_time)
+            bot_logger.logger.debug('last failover_time : %s' % str(failover_time.value))
 
             bot_logger.logger.info('Check double spend')
             time.sleep(1)
@@ -142,13 +142,13 @@ class SoDogeTip():
                 tx_info["double_spend"] = True
                 if tx_info["double_spend"] is False:
                     # check we are not in safe mode
-                    if time.time() > failover_time + 86400:
+                    if time.time() > int(failover_time.value) + 86400:
                         bot_logger.logger.warn('Safe mode Disabled')
-#                        failover_time = 0
+                        failover_time.value = 0
 
                 elif tx_info["double_spend"] is True:
                     bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
-                    failover_time = time.time()
+                    failover_time.value = int(time.time())
             except:
                 traceback.print_exc()
-            bot_logger.logger.debug('failover_time : %s' % failover_time)
+            bot_logger.logger.debug('failover_time : %s' % str(failover_time.value))

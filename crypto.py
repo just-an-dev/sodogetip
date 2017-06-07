@@ -116,7 +116,7 @@ def tip_user(rpc, sender_user, receiver_user, amount_tip, tx_queue, failover_tim
     sender_address = user_function.get_user_address(sender_user)
     receiver_address = user_function.get_user_address(receiver_user)
 
-    if time.time() > failover_time + 86400:
+    if time.time() > int(failover_time.value) + 86400:
         bot_logger.logger.info("tip send in normal mode")
         try:
             return send_to(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)

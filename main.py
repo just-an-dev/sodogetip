@@ -1,5 +1,6 @@
 import traceback
 from Queue import Queue
+from multiprocessing import Value
 from threading import Thread
 
 import time
@@ -17,8 +18,7 @@ if __name__ == "__main__":
     while True:
         try:
             tx_queue = Queue()
-            failover_time = 0
-            global failover_time
+            failover_time = Value('i', 0)
 
             Bot = SoDogeTip()
 
