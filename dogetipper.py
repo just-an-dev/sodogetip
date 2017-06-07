@@ -134,9 +134,7 @@ class SoDogeTip():
             sent_tx = tx_queue.get()
             bot_logger.logger.info('Check double spend on tx %s' % sent_tx)
             try:
-                #tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
-                tx_info = {}
-                tx_info["double_spend"] = True
+                tx_info = requests.get(config.url_get_value['blockcypher'] + sent_tx).json()
                 if tx_info["double_spend"] is False:
                     # check we are not in safe mode
                     if time.time() > int(failover_time.value) + 86400:
