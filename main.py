@@ -18,6 +18,7 @@ if __name__ == "__main__":
         try:
             tx_queue = Queue()
             failover_time = 0
+            global failover_time
 
             Bot = SoDogeTip()
 

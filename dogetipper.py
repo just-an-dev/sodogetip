@@ -144,7 +144,7 @@ class SoDogeTip():
                     # check we are not in safe mode
                     if time.time() > failover_time + 86400:
                         bot_logger.logger.warn('Safe mode Disabled')
-                        failover_time = 0
+#                        failover_time = 0
 
                 elif tx_info["double_spend"] is True:
                     bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
