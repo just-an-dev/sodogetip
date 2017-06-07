@@ -17,6 +17,7 @@ link_balance = "https://www.reddit.com/message/compose?to=" + config.bot_name + 
 
 message_register_success = ("Hello /u/{{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: {{ address }}" \
+                           "\n\n**This bot is \"on chain\" so when you tip some mining fee are added ! **" \
                            "\n\nWondering how to get tipped Dogecoins? Participate in /r/dogecoin!" \
                            "\n\nIf you need help using me (such as tipping people), you can send me a +help message [here](" + link_help + ") to receive a getting started guide." \
                            "\n\n__DID YOU KNOW?:__ Unlike other tip bots, this one is non-profit and maintained by the community. Checkmate!")
@@ -35,19 +36,23 @@ message_already_registered = "You are already registered!"
 message_balance_low_withdraw = ("Hello /u/{{ username }}! It seems your balance of __Ð{{ user_balance }}__ is too low for this withdraw amount of __Ð{{ amount }}__." \
                                         "\n\n[Want to try again?](" + link_withdraw + ")")
 
-message_account_details = ("\n\nHere are your account details /u/{{ username }}!" \
+message_account_details = "\n\nHere are your account details /u/{{ username }}!" \
                             "\n\n^very ^info | &nbsp;" \
                             "\n---|---" \
                             "\n^Your ^balance | ^{{ balance }} ^doge ^(${{ balance_value_usd }})" \
-                            "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})"
-                            "\n^Your ^spendable ^balance | ^{{ spendablebalance }} ^doge (${{ spendable_value_usd }})"
+                            "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})" \
+                            "\n^Your ^spendable ^balance | ^{{ spendablebalance }} ^doge (${{ spendable_value_usd }})" \
                             "\n^Deposit ^address | ^{{ address }}" \
-                            "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")")
+                            "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")" \
+                            "\n\n**This bot is \"on chain\" so when you tip some mining fee are added ! **"
+
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
-message_balance = ("Hello /u/{{ username }}!" \
-                           "\n\nYour confirmed balance is: {{ balance }} (${{ balance_value_usd }})" \
-                           "\n\nYour unconfirmed balance is: {{ pendingbalance }} (${{ pending_value_usd }})"
-                           "\n\nYour spendable balance is: {{ spendablebalance }} (${{ spendable_value_usd}})")
+message_balance = "Hello /u/{{ username }}!" \
+                  "\n\nYour confirmed balance is: {{ balance }} (${{ balance_value_usd }})" \
+                  "\n\nYour unconfirmed balance is: {{ pendingbalance }} (${{ pending_value_usd }})" \
+                  "\n\nYour spendable balance is: {{ spendablebalance }} (${{ spendable_value_usd}})" \
+                  "\n\n**This bot is \"on chain\" so when you tip some mining fee are added ! **"
+
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGETEST/{{ txid }})")
 message_withdraw = ("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
