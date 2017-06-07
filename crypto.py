@@ -16,10 +16,24 @@ def init_passphrase():
     wallet_passphrase = getpass.getpass("wallet passphrase : ")
 
 
+def balance_user(rpc, msg, failover_time):
+    if user_function.user_exist(msg.author.name):
+        if time.time() > int(failover_time.value) + 86400:
+            # not in safe mode
+            balance = get_user_confirmed_balance(rpc, msg.author.name)
+            spendable_balance = get_user_spendable_balance(rpc, msg.author.name) + balance
+        else:
+            # we are in safe mode
+            spendable_balance = get_user_confirmed_balance(rpc, msg.author.name)
+
+    return spendable_balance
+
+
 def get_user_spendable_balance(rpc, user):
     # spendable_balance is the confirmed balance and the unconfirmed balance of
     # transactions that the bot has generated, but not the unconfirmed balance of
     # transactions originating from a wallet address that does not belong to the bot
+
     unspent_amounts = []
     address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(0, 0, [address])
