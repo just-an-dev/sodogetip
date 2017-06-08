@@ -107,6 +107,7 @@ def withdraw_user(rpc, msg, failover_time):
     if user_function.user_exist(msg.author.name):
         sender_address = user_function.get_user_address(msg.author.name)
         amount = split_message[1]
+        print(amount)
         user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
         if utils.check_amount_valid(amount) and split_message[4] != sender_address:
@@ -148,8 +149,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
     if split_message[tip_index] == str('+/u/' + config.bot_name) and split_message[tip_index + 2] == 'doge':
 
-        amount = split_message[tip_index + 1]
-
+        amount = float(split_message[tip_index + 1])
+        amount = round(amount-0.5)
         if utils.check_amount_valid(amount):
             parent_comment = msg.parent()
             if user_function.user_exist(msg.author.name) and (msg.author.name != parent_comment.author.name):
@@ -162,9 +163,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                 bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
                 # in failover we need to use only user_balance
-                if int(amount) >= user_spendable_balance:
+                if amount >= float(user_spendable_balance):
                     # not enough for tip
-                    if int(amount) < user_pending_balance:
+                    if amount < float(user_pending_balance):
                         msg.reply(Template(lang.message_balance_pending_tip).render(username=msg.author.name))
                     else:
                         bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
@@ -192,7 +193,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                             # if user have 'verify' in this command he will have confirmation
                             if split_message.count('verify') or int(amount) >= 1000:
                                 msg.reply(Template(lang.message_tip).render(
-                                    sender=msg.author.name, receiver=parent_comment.author.name, amount=str(amount),
+                                    sender=msg.author.name, receiver=parent_comment.author.name, amount=str(int(amount)),
                                     value_usd=str(value_usd), txid=txid
                                 ))
                     else:
