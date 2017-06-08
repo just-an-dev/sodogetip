@@ -160,11 +160,11 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         # update receiver
         tip.set_receiver(msg.parent().author.name)
 
-        if user_function.user_exist(tip.sender) and (tip.sender != tip.receiver):
+        if user_function.user_exist(tip.sender.username) and (tip.sender.username != tip.receiver.username):
 
             # check we have enough
-            user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-            user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+            user_balance = crypto.get_user_confirmed_balance(rpc, tip.sender.username)
+            user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, tip.sender.username)
 
             user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
             bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
@@ -183,60 +183,60 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                 value_usd = utils.get_coin_value(tip.amount)
                 # check user have address before tip
                 if user_function.user_exist(tip.receiver):
-                    tip.tx_id = crypto.tip_user(rpc, tip.sender, tip.receiver, tip.amount, tx_queue, failover_time)
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender.username, tip.receiver.username, tip.amount, tx_queue, failover_time)
                     if tip.tx_id:
-                        bot_logger.logger.info('%s tip %s to %s' % (tip.sender, str(tip.amount), tip.receiver))
+                        bot_logger.logger.info('%s tip %s to %s' % (tip.sender.username, str(tip.amount), tip.receiver.username))
                         tip.finish = True
 
                         # add to sender history
-                        user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
-                                                     tip.amount,
+                        user_function.add_to_history(tip.sender.username, tip.sender.username, tip.receiver.username,
+                                                     tip.amount.username,
                                                      "tip send", tip.tx_id)
 
                         # add to receiver history
-                        user_function.add_to_history(tip.receiver, tip.sender,
-                                                     tip.receiver,
+                        user_function.add_to_history(tip.receiver.username, tip.sender.username,
+                                                     tip.receiver.username,
                                                      tip.amount,
                                                      "tip receive", tip.tx_id)
 
                         # if user have 'verify' in this command he will have confirmation
                         if tip.verify:
                             msg.reply(Template(lang.message_tip).render(
-                                sender=tip.sender, receiver=tip.receiver, amount=str(tip.amount),
+                                sender=tip.sender.username, receiver=tip.receiver.username, amount=str(tip.amount),
                                 value_usd=str(value_usd), txid=tip.tx_id
                             ))
                 else:
                     bot_logger.logger.info('user %s not registered' % tip.receiver)
 
-                    user_function.save_unregistered_tip(tip.sender, tip.receiver, tip.amount,
+                    user_function.save_unregistered_tip(tip.sender.username, tip.receiver.username, tip.amount,
                                                         msg.fullname)
 
-                    msg.reply(Template(lang.message_recipient_register).render(username=tip.receiver))
+                    msg.reply(Template(lang.message_recipient_register).render(username=tip.receiver.username))
 
                     # send MP to user who has been tipped and haven't account
-                    reddit.redditor(tip.receiver).message(
+                    reddit.redditor(tip.receiver.username).message(
                         Template(
                             lang.message_recipient_need_register_title).render(amount=str(tip.amount)),
                         Template(
                             lang.message_recipient_need_register_message).render(
-                            username=tip.receiver, sender=tip.sender, amount=str(tip.amount),
+                            username=tip.receiver.username, sender=tip.sender.username, amount=str(tip.amount),
                             value_usd=str(value_usd)))
 
                 # add to sender history
-                user_function.add_to_history(tip.sender, tip.sender, tip.receiver,
+                user_function.add_to_history(tip.sender.username, tip.sender.username, tip.receiver,
                                              tip.amount,
                                              "tip send", tip.tx_id)
 
                 # add to receiver history
-                user_function.add_to_history(tip.receiver, tip.sender,
-                                             tip.receiver,
+                user_function.add_to_history(tip.receiver.username, tip.sender.username,
+                                             tip.receiver.username,
                                              tip.amount,
                                              "tip receive", tip.tx_id)
 
-        elif user_function.user_exist(tip.sender) and (tip.sender == tip.receiver):
-            msg.reply(Template(lang.message_recipient_self).render(username=tip.sender))
+        elif user_function.user_exist(tip.sender.username) and (tip.sender.username == tip.receiver.username):
+            msg.reply(Template(lang.message_recipient_self).render(username=tip.sender.username))
         else:
-            msg.reply(Template(lang.message_need_register).render(username=tip.sender))
+            msg.reply(Template(lang.message_need_register).render(username=tip.sender.username))
     else:
         bot_logger.logger.info(lang.message_invalid_amount)
         msg.reply(lang.message_invalid_amount)
