@@ -26,23 +26,32 @@ def create_unregistered_tip_storage():
 
 def get_coin_value(balance):
     try:
-        c_currency = requests.get(url_get_value['coincap'])
+        c_currency = requests.get(url_get_value['cryptonator'])
         jc_currency = c_currency.json()
-        bot_logger.logger.info('value is $%s' % str(jc_currency['usdPrice']))
+        bot_logger.logger.info('value is $%s' % str(jc_currency['ticker']['price']))
         usd_currency = float(
-            "{0:.2f}".format(int(balance) * float(jc_currency['usdPrice'])))
+            "{0:.2f}".format(
+                int(balance) * float(jc_currency['ticker']['price'])))
         return usd_currency
     except:
         try:
-            c_currency = requests.get(url_get_value['cryptocompare'])
+            c_currency = requests.get(url_get_value['coincap'])
             jc_currency = c_currency.json()
-            bot_logger.logger.info('value is $%s' % str(jc_currency['Data'][0]['Price']))
+            bot_logger.logger.info('value is $%s' % str(jc_currency['usdPrice']))
             usd_currency = float(
-                "{0:.2f}".format(
-                    int(balance) * float(jc_currency['Data'][0]['Price'])))
+                "{0:.2f}".format(int(balance) * float(jc_currency['usdPrice'])))
             return usd_currency
         except:
-            traceback.print_exc()
+            try:
+                c_currency = requests.get(url_get_value['cryptocompare'])
+                jc_currency = c_currency.json()
+                bot_logger.logger.info('value is $%s' % str(jc_currency['Data'][0]['Price']))
+                usd_currency = float(
+                    "{0:.2f}".format(
+                        int(balance) * float(jc_currency['Data'][0]['Price'])))
+                return usd_currency
+            except:
+                traceback.print_exc()
 
 
 def check_amount_valid(amount):
