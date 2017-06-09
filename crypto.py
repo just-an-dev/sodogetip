@@ -125,7 +125,7 @@ def get_user_unconfirmed_balance(rpc, user):
 
 
 def tip_user(rpc, sender_user, receiver_user, amount_tip, tx_queue, failover_time):
-    bot_logger.logger.debug("failover_time : %s " % (str(failover_time)))
+    bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     sender_address = user_function.get_user_address(sender_user)
     receiver_address = user_function.get_user_address(receiver_user)
