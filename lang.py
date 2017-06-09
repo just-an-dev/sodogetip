@@ -54,7 +54,7 @@ message_balance = "Hello /u/{{ username }}!" \
                   "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! "
 
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
-message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGETEST/{{ txid }})")
+message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGE/{{ txid }})")
 message_withdraw = ("__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw_to_self = ("__^[such ^error]__: ^You ^cannot ^withdraw ^to ^your ^own ^bot ^address")
 message_footer = ("\n\n*****" \
