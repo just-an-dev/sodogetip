@@ -2,7 +2,7 @@
 Tip a user: `+/u/sodogetip 10 doge`
 
 ## Commands 
-To submit the following commands, send them in a PM to a sodogetip instance, the links will send a PM to /u/sodogetiptest
+To submit the following commands, send them in a PM to a sodogetip instance, the links will send a PM to /u/sodogetip
 
 [subject '+register' and body '+register'](https://www.reddit.com/message/compose?to=sodogetip&subject=%2Bregister&message=%2Bregister):
     => create an account
