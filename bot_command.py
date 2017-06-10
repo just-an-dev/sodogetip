@@ -281,6 +281,7 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
+
                     txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'], tx_queue, failover_time)
                     user_function.remove_pending_tip(tip['id'])
 
@@ -302,3 +303,19 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                 user_function.remove_pending_tip(tip['id'])
     else:
         bot_logger.logger.info("no pending tipping")
+
+
+def donate(rpc, reddit, msg, tx_queue, failover_time):
+    if user_function.user_exist(msg.author.name):
+        split_message = msg.body.lower().strip().split()
+
+        donate_index = split_message.index('+donate')
+        amount = split_message[donate_index + 1]
+        if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
+            tip_user(rpc, msg.author.name, config.bot_name, amount, tx_queue, failover_time)
+        else:
+            bot_logger.logger.info(lang.message_invalid_amount)
+            reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % msg.author.name)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
