@@ -51,12 +51,6 @@ def get_user_spendable_balance(rpc, user):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
-    current_balance = rpc.getbalance("reddit-%s" % user)
-    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
-
-    if int(current_balance) != int(sum(unspent_amounts)):
-        bot_logger.logger.warn("maybe an error !")
-
     # check if user have pending tips
     pending_tips = user_function.get_balance_unregistered_tip(user)
 
@@ -70,6 +64,7 @@ def get_user_confirmed_balance(rpc, user):
 
     address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(1, 99999999999, [address])
+
     # in case of no un-spent transaction
     if len(list_unspent) == 0:
         return 0
@@ -78,12 +73,6 @@ def get_user_confirmed_balance(rpc, user):
         unspent_amounts.append(list_unspent[i]['amount'])
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
-
-    current_balance = rpc.getbalance("reddit-%s" % user)
-    bot_logger.logger.debug("current_balance %s" % (str(int(current_balance))))
-
-    if int(current_balance) != int(sum(unspent_amounts)):
-        bot_logger.logger.warn("maybe an error !")
 
     # check if user have pending tips
     pending_tips = user_function.get_balance_unregistered_tip(user)
@@ -98,6 +87,7 @@ def get_user_unconfirmed_balance(rpc, user):
 
     address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(0, 0, [address])
+
     # in case of no unconfirmed transactions
     if len(list_unspent) == 0:
         return 0
