@@ -29,6 +29,10 @@ class Tip(object):
         # Group 5 is either blank(no verify message) or verify(verify message)
         self.verify = True if (m.group(5) == "verify") else False
 
+        #if self.amount is 'all':
+            # todo : get user balance
+            #user_utils.get_balance_confirmed(self.sender)
+
         # to support any type of randomXXX amount
         if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
             self.amount = randint(1, int(self.amount[:6]))
