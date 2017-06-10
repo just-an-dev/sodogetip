@@ -37,15 +37,7 @@ class SoDogeTip():
             bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
-                if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
-                    os.makedirs(DATA_PATH + bot_config['user_history_path'])
-
-                # create file if not exist (user storage)
-                utils.create_user_storage()
-
-                # create file if not exist (tip unregistered user )
-                utils.create_unregistered_tip_storage()
-
+                
                 for msg in self.reddit.inbox.unread(limit=None):
 
                     if (type(msg) is not Message) and (type(msg) is not Comment):
