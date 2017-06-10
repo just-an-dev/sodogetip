@@ -49,17 +49,6 @@ def get_user_spendable_balance(rpc, user):
         if vin['vout'][0]['scriptPubKey']['addresses'][0] in user_function.get_users().values():
             unspent_amounts.append(list_unspent[i]['amount'])
 
-            # for item in range(0,len(vin['vout']),1):
-            # for addr in range(0,len(vin['vout'][item]['scriptPubKey']['addresses']),1):
-            # if vin['vout'][item]['scriptPubKey']['addresses'][addr] in user_function.get_users().values():
-            # continue
-            # else:
-            # list_unspent = rpc.listunspent(1, 99999999999, [address])
-            # continue
-
-            # for i in range(0, len(list_unspent), 1):
-            # unspent_amounts.append(list_unspent[i]['amount'])
-
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
     current_balance = rpc.getbalance("reddit-%s" % user)
