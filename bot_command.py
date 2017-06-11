@@ -312,7 +312,10 @@ def donate(rpc, reddit, msg, tx_queue, failover_time):
         donate_index = split_message.index('+donate')
         amount = split_message[donate_index + 1]
         if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
+
             tip_user(rpc, msg.author.name, config.bot_name, amount, tx_queue, failover_time)
+
+            history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
