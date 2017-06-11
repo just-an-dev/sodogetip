@@ -148,17 +148,15 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
     # create an Tip
     tip = models.Tip()
-    tip.parse_message(msg.body, rpc)
 
     # update sender
     tip.set_sender(msg.author.name)
 
+    # parse message
+    tip.parse_message(msg.body, rpc)
+
     # check amount of tip
-    if utils.check_amount_valid(tip.amount):
-        # if tip is over 1000 doge set verify
-        if int(tip.amount) >= 1000:
-            tip.verify = True
-    else:
+    if not utils.check_amount_valid(tip.amount):
         # invalid amount
         bot_logger.logger.info(lang.message_invalid_amount)
         reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)

@@ -2,6 +2,7 @@ import re
 from random import randint
 
 import config
+import crypto
 import user_function
 import utils
 
@@ -29,17 +30,6 @@ class Tip(object):
         # Group 5 is either blank(no verify message) or verify(verify message)
         self.verify = True if (m.group(5) == "verify") else False
 
-        #if self.amount is 'all':
-            # todo : get user balance
-            #user_utils.get_balance_confirmed(self.sender)
-
-        # to support any type of randomXXX amount
-        if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
-            self.amount = randint(1, int(self.amount[:6]))
-
-        # here amount is numeric, make magic to support not whole tips
-        self.amount = round(self.amount - 0.5)
-
         # to support send tip to username
         if '/u/' in self.receiver:
             self.receiver = User(self.receiver[:3])
@@ -50,6 +40,22 @@ class Tip(object):
         elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid']:
             self.receiver = User("address" + self.receiver)
             self.receiver.address = self.receiver
+
+        # to support any type of randomXXX amount
+        if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
+            self.amount = randint(1, int(self.amount[:6]))
+
+        # here amount is numeric, make magic to support not whole tips
+        self.amount = round(self.amount - 0.5)
+
+        # if amount is all, get balance
+        if self.amount is 'all':
+            # get user balance
+            self.amount = crypto.get_user_spendable_balance(rpc, self.sender.address)
+
+        # if tip is over 1000 doge set verify
+        if int(self.amount) >= 1000:
+            self.verify = True
 
     def set_sender(self, sender_username):
         self.sender = User(sender_username)
@@ -69,3 +75,4 @@ class User(object):
 
         if user_function.user_exist(self.username):
             self.address = user_function.get_user_address(self.username)
+
