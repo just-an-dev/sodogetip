@@ -63,7 +63,7 @@ def balance_user(rpc, msg):
 
         history.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
-        bot_logger.logger.info('user %s not registered ' % msg.author.name)
+        bot_logger.logger.info('user %s not registered (command : balance) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
@@ -87,6 +87,7 @@ def info_user(rpc, msg):
             address=address))
 
     else:
+        bot_logger.logger.info('user %s not registered (command : info) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
@@ -96,6 +97,7 @@ def help_user(rpc, msg):
         msg.reply(Template(lang.message_help + lang.message_footer).render(
             username=msg.author.name, address=address))
     else:
+        bot_logger.logger.info('user %s not registered (command : help) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
@@ -259,7 +261,7 @@ def history_user(msg):
 
         msg.reply(Template(lang.message_history + history_table + lang.message_footer).render(username=msg.author.name))
     else:
-        bot_logger.logger.info('user %s not registered ' % msg.author.name)
+        bot_logger.logger.info('user %s not registered (command : history) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
