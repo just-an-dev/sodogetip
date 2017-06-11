@@ -82,7 +82,6 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
                             # msg.reply('Currently not supported')
                             bot_logger.logger.info('Currently not supported')
-                            utils.mark_msg_read(self.reddit, msg)
 
                 # to not explode rate limit :)
                 bot_logger.logger.info('Make an pause !')
@@ -105,18 +104,22 @@ class SoDogeTip():
             # get list of account
             list_account = user_function.get_users()
             for account, address in list_account.items():
-                time.sleep(1)  # don't flood daemon
+                # don't flood rpc daemon
+                time.sleep(1)
                 list_tx = self.rpc_antispam.listunspent(1, 99999999999, [address])
-                unspent_amounts = []
-                for i in range(0, len(list_tx), 1):
-                    unspent_amounts.append(list_tx[i]['amount'])
-                    if i > 200:
-                        break
 
                 if len(list_tx) > int(bot_config['spam_limit']):
+                    unspent_amounts = []
+                    for i in range(0, len(list_tx), 1):
+                        unspent_amounts.append(list_tx[i]['amount'])
+                        # limits to 200 transaction to not explode timeout rpc
+                        if i > 200:
+                            break
+
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    # amount = crypto.get_user_confirmed_balance(self.rpc_antispam, account)
                     crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
+
+            # wait a bit before re-scan account
             time.sleep(240)
 
     def double_spend_check(self, tx_queue, failover_time):
@@ -134,8 +137,10 @@ class SoDogeTip():
                         failover_time.value = 0
 
                 elif tx_info["double_spend"] is True:
+                    # update time until we are in safe mode
                     bot_logger.logger.warn('Double spend detected on tx %s' % sent_tx)
                     failover_time.value = int(time.time())
             except:
                 traceback.print_exc()
+
             bot_logger.logger.debug('failover_time : %s' % str(failover_time.value))

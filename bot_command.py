@@ -8,6 +8,7 @@ from praw.models import Comment
 import bot_logger
 import config
 import crypto
+import history
 import lang
 import re
 import user_function
@@ -24,7 +25,7 @@ def register_user(rpc, msg):
                                                                                      address=address))
             user_function.add_user(msg.author.name, address)
 
-            user_function.add_to_history(msg.author.name, "", "", "", "register")
+            history.add_to_history(msg.author.name, "", "", "", "register")
 
             # create a backup of wallet
             rpc.backupwallet(
@@ -60,7 +61,7 @@ def balance_user(rpc, msg):
                                                                         spendablebalance=str(spendable_balance),
                                                                         spendable_value_usd=str(spendable_value_usd)))
 
-        user_function.add_to_history(msg.author.name, "", "", balance, "balance")
+        history.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
         bot_logger.logger.info('user %s not registered ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
@@ -122,7 +123,7 @@ def withdraw_user(rpc, msg, failover_time):
                     send = crypto.send_to_failover(rpc, sender_address, receiver_address, amount)
 
                 if send:
-                    user_function.add_to_history(msg.author.name, sender_address, receiver_address, amount,
+                    history.add_to_history(msg.author.name, sender_address, receiver_address, amount,
                                                  "withdraw")
                     value_usd = utils.get_coin_value(amount)
                     msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
@@ -178,10 +179,10 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                         txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount, tx_queue,
                                                failover_time)
                         if txid:
-                            user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
+                            history.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                          amount,
                                                          "tip send", txid)
-                            user_function.add_to_history(parent_comment.author.name, msg.author.name,
+                            history.add_to_history(parent_comment.author.name, msg.author.name,
                                                          parent_comment.author.name,
                                                          amount,
                                                          "tip receive", txid)
@@ -197,10 +198,10 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount,
                                                             msg.fullname)
-                        user_function.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
+                        history.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
                                                      amount,
                                                      "tip send", False)
-                        user_function.add_to_history(parent_comment.author.name, msg.author.name,
+                        history.add_to_history(parent_comment.author.name, msg.author.name,
                                                      parent_comment.author.name,
                                                      amount,
                                                      "tip receive", False)
@@ -225,7 +226,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
 def history_user(msg):
     if user_function.user_exist(msg.author.name):
-        data = user_function.get_user_history(msg.author.name)
+        data = history.get_user_history(msg.author.name)
         history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
         history_table += "---|---|---|---|:-:|:-:\n"
         for tip in data:
