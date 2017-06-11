@@ -60,3 +60,19 @@ def replay_pending_tip(reddit, tx_queue, failover_time):
             models.HistoryStorage.update_tip(tip.receiver.username, tip)
     else:
         bot_logger.logger.info("no pending tipping")
+
+
+def enablemultisig_1of2(rpc, reddit, msg, tx_queue, failover_time):
+    if user_function.user_exist(msg.author.name):
+        split_message = msg.body.lower().strip().split()
+        enablemultisig_index = split_message.index('+enablemultisig')
+        if split_message[enablemultisig_index + 1] == '1of2':
+            userpubkey = split_message[enablemultisig_index + 2]
+            address = user_function.get_user_address(msg.author.name)
+            botpubkey = rpc.validateaddress(address)
+            try:
+                multisig = rpc.createmultisig(1, [str(botpubkey['pubkey']), str(split_message[enablemultisig_index + 2])])
+            except:
+                bot_logger.logger.info('user %s entered invalid pubkey (command : enablemultisig_1of2) ' % msg.author.name)
+            rpc.importaddress(multisig["address"], "redditmulti-%s" % msg.author.name, False)
+            print(multisig)
