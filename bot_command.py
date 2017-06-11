@@ -202,6 +202,10 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         # ok we have enough for tip
         value_usd = utils.get_coin_value(tip.amount)
 
+        # add tip to history of sender & receiver
+        history.add_to_history_tip(msg.author.name, "tip send", tip)
+        history.add_to_history_tip(tip.receiver.username, "tip receive", tip)
+
         # check user have address before tip
         if user_function.user_exist(tip.receiver.username):
             tip.txid = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue, failover_time)
@@ -216,6 +220,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                         amount=str(int(tip.amount)),
                         value_usd=str(value_usd), txid=tip.txid
                     ))
+
         else:
             bot_logger.logger.info('user %s not registered' % tip.receiver.username)
 
@@ -234,14 +239,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     username=tip.receiver.username, sender=msg.author.name, amount=str(tip.amount),
                     value_usd=str(value_usd)))
 
-        # add tip to history of sender & receiver
-        history.add_to_history(msg.author.name, msg.author.name, tip.receiver.username,
-                               tip.amount,
-                               "tip send", tip.txid)
-        history.add_to_history(tip.receiver.username, msg.author.name,
-                               tip.receiver.username,
-                               tip.amount,
-                               "tip receive", tip.txid)
+        # update tip status
+        history.update_tip(msg.author.name,tip)
+        history.update_tip(tip.receiver.username,tip)
 
 
 def history_user(msg):
@@ -256,7 +256,7 @@ def history_user(msg):
                 str_finish = "Successful"
 
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
-                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f'), tip['sender'], tip['receiver'],
+                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'), tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str_finish)
 
         msg.reply(Template(lang.message_history + history_table + lang.message_footer).render(username=msg.author.name))
