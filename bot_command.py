@@ -155,6 +155,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     # parse message
     tip.parse_message(msg.body, rpc)
 
+    # set reddit message id
+    tip.message_fullname = msg.fullname
+
     # check amount of tip
     if not utils.check_amount_valid(tip.amount):
         # invalid amount
@@ -216,8 +219,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         else:
             bot_logger.logger.info('user %s not registered' % tip.receiver.username)
 
-            user_function.save_unregistered_tip(msg.author.name, tip.receiver.username, tip.amount,
-                                                msg.fullname)
+            user_function.save_unregistered_tip(tip)
 
             # send message to sender of tip
             reddit.redditor(msg.author.name).message('tipped user not registered',

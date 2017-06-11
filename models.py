@@ -1,5 +1,7 @@
 import re
-from random import randint
+from random import randint, random
+
+import datetime
 
 import config
 import crypto
@@ -17,6 +19,11 @@ class Tip(object):
         self.sender = None
         self.finish = False
         self.tx_id = None
+
+        self.id = random.randint(0, 99999999)
+        # reddit message id
+        self.message_fullname = None,
+        self.time = datetime.datetime.now().isoformat()
 
     def parse_message(self, message_to_parse, rpc):
         p = re.compile('(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s(verify)?')
@@ -75,4 +82,3 @@ class User(object):
 
         if user_function.user_exist(self.username):
             self.address = user_function.get_user_address(self.username)
-

@@ -47,16 +47,16 @@ def get_unregistered_tip():
     return data
 
 
-def save_unregistered_tip(sender, receiver, amount, message_fullname):
-    bot_logger.logger.info("Save tip form %s to %s " % (sender, receiver))
+def save_unregistered_tip(tip):
+    bot_logger.logger.info("Save tip form %s to %s " % (tip.sender.username, tip.receiver.username))
     db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
     db.insert({
-        'id': random.randint(0, 99999999),
-        'amount': amount,
-        'receiver': receiver,
-        'sender': sender,
-        'message_fullname': message_fullname,
-        'time': datetime.datetime.now().isoformat(),
+        'id': tip.id,
+        'amount': tip.amount,
+        'receiver': tip.receiver.username,
+        'sender': tip.sender.username,
+        'message_fullname': tip.message_fullname,
+        'time': tip.time,
     })
     db.close()
 
