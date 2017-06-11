@@ -1,4 +1,7 @@
-# v2.1 - xx/07/2017
+# v2.2 - in progress
+- Add 1of2 multisig
+
+# v2.1 - 15/07/2017
 - Fix issue #78 (clean code - balances)
 - Big restructuring #90
 - Add remind function
