@@ -75,4 +75,4 @@ def enablemultisig_1of2(rpc, reddit, msg, tx_queue, failover_time):
             except:
                 bot_logger.logger.info('user %s entered invalid pubkey (command : enablemultisig_1of2) ' % msg.author.name)
             rpc.importaddress(multisig["address"], "redditmulti-%s" % msg.author.name, False)
-            print(multisig)
+            msg.reply('1 of 2 multisig successfully created.  Your address is : ' + str(multisig["address"]) + '\n\n and your redeemScript is : ' + multisig["redeemScript"])
