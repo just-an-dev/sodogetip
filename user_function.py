@@ -27,6 +27,12 @@ def get_multisig_users():
             data = {}
         return data
 
+def mutisig_enabled(username, type_multisig):
+    db = TinyDB(DATA_PATH + bot_config['multisig_user'])
+    table = db.table(username)
+    User = Query()
+    return table.search(User.type == type_multisig)
+
 def get_unregistered_tip():
     db = TinyDB(config.unregistered_tip_user)
     data = db.all()
