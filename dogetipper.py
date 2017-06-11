@@ -81,6 +81,10 @@ class SoDogeTip:
                             commands.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
+                        elif split_message.count('+enablemultisig') and split_message[1] == '1of2':
+                            bot_command.enablemultisig_1of2(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
+                            utils.mark_msg_read(self.reddit, msg)
+
                         else:
                             utils.mark_msg_read(self.reddit, msg)
                             # msg.reply('Currently not supported')
