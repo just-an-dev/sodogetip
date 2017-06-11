@@ -1,19 +1,36 @@
 import getpass
+import logging
 import time
 import traceback
 
-import logging
+from bitcoinrpc.authproxy import AuthServiceProxy
 
 import bot_logger
 import user_function
-from config import bot_config
-from dogetipper import SoDogeTip
+from config import bot_config, rpc_config
 
 
 def init_passphrase():
     # enter user passphrase
     global wallet_passphrase
     wallet_passphrase = getpass.getpass("wallet passphrase : ")
+
+def check_passphrase():
+    rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
+            rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
+            rpc_config['doge_rpc_port']), timeout=120)
+
+    logging.disable(logging.DEBUG)
+    rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    logging.disable(logging.NOTSET)
+
+    # check
+    wallet_info = rpc.getwalletinfo()
+    if wallet_info['unlocked_until'] < time.time() :
+        exit()
+
+    rpc.walletlock()
+
 
 
 def balance_user(rpc, msg, failover_time):

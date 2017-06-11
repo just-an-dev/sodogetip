@@ -18,6 +18,9 @@ if __name__ == "__main__":
     # get wallet pass phrase from user input
     crypto.init_passphrase()
 
+    # check passphase is good
+    crypto.check_passphrase()
+
     while True:
         try:
             # create directory to store user history
