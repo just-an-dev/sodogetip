@@ -78,6 +78,10 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
 
+                        elif split_message.count('+donate'):
+                            utils.mark_msg_read(self.reddit, msg)
+                            bot_command.donate(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
+
                         else:
                             utils.mark_msg_read(self.reddit, msg)
                             # msg.reply('Currently not supported')
