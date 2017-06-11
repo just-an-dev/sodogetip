@@ -175,18 +175,11 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     value_usd = utils.get_coin_value(amount)
 
                     # check user have address before tip
+                    txid = False
                     if user_function.user_exist(parent_comment.author.name):
                         txid = crypto.tip_user(rpc, msg.author.name, parent_comment.author.name, amount, tx_queue,
                                                failover_time)
                         if txid:
-                            history.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
-                                                         amount,
-                                                         "tip send", txid)
-                            history.add_to_history(parent_comment.author.name, msg.author.name,
-                                                         parent_comment.author.name,
-                                                         amount,
-                                                         "tip receive", txid)
-
                             bot_logger.logger.info(
                                 '%s tip %s to %s' % (msg.author.name, str(amount), parent_comment.author.name))
                             # if user have 'verify' in this command he will have confirmation
@@ -198,13 +191,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     else:
                         user_function.save_unregistered_tip(msg.author.name, parent_comment.author.name, amount,
                                                             msg.fullname)
-                        history.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
-                                                     amount,
-                                                     "tip send", False)
-                        history.add_to_history(parent_comment.author.name, msg.author.name,
-                                                     parent_comment.author.name,
-                                                     amount,
-                                                     "tip receive", False)
+
+
                         bot_logger.logger.info('user %s not registered' % parent_comment.author.name)
                         reddit.redditor(msg.author.name).message('tipped user not registered', Template(lang.message_recipient_register).render(username=parent_comment.author.name))
 
@@ -215,6 +203,15 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                                 lang.message_recipient_need_register_message).render(
                                 username=parent_comment.author.name, sender=msg.author.name, amount=str(amount),
                                 value_usd=str(value_usd)))
+
+                    history.add_to_history(msg.author.name, msg.author.name, parent_comment.author.name,
+                                           amount,
+                                           "tip send", txid)
+                    history.add_to_history(parent_comment.author.name, msg.author.name,
+                                           parent_comment.author.name,
+                                   amount,
+                                   "tip receive", txid)
+
             elif user_function.user_exist(msg.author.name) and (msg.author.name == parent_comment.author.name):
                 reddit.redditor(msg.author.name).message('cannot tip self', Template(lang.message_recipient_self).render(username=msg.author.name))
             else:
