@@ -56,3 +56,15 @@ def get_balance_unregistered_tip(user):
                 pending_tips.append(int(tip['amount']))
 
     return int(sum(pending_tips))
+
+
+def save_multisig(username, multisig):
+    db = TinyDB(DATA_PATH + bot_config['multisig_user'])
+    db.insert({
+        'user': username,
+        'address': multisig['address'],
+        'redeemscript': multisig['redeemScript'],
+        'type': "1of2",
+        'enabled': True,
+    })
+    db.close()

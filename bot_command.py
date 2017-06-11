@@ -72,6 +72,7 @@ def enablemultisig_1of2(rpc, reddit, msg, tx_queue, failover_time):
             botpubkey = rpc.validateaddress(address)
             try:
                 multisig = rpc.createmultisig(1, [str(botpubkey['pubkey']), str(split_message[enablemultisig_index + 2])])
+                user_function.save_multisig(msg.author.name, multisig)
             except:
                 bot_logger.logger.info('user %s entered invalid pubkey (command : enablemultisig_1of2) ' % msg.author.name)
             rpc.importaddress(multisig["address"], "redditmulti-%s" % msg.author.name, False)
