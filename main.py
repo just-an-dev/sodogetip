@@ -50,6 +50,10 @@ if __name__ == "__main__":
                                                target=Bot.double_spend_check,
                                                args=(tx_queue, failover_time,))
 
+            thread_double_spend_check = Thread(name='vanitygen',
+                                               target=Bot.vanitygen,
+                                               args=(tx_queue, failover_time,))
+
             thread_master.start()
             thread_pending_tip.start()
             thread_anti_spamming_tx.start()

@@ -271,3 +271,13 @@ class UserStorage:
             return data[0].get('address')
         else:
             bot_logger.logger.error("get address of un-registered user  %s " % (str(username)))
+
+class VanityGenRequest(object):
+    """Class to represent an user"""
+
+    def __init__(self, user,vanity):
+        self.username = user
+        self.pattern = None
+        self.difficulty = None
+        self.address = None
+        self.privkey = None

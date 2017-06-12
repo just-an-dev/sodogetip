@@ -4,6 +4,7 @@ import traceback
 import praw
 import requests
 from praw.models import Message, Comment
+from tinydb import TinyDB
 
 import bot_command
 import bot_logger
@@ -141,3 +142,19 @@ class SoDogeTip:
                 traceback.print_exc()
 
             bot_logger.logger.debug('failover_time : %s' % str(failover_time.value))
+
+    def vanitygen(self, tx_queue, failover_time):
+        while True:
+            bot_logger.logger.info('Check if we need to generate address')
+            # get user request of gen
+            db = TinyDB(DATA_PATH + bot_config['vanitygen'])
+            for gen_request in db.all():
+                print gen_request
+
+                # generate address
+
+                # parse output
+
+                # transfer funds
+
+                # update user storage file
