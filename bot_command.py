@@ -279,7 +279,6 @@ def history_user(msg):
 
 # Resend tips to previously unregistered users that are now registered
 def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
-
     # check if user have pending tips
     list_tips = user_function.get_unregistered_tip()
 
@@ -294,9 +293,10 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                 if tip.receiver.is_registered():
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
-                            str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
+                            str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                    tip.tx_id = crypto.tip_user(rpc, tip.sender.username, tip.receiver.username, tip.amount, tx_queue, failover_time)
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender.username, tip.receiver.username, tip.amount, tx_queue,
+                                                failover_time)
                     tip.finish = True
                     user_function.remove_pending_tip(tip.id)
 

@@ -1,4 +1,5 @@
 import datetime
+
 from tinydb import TinyDB, Query
 
 import bot_logger
@@ -53,7 +54,7 @@ def update_tip(user_history, tip):
     # update only finish tips
     if tip.tx_id is not None:
         db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
-        tip = Query()
-        db.update({'finish': True}, tip.id == tip.id)
-        db.update({'tx_id': tip.tx_id}, tip.id == tip.id)
+        tip_query = Query()
+        db.update({'finish': True}, tip_query.id == tip.id)
+        db.update({'tx_id': tip.tx_id}, tip_query.id == tip.id)
         db.close()
