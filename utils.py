@@ -65,13 +65,6 @@ def check_amount_valid(amount):
         return False
 
 
-def is_whole(x):
-    if x % 1 == 0:
-        return True
-    else:
-        return False
-
-
 def mark_msg_read(reddit, msg):
     unread_messages = [msg]
     reddit.inbox.mark_read(unread_messages)
