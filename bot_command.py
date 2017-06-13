@@ -300,11 +300,11 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                     tip.finish = True
                     user_function.remove_pending_tip(tip.id)
 
-                    if 'message_fullname' in tip.keys():
-                        msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
+                    if tip.message_fullname is not None:
+                        msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
                         msg = Comment(reddit, msg_id)
                         msg.reply(Template(lang.message_tip).render(
-                            sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']),
+                            sender=tip.sender.username, receiver=tip.receiver.username, amount=str(tip.amount),
                             value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
 
                     # update tip status
