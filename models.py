@@ -15,6 +15,7 @@ class Tip(object):
         self.receiver = None
         self.amount = None
         self.verify = False
+        self.currency = None
         self.sender = None
         self.finish = False
         self.tx_id = None
@@ -25,8 +26,9 @@ class Tip(object):
         self.time = datetime.datetime.now().isoformat()
 
     def parse_message(self, message_to_parse, rpc):
-        p = re.compile('(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s(verify)?',
-                       re.IGNORECASE)
+        p = re.compile(
+            '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s?(verify)?',
+            re.IGNORECASE)
         m = p.search(message_to_parse.strip())
         # Group 1 is +/u/sodogetiptest
         # Group 2 is either blank(tip to the commentor), an address, or a user
@@ -34,6 +36,7 @@ class Tip(object):
         # Group 3 is the tip amount in integers(ex.  100) or a word(ex.roll)
         self.amount = m.group(3)
         # Group 4 is doge
+        self.currency = m.group(4)
         # Group 5 is either blank(no verify message) or verify(verify message)
         self.verify = True if (m.group(5) == "verify") else False
 
@@ -51,8 +54,8 @@ class Tip(object):
                 self.receiver.address = self.receiver
 
         # to support any type of randomXXX amount
-        if 'random' in self.amount and utils.check_amount_valid(self.amount[:6]):
-            self.amount = random.randint(1, int(self.amount[:6]))
+        if 'random' in self.amount and utils.check_amount_valid(self.amount[6:]):
+            self.amount = random.randint(1, int(self.amount[6:]))
 
         # here amount is numeric, make magic to support not whole tips
         if utils.check_amount_valid(self.amount):
@@ -95,7 +98,11 @@ class Tip(object):
     def is_expired(self):
         limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
-        return (datetime.datetime.strptime(self.time, '%Y-%m-%dT%H:%M:%S.%f') > limit_date)
+        if type(self.time) is str:
+            return limit_date > datetime.datetime.strptime(self.time, '%Y-%m-%dT%H:%M:%S.%f')
+
+        if type(self.time) is datetime.datetime:
+            return limit_date > self.time
 
 
 class User(object):
