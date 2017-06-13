@@ -16,10 +16,10 @@ if __name__ == "__main__":
     bot_logger.logger.info("Bot Started !!")
 
     # get wallet pass phrase from user input
-    crypto.init_passphrase()
+    # crypto.init_passphrase()
 
     # check passphase is good
-    crypto.check_passphrase()
+    # crypto.check_passphrase()
 
     while True:
         try:

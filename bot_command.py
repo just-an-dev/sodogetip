@@ -158,6 +158,19 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
     bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
+    # check user who use command is registered
+    if user_function.user_exist(msg.author.name) is not True:
+        bot_logger.logger.info('user %s not registered ' % msg.author.name)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
+        return False
+
+    # check user not tip self
+    if msg.author.name == msg.parent().author.name:
+        reddit.redditor(msg.author.name).message('cannot tip self',
+                                                 Template(lang.message_recipient_self).render(
+                                                     username=msg.author.name))
+        return False
+
     # create an Tip
     tip = models.Tip()
 
@@ -177,20 +190,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
         return False
 
-    # check receiver
-    if user_function.user_exist(tip.sender.username) and (tip.sender.username != tip.receiver.username):
-        # update receiver
-        tip.set_receiver(msg.parent().author.name)
-    elif user_function.user_exist(msg.author.name) and (msg.author.name == tip.receiver.username):
-        reddit.redditor(msg.author.name).message('cannot tip self',
-                                                 Template(lang.message_recipient_self).render(
-                                                     username=msg.author.name))
-        return False
-    else:
-        reddit.redditor(msg.author.name).message('tipped user not registered',
-                                                 Template(lang.message_need_register).render(
-                                                     username=msg.author.name))
-        return False
+    # update receiver
+    tip.set_receiver(msg.parent().author.name)
 
     # check we have enough
     user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
@@ -210,17 +211,16 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
             reddit.redditor(msg.author.name).message('low balance',
                                                      Template(lang.message_balance_low_tip).render(
                                                          username=msg.author.name))
-    else:
-        # ok we have enough for tip
-        value_usd = utils.get_coin_value(tip.amount)
 
+    else:
         # add tip to history of sender & receiver
         history.add_to_history_tip(msg.author.name, "tip send", tip)
         history.add_to_history_tip(tip.receiver.username, "tip receive", tip)
 
-        # check user have address before tip
+        # check user who receive tip have an account
         if user_function.user_exist(tip.receiver.username):
-            tip.txid = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue, failover_time)
+            tip.txid = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
+                                       failover_time)
             if tip.txid:
                 bot_logger.logger.info(
                     '%s tip %s to %s' % (msg.author.name, str(tip.amount), tip.receiver.username))
@@ -230,12 +230,11 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     msg.reply(Template(lang.message_tip).render(
                         sender=msg.author.name, receiver=tip.receiver.username,
                         amount=str(int(tip.amount)),
-                        value_usd=str(value_usd), txid=tip.txid
+                        value_usd=str(tip.get_value_usd()), txid=tip.txid
                     ))
-
         else:
             bot_logger.logger.info('user %s not registered' % tip.receiver.username)
-
+            # save tip
             user_function.save_unregistered_tip(tip)
 
             # send message to sender of tip
@@ -249,10 +248,10 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                 Template(
                     lang.message_recipient_need_register_message).render(
                     username=tip.receiver.username, sender=msg.author.name, amount=str(tip.amount),
-                    value_usd=str(value_usd)))
+                    value_usd=str(tip.get_value_usd())))
 
         # update tip status
-        history.update_tip(msg.author.name, tip)
+        history.update_tip(tip.sender.username, tip)
         history.update_tip(tip.receiver.username, tip)
 
 
@@ -280,32 +279,37 @@ def history_user(msg):
 
 # Resend tips to previously unregistered users that are now registered
 def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
-    # check if it's not too old & replay tipping
-    limit_date = datetime.datetime.now() - datetime.timedelta(days=3)
 
     # check if user have pending tips
     list_tips = user_function.get_unregistered_tip()
 
     if list_tips:
-        for tip in list_tips:
-            bot_logger.logger.info("replay tipping check for %s" % str(tip['id']))
-            if (datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f') > limit_date):
-                if (user_function.user_exist(tip['receiver'])):
+        for arr_tip in list_tips:
+            tip = models.Tip().create_from_array(arr_tip)
+
+            bot_logger.logger.info("replay tipping check for %s" % str(tip.id))
+
+            # check if it's not too old & replay tipping
+            if tip.is_expired():
+                if tip.receiver.is_registered():
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip['id']), tip['sender'], tip['amount'], tip['receiver']))
 
-                    txid = crypto.tip_user(rpc, tip['sender'], tip['receiver'], tip['amount'], tx_queue, failover_time)
-                    user_function.remove_pending_tip(tip['id'])
-
-                    value_usd = utils.get_coin_value(tip['amount'])
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender.username, tip.receiver.username, tip.amount, tx_queue, failover_time)
+                    tip.finish = True
+                    user_function.remove_pending_tip(tip.id)
 
                     if 'message_fullname' in tip.keys():
                         msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip['message_fullname'])
                         msg = Comment(reddit, msg_id)
                         msg.reply(Template(lang.message_tip).render(
                             sender=tip['sender'], receiver=tip['receiver'], amount=str(tip['amount']),
-                            value_usd=str(value_usd), txid=txid))
+                            value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+
+                    # update tip status
+                    history.update_tip(tip.sender.username, tip)
+                    history.update_tip(tip.receiver.username, tip)
 
                 else:
                     bot_logger.logger.info(
@@ -313,7 +317,7 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
             else:
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s for %s  " % (tip['sender'], tip['amount'], tip['receiver']))
-                user_function.remove_pending_tip(tip['id'])
+                user_function.remove_pending_tip(tip.id)
     else:
         bot_logger.logger.info("no pending tipping")
 
@@ -326,7 +330,7 @@ def donate(rpc, reddit, msg, tx_queue, failover_time):
         amount = split_message[donate_index + 1]
         if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
 
-            tip_user(rpc, msg.author.name, config.bot_name, amount, tx_queue, failover_time)
+            crypto.tip_user(rpc, msg.author.name, config.bot_name, amount, tx_queue, failover_time)
 
             history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
