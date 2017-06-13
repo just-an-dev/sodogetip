@@ -7,7 +7,6 @@ sys.setdefaultencoding("utf-8")
 
 import config
 
-
 link_register = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=\%2Bregister&message=\%2Bregister"
 link_help = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bhelp&message=%2Bhelp"
 link_withdraw = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bwithdraw&message=%2Bwithdraw%20AMOUNT%20doge%20to%20ADDRESS"
@@ -39,18 +38,18 @@ message_balance_low_withdraw = ("Hello /u/{{ username }}! It seems your balance 
 message_account_details = "\n\nHere are your account details /u/{{ username }}!" \
                             "\n\n^very ^info | &nbsp;" \
                             "\n---|---" \
-                            "\n^Your ^balance | ^{{ balance }} ^doge ^(${{ balance_value_usd }})" \
-                            "\n^Your ^pending ^balance | ^{{ pendingbalance }} ^doge ^(${{ pending_value_usd }})" \
-                            "\n^Your ^spendable ^balance | ^{{ spendablebalance }} ^doge (${{ spendable_value_usd }})" \
+                            "\n^Your ^balance | ^{{ spendable_balance }} ^doge ^(${{ spendable_value_usd }})" \
+                            "\n^Your ^pending ^balance | ^{{ pending_balance }} ^doge ^(${{ pending_value_usd }})" \
+                            "\n\nTips to unregistered users: {{ pending_tips }} (${{ pending_tips_value_usd}})" \
                             "\n^Deposit ^address | ^{{ address }}" \
                             "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")" \
                             "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! "
 
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
 message_balance = "Hello /u/{{ username }}!" \
-                  "\n\nYour confirmed balance is: {{ balance }} (${{ balance_value_usd }})" \
-                  "\n\nYour unconfirmed balance is: {{ pendingbalance }} (${{ pending_value_usd }})" \
-                  "\n\nYour spendable balance is: {{ spendablebalance }} (${{ spendable_value_usd}})" \
+                  "\n\nYour confirmed balance is: {{ spendable_balance }} (${{ spendable_value_usd }})" \
+                  "\n\nYour pending balance is: {{ pending_balance }} (${{ pending_value_usd }})" \
+                  "\n\nTips to unregistered users: {{ pending_tips }} (${{ pending_tips_value_usd}})" \
                   "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! "
 
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")

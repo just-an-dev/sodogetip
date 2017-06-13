@@ -34,17 +34,27 @@ def register_user(rpc, msg):
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
+        pending_value_usd = utils.get_coin_value(pending_balance)
+        spendable_value_usd = utils.get_coin_value(spendable_balance)
         address = user_function.get_user_address(msg.author.name)
         msg.reply(Template(lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
             username=msg.author.name,
-            address=address, balance=str(balance))
-        )
+            address=address,
+            pendingbalance=str(pending_balance),
+            pending_value_usd=str(pending_value_usd),
+            spendable_balance=str(spendable_balance),
+            spendable_value_usd=str(spendable_value_usd)
+        ))
 
 
 def balance_user(rpc, msg):
     if user_function.user_exist(msg.author.name):
 
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+        # pending_tips is balance of tip send to unregistered users
+        pending_tips = user_function.get_balance_unregistered_tip(msg.author.name)
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
 
@@ -53,13 +63,18 @@ def balance_user(rpc, msg):
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
+        pending_tips_value_usd = utils.get_coin_value(spendable_balance)
         msg.reply(
             Template(lang.message_balance + lang.message_footer).render(username=msg.author.name, balance=str(balance),
                                                                         balance_value_usd=str(balance_value_usd),
-                                                                        pendingbalance=str(pending_balance),
+                                                                        pending_balance=str(pending_balance),
                                                                         pending_value_usd=str(pending_value_usd),
-                                                                        spendablebalance=str(spendable_balance),
-                                                                        spendable_value_usd=str(spendable_value_usd)))
+                                                                        spendable_balance=str(spendable_balance),
+                                                                        spendable_value_usd=str(spendable_value_usd),
+                                                                        pending_tips=str(pending_tips),
+                                                                        pending_tips_value_usd=str(
+                                                                            pending_tips_value_usd)
+                                                                        ))
 
         history.add_to_history(msg.author.name, "", "", balance, "balance")
     else:
@@ -73,19 +88,15 @@ def info_user(rpc, msg):
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
-        balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         msg.reply(Template(lang.message_account_details + lang.message_footer).render(
             username=msg.author.name,
-            balance=str(balance),
-            balance_value_usd=str(balance_value_usd),
             pendingbalance=str(pending_balance),
             pending_value_usd=str(pending_value_usd),
-            spendablebalance=str(spendable_balance),
+            spendable_balance=str(spendable_balance),
             spendable_value_usd=str(spendable_value_usd),
             address=address))
-
     else:
         bot_logger.logger.info('user %s not registered (command : info) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
@@ -240,8 +251,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     value_usd=str(value_usd)))
 
         # update tip status
-        history.update_tip(msg.author.name,tip)
-        history.update_tip(tip.receiver.username,tip)
+        history.update_tip(msg.author.name, tip)
+        history.update_tip(tip.receiver.username, tip)
 
 
 def history_user(msg):
@@ -256,7 +267,8 @@ def history_user(msg):
                 str_finish = "Successful"
 
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
-                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'), tip['sender'], tip['receiver'],
+                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),
+                tip['sender'], tip['receiver'],
                 str(tip['amount']), tip['action'], str_finish)
 
         msg.reply(Template(lang.message_history + history_table + lang.message_footer).render(username=msg.author.name))
