@@ -160,7 +160,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
     # check user who use command is registered
     if user_function.user_exist(msg.author.name) is not True:
-        bot_logger.logger.info('user %s not registered ' % msg.author.name)
+        bot_logger.logger.info('user %s not registered (sender) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
         return False
 
@@ -218,7 +218,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         history.add_to_history_tip(tip.receiver.username, "tip receive", tip)
 
         # check user who receive tip have an account
-        if user_function.user_exist(tip.receiver.username):
+        if tip.receiver.is_registered():
             tip.txid = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
                                        failover_time)
             if tip.txid:
@@ -233,13 +233,13 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                         value_usd=str(tip.get_value_usd()), txid=tip.txid
                     ))
         else:
-            bot_logger.logger.info('user %s not registered' % tip.receiver.username)
+            bot_logger.logger.info('user %s not registered (receiver)' % tip.receiver.username)
             # save tip
             user_function.save_unregistered_tip(tip)
 
             # send message to sender of tip
-            reddit.redditor(msg.author.name).message('tipped user not registered',
-                                                     Template(lang.message_recipient_register).render(
+            reddit.redditor(tip.sender.username).message('tipped user not registered',
+                                                         Template(lang.message_recipient_register).render(
                                                          username=tip.receiver.username))
             # send message to receiver
             reddit.redditor(tip.receiver.username).message(
