@@ -55,14 +55,15 @@ def get_coin_value(balance):
 
 
 def check_amount_valid(amount):
-    if amount >= 1:
         try:
-            print('such amount : '+str(amount))
-            return True
-        except UnicodeEncodeError:
+            if (float(amount)) >= 1:
+                print('such amount : '+str(amount))
+                return True
+            else:
+                return False
+        except (UnicodeEncodeError, ValueError):
             return False
-    else:
-        return False
+
 
 
 def mark_msg_read(reddit, msg):

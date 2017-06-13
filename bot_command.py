@@ -117,13 +117,14 @@ def withdraw_user(rpc, msg, failover_time):
 
     if user_function.user_exist(msg.author.name):
         sender_address = user_function.get_user_address(msg.author.name)
-        amount = float(split_message[1])
-        amount = round(amount - 0.5)
 
-        user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
+        if utils.check_amount_valid(split_message[1]) and split_message[4] != sender_address:
+            amount = float(split_message[1])
+            amount = round(amount - 0.5)
 
-        if utils.check_amount_valid(amount) and split_message[4] != sender_address:
+            user_balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
+            user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
+
             if amount >= float(user_balance) + float(user_spendable_balance):
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     msg.author.name, amount, user_balance))
