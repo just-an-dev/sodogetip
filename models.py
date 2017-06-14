@@ -121,7 +121,6 @@ class User(object):
             return True
         else:
             return False
-        return user_function.user_exist(self.username)
 
     def get_balance_unregistered_tip(self):
         return user_function.get_balance_unregistered_tip(self.username)

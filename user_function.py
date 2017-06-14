@@ -1,6 +1,5 @@
-import datetime
 import json
-import random
+
 from tinydb import TinyDB, Query
 
 import bot_logger
@@ -29,7 +28,10 @@ def add_user(user, address):
 
 def get_user_address(user):
     user_list = get_users()
-    return user_list[user]
+    try:
+        return user_list[user]
+    except KeyError:
+        return None
 
 
 def user_exist(user):
