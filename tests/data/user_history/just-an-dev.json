@@ -3,35 +3,36 @@
     "1": {
       "finish": true,
       "sender": "just-an-dev",
-      "receiver": "doge",
+      "time": "2017-06-13T20:57:43.523136",
       "tx_id": "3b66712a19f329849bea019ae6d993c39756c01c4c6f16168ff64304f4c5191d",
       "amount": 100.0,
       "user": "just-an-dev",
-      "time": "2017-06-13T20:57:43.523136",
-      "action": "tip send",
-      "id": 92255763
-    },
-    "9": {
-      "finish": true,
-      "sender": "just-an-dev",
       "receiver": "doge",
-      "tx_id": "3b66712a19f329849bea019ae6d993c39756c01c4c6f16168ff64304f4c5191d",
-      "amount": 100.0,
-      "user": "just-an-dev",
-      "time": "2017-06-13T20:57:43.523136",
       "action": "tip send",
       "id": 92255763
     },
     "10": {
-      "finish": true,
+      "finish": false,
       "sender": "just-an-dev",
-      "receiver": "doge",
-      "tx_id": "3b66712a19f329849bea019ae6d993c39756c01c4c6f16168ff64304f4c5191d",
+      "time": "2017-06-13T20:57:43.523136",
+      "tx_id": "",
       "amount": 100.0,
       "user": "just-an-dev",
-      "time": "2017-06-13T20:57:43.523136",
+      "receiver": "doge",
       "action": "tip send",
-      "id": 92255763
+      "id": 42122771
+    },
+    "9": {
+      "finish": false,
+      "sender": "just-an-dev",
+      "time": "2017-06-13T20:57:43.523136",
+      "tx_id": "",
+      "amount": 100.0,
+      "user": "just-an-dev",
+      "receiver": "doge",
+      "action": "tip send",
+      "id": 69757083
     }
-  }
+  },
+  "version": {}
 }

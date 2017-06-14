@@ -23,6 +23,7 @@ def repare_history(user):
                 db.update({'tx_id': cur_finish}, eids=[row.eid])
                 db.update({'finish': True}, eids=[row.eid])
         ver.insert({'v1': 'ok'})
+        bot_logger.logger.info('update of history of user %s (ok)' % user)
     db.close()
 
 

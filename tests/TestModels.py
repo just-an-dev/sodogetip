@@ -35,7 +35,8 @@ class TestTip(unittest.TestCase):
         self.assertLess(tip.amount, 10000)
         self.assertGreater(tip.amount, 1)
         self.assertEqual("doge", tip.currency)
-        self.assertEqual(True, tip.verify)
+        if tip.amount >= 1000:
+            self.assertEqual(True, tip.verify)
 
     def test_tip_user_mention(self):
         tip = models.Tip()

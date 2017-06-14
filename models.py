@@ -99,7 +99,15 @@ class Tip(object):
 
         self.id = arr_tip['id']
         self.amount = arr_tip['amount']
-        self.message_fullname = arr_tip['message_fullname']
+
+        if 'message_fullname' in arr_tip.keys():
+            self.message_fullname = arr_tip['message_fullname']
+
+        if 'finish' in arr_tip.keys():
+            self.finish = arr_tip['finish']
+
+        if 'tx_id' in arr_tip.keys():
+            self.tx_id = arr_tip['tx_id']
 
         self.time = arr_tip['time']
 
