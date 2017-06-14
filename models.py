@@ -67,6 +67,15 @@ class Tip(object):
             # get user balance
             self.amount = crypto.get_user_spendable_balance(rpc, self.sender.address)
 
+        if self.amount is "roll":
+            self.amount = random.randint(1, 6)
+
+        if self.amount is "flip":
+            self.amount = random.randint(1, 2)
+
+        if self.amount in config.tip_keyword.keys():
+            self.amount = config.tip_keyword[self.amount]
+
         # if tip is over 1000 doge set verify
         if int(self.amount) >= 1000:
             self.verify = True

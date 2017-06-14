@@ -31,3 +31,7 @@ url_get_value = {
     "cryptonator": 'https://api.cryptonator.com/api/full/doge-usd',
     "blockcypher": 'https://api.blockcypher.com/v1/doge/main/txs/'
 }
+
+tip_keyword = {
+    "dogecar" : 98
+}
