@@ -7,13 +7,34 @@ from config import DATA_PATH, bot_config
 
 
 # return all history of users
+def repare_history(user):
+    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
+    ver = db.table("version")
+    patch = Query()
+    data = ver.search(patch.v1 == 'ok')
+    if len(data) is not 0 and data[0]['v1'] is not 'ok':
+        # not patch apply
+        def_table = db.table("_default")
+        data_histo = def_table.all()
+        for row in data_histo:
+            if len(row['finish']) == 74 and row['tx_id'] == "":
+                # invert the 2 fields
+                cur_finish = row['finish']
+                db.update({'tx_id': cur_finish}, eids=[row.eid])
+                db.update({'finish': True}, eids=[row.eid])
+        ver.insert({'v1': 'ok'})
+    db.close()
+
+
 def get_user_history(user):
+    repare_history(user)
     db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
     data = db.all()
     db.close()
     return data
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id =""):
+
+def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id=""):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
 
