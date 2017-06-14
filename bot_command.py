@@ -303,7 +303,7 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
             bot_logger.logger.info("replay tipping check for %s" % str(tip.id))
 
             # check if it's not too old & replay tipping
-            if tip.is_expired():
+            if not tip.is_expired():
                 if tip.receiver.is_registered():
                     bot_logger.logger.info(
                         "replay tipping %s - %s send %s to %s  " % (
