@@ -3,7 +3,7 @@ import re
 import time
 
 from jinja2 import Template
-from praw.models import Comment
+from praw.models import Comment, Message
 
 import bot_logger
 import config
@@ -15,13 +15,15 @@ import user_function
 import utils
 
 
-def register_user(rpc, msg):
+def register_user(rpc, msg, reddit):
     if not user_function.user_exist(msg.author.name):
         address = rpc.getnewaddress("reddit-%s" % msg.author.name)
         if address:
-            msg.reply(
-                Template(lang.message_register_success + lang.message_footer).render(username=msg.author.name,
-                                                                                     address=address))
+            content_reply = Template(lang.message_register_success + lang.message_footer).render(
+                username=msg.author.name,
+                address=address)
+            tittle_reply = 'you are registered'
+
             user_function.add_user(msg.author.name, address)
 
             history.add_to_history(msg.author.name, "", "", "", "register")
@@ -39,14 +41,23 @@ def register_user(rpc, msg):
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         address = user_function.get_user_address(msg.author.name)
-        msg.reply(Template(lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
+        content_reply = Template(
+            lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
             username=msg.author.name,
             address=address,
-            pendingbalance=str(pending_balance),
+            pending_balance=str(pending_balance),
             pending_value_usd=str(pending_value_usd),
             spendable_balance=str(spendable_balance),
             spendable_value_usd=str(spendable_value_usd)
-        ))
+        )
+        tittle_reply = 'you are already registered'
+
+    # send PM so just reply
+    if type(msg) is Message:
+        msg.reply(content_reply)
+    # we have just comment so send info in PM
+    if type(msg) is Comment:
+        reddit.redditor(msg.author.name).message(tittle_reply, content_reply)
 
 
 def balance_user(rpc, msg):
@@ -240,7 +251,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
             # send message to sender of tip
             reddit.redditor(tip.sender.username).message('tipped user not registered',
                                                          Template(lang.message_recipient_register).render(
-                                                         username=tip.receiver.username))
+                                                             username=tip.receiver.username))
             # send message to receiver
             reddit.redditor(tip.receiver.username).message(
                 Template(
