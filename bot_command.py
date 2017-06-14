@@ -76,7 +76,7 @@ def balance_user(rpc, msg):
         balance_value_usd = utils.get_coin_value(balance)
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
-        pending_tips_value_usd = utils.get_coin_value(spendable_balance)
+        pending_tips_value_usd = utils.get_coin_value(pending_tips)
         msg.reply(
             Template(lang.message_balance + lang.message_footer).render(username=msg.author.name, balance=str(balance),
                                                                         balance_value_usd=str(balance_value_usd),

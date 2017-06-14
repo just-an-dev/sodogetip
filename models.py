@@ -49,9 +49,10 @@ class Tip(object):
             elif '@' in self.receiver:
                 self.receiver = User(self.receiver[1:])
             # to support send tip to an address
-            elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid']:
-                self.receiver = User("address-" + self.receiver)
-                self.receiver.address = self.receiver
+            elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid'] == 'true':
+                address = self.receiver
+                self.receiver = User("address-" + address)
+                self.receiver.address = address
 
         # to support any type of randomXXX amount
         if 'random' in self.amount and utils.check_amount_valid(self.amount[6:]):

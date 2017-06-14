@@ -3,6 +3,7 @@ import unittest
 
 import config
 import models
+from MockRpc import MockRpc
 
 
 class TestTip(unittest.TestCase):
@@ -58,11 +59,12 @@ class TestTip(unittest.TestCase):
         self.assertEqual("just-an-dev", tip.receiver.username)
 
     def test_tip_address(self):
+        mock_rpc = MockRpc()
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " @just-an-dev 1000 doge", None)
+        tip.parse_message("+/u/" + config.bot_name + " nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR 1000 doge", mock_rpc)
         self.assertEqual(1000, tip.amount)
         self.assertEqual("doge", tip.currency)
-        self.assertEqual("just-an-dev", tip.receiver.username)
+        self.assertEqual("nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", tip.receiver.address)
 
     def test_tip_not_expired(self):
         tip = models.Tip()
