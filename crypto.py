@@ -102,7 +102,7 @@ def get_user_confirmed_balance(rpc, user):
 def get_user_unconfirmed_balance(rpc, user):
     unspent_amounts = []
 
-    address = user_function.get_user_address(user)
+    address = user.address
     list_unspent = rpc.listunspent(0, 0, [address])
 
     # in case of no unconfirmed transactions
@@ -113,9 +113,6 @@ def get_user_unconfirmed_balance(rpc, user):
         unspent_amounts.append(list_unspent[i]['amount'])
 
     bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
-
-    unconfirmed_balance = rpc.getbalance("reddit-%s" % user)
-    bot_logger.logger.debug("unconfirmed_balance %s" % (str(int(unconfirmed_balance))))
 
     return int(sum(unspent_amounts))
 

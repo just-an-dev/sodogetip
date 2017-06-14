@@ -116,4 +116,12 @@ class User(object):
             self.address = user_function.get_user_address(self.username)
 
     def is_registered(self):
+        # if user have address it's registered
+        if self.address is not None:
+            return True
+        else:
+            return False
         return user_function.user_exist(self.username)
+
+    def get_balance_unregistered_tip(self):
+        return user_function.get_balance_unregistered_tip(self.username)

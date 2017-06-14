@@ -16,15 +16,16 @@ import utils
 
 
 def register_user(rpc, msg, reddit):
-    if not user_function.user_exist(msg.author.name):
-        address = rpc.getnewaddress("reddit-%s" % msg.author.name)
-        if address:
+    user = models.User(msg.author.name)
+    if not user.is_registered():
+        user.address = rpc.getnewaddress("reddit-%s" % msg.author.name)
+        if user.address:
             content_reply = Template(lang.message_register_success + lang.message_footer).render(
-                username=msg.author.name,
-                address=address)
+                username=user.username,
+                address=user.address)
             tittle_reply = 'you are registered'
 
-            user_function.add_user(msg.author.name, address)
+            user_function.add_user(msg.author.name, user.address)
 
             history.add_to_history(msg.author.name, "", "", "", "register")
 
@@ -35,16 +36,16 @@ def register_user(rpc, msg, reddit):
             bot_logger.logger.warning('Error during register !')
     else:
         bot_logger.logger.info('%s are already registered ' % msg.author.name)
+
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, user)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
-        address = user_function.get_user_address(msg.author.name)
         content_reply = Template(
             lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
             username=msg.author.name,
-            address=address,
+            address=user.address,
             pending_balance=str(pending_balance),
             pending_value_usd=str(pending_value_usd),
             spendable_balance=str(spendable_balance),
@@ -61,12 +62,13 @@ def register_user(rpc, msg, reddit):
 
 
 def balance_user(rpc, msg):
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
 
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
         # pending_tips is balance of tip send to unregistered users
-        pending_tips = user_function.get_balance_unregistered_tip(msg.author.name)
-        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        pending_tips = user.get_balance_unregistered_tip()
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, user)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
 
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
@@ -94,10 +96,10 @@ def balance_user(rpc, msg):
 
 
 def info_user(rpc, msg):
-    if user_function.user_exist(msg.author.name):
-        address = user_function.get_user_address(msg.author.name)
+    user = models.User(msg.author.name)
+    if user.is_registered():
         balance = crypto.get_user_confirmed_balance(rpc, msg.author.name)
-        pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        pending_balance = crypto.get_user_unconfirmed_balance(rpc, user)
         spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
@@ -107,7 +109,7 @@ def info_user(rpc, msg):
             pending_value_usd=str(pending_value_usd),
             spendable_balance=str(spendable_balance),
             spendable_value_usd=str(spendable_value_usd),
-            address=address))
+            address=user.address))
     else:
         bot_logger.logger.info('user %s not registered (command : info) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
@@ -175,13 +177,6 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
         return False
 
-    # check user not tip self
-    if msg.author.name == msg.parent().author.name:
-        reddit.redditor(msg.author.name).message('cannot tip self',
-                                                 Template(lang.message_recipient_self).render(
-                                                     username=msg.author.name))
-        return False
-
     # create an Tip
     tip = models.Tip()
 
@@ -204,28 +199,35 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     # update receiver
     tip.set_receiver(msg.parent().author.name)
 
+    # check user not tip self
+    if tip.sender.username == tip.receiver.username:
+        reddit.redditor(tip.sender.username).message('cannot tip self',
+                                                     Template(lang.message_recipient_self).render(
+                                                         username=tip.sender.username))
+        return False
+
     # check we have enough
     user_spendable_balance = crypto.balance_user(rpc, msg, failover_time)
     bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
     # in failover we need to use only user_balance
     if tip.amount >= float(user_spendable_balance):
-        user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, msg.author.name)
+        user_pending_balance = crypto.get_user_unconfirmed_balance(rpc, tip.sender)
         # not enough for tip
         if tip.amount < float(user_pending_balance):
-            reddit.redditor(msg.author.name).message('pending tip',
-                                                     Template(lang.message_balance_pending_tip).render(
-                                                         username=msg.author.name))
+            reddit.redditor(tip.sender.username).message('pending tip',
+                                                         Template(lang.message_balance_pending_tip).render(
+                                                             username=tip.sender.username))
         else:
             bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
-                msg.author.name, str(tip.amount), str(user_spendable_balance)))
-            reddit.redditor(msg.author.name).message('low balance',
-                                                     Template(lang.message_balance_low_tip).render(
-                                                         username=msg.author.name))
+                tip.sender.username, str(tip.amount), str(user_spendable_balance)))
+            reddit.redditor(tip.sender.username).message('low balance',
+                                                         Template(lang.message_balance_low_tip).render(
+                                                             username=tip.sender.username))
 
     else:
         # add tip to history of sender & receiver
-        history.add_to_history_tip(msg.author.name, "tip send", tip)
+        history.add_to_history_tip(tip.sender.username, "tip send", tip)
         history.add_to_history_tip(tip.receiver.username, "tip receive", tip)
 
         # check user who receive tip have an account
@@ -334,14 +336,15 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
 
 
 def donate(rpc, reddit, msg, tx_queue, failover_time):
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
         split_message = msg.body.lower().strip().split()
 
         donate_index = split_message.index('+donate')
         amount = split_message[donate_index + 1]
         if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
 
-            crypto.tip_user(rpc, msg.author.name, config.bot_name, amount, tx_queue, failover_time)
+            crypto.tip_user(rpc, user.username, config.bot_name, amount, tx_queue, failover_time)
 
             history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:

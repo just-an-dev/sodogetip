@@ -86,6 +86,20 @@ class TestUser(unittest.TestCase):
         self.assertEqual(None, user.address)
         self.assertEqual(False, user.is_registered())
 
+    def test_user_exist_by_addr(self):
+        user = models.User("doge")
+        user.address = "nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR"
+        self.assertEqual("nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", user.address)
+        self.assertEqual(True, user.is_registered())
+
+    def test_unregistered_tip_empty(self):
+        user = models.User("doge")
+        self.assertEqual(0, user.get_balance_unregistered_tip())
+
+    def test_unregistered_tip(self):
+        user = models.User("just-an-dev")
+        self.assertEqual(1000, user.get_balance_unregistered_tip())
+
 
 if __name__ == '__main__':
     unittest.main()
