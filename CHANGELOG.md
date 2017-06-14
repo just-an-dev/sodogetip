@@ -7,6 +7,7 @@
 - Update log rotation file
 - Simplify +info and +balance commands
 - Fix an issue when register in comments
+- Add limit on number of entry returned by +history
 
 # v1.0 - 10/06/2017
 - First release

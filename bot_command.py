@@ -270,7 +270,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
 def history_user(msg):
     if user_function.user_exist(msg.author.name):
-        data = history.get_user_history(msg.author.name)
+        data_raw = history.get_user_history(msg.author.name)
+        data_raw_sort = sorted(data_raw.items(), key=lambda histo_entry: int(histo_entry[0]))
+        data = data_raw_sort[-30:]
         history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
         history_table += "---|---|---|---|:-:|:-:\n"
         for tip in data:
