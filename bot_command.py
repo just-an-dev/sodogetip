@@ -280,10 +280,15 @@ def history_user(msg):
             if tip['finish']:
                 str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
 
+            str_amount = str(float(tip['amount']))
+            if float(tip['amount']).is_integer():
+                str_amount = str(int(tip['amount']))
+
+
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),
                 tip['sender'], tip['receiver'],
-                str(tip['amount']), tip['action'], str_finish)
+                str_amount, tip['action'], str_finish)
 
         msg.reply(Template(lang.message_history + history_table + lang.message_footer).render(username=msg.author.name))
     else:
