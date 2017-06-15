@@ -232,9 +232,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
         # check user who receive tip have an account
         if tip.receiver.is_registered():
-            tip.txid = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
-                                       failover_time)
-            if tip.txid:
+            tip.tx_id = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
+                                        failover_time)
+            if tip.tx_id:
                 bot_logger.logger.info(
                     '%s tip %s to %s' % (msg.author.name, str(tip.amount), tip.receiver.username))
 
@@ -243,7 +243,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     msg.reply(Template(lang.message_tip).render(
                         sender=msg.author.name, receiver=tip.receiver.username,
                         amount=str(int(tip.amount)),
-                        value_usd=str(tip.get_value_usd()), txid=tip.txid
+                        value_usd=str(tip.get_value_usd()), txid=tip.tx_id
                     ))
         else:
             bot_logger.logger.info('user %s not registered (receiver)' % tip.receiver.username)
@@ -274,7 +274,7 @@ def history_user(msg):
         data = data_raw[-30:]
         history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
         history_table += "---|---|---|---|:-:|:-:\n"
-        for tip in data:
+        for tip in data[::-1]:
             str_finish = "Pending"
 
             if tip['finish']:

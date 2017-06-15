@@ -12,7 +12,7 @@ def repare_history(user):
     ver = db.table("version")
     patch = Query()
     data = ver.search(patch.v1 == 'ok')
-    if len(data) == 0 or data[0]['v1'] is not 'ok':
+    if len(data) == 0:
         # not patch apply
         def_table = db.table("_default")
         data_histo = def_table.all()
@@ -74,9 +74,14 @@ def add_to_history_tip(user_history, action, tip):
 
 def update_tip(user_history, tip):
     # update only finish tips
+    bot_logger.logger.info("update history for user=%s, tip.tx_id=%s" % (user_history, tip.tx_id))
     if tip.tx_id is not None:
+        bot_logger.logger.info("update history for user=%s, tip.id=%s" % (user_history, tip.id))
+
         db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
         tip_query = Query()
         db.update({'finish': True}, tip_query.id == tip.id)
         db.update({'tx_id': tip.tx_id}, tip_query.id == tip.id)
         db.close()
+    else:
+        bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip.id))
