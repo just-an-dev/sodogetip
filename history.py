@@ -12,12 +12,12 @@ def repare_history(user):
     ver = db.table("version")
     patch = Query()
     data = ver.search(patch.v1 == 'ok')
-    if len(data) is 0 and data[0]['v1'] is not 'ok':
+    if len(data) == 0 or data[0]['v1'] is not 'ok':
         # not patch apply
         def_table = db.table("_default")
         data_histo = def_table.all()
         for row in data_histo:
-            if len(row['finish']) == 74 and row['tx_id'] == "":
+            if not isinstance(row['finish'], bool) and len(row['finish']) == 74 and row['tx_id'] == "":
                 # invert the 2 fields
                 cur_finish = row['finish']
                 db.update({'tx_id': cur_finish}, eids=[row.eid])
