@@ -46,6 +46,8 @@ class Tip(object):
                 self.receiver = User(self.receiver[4:])
             elif '/u/' in self.receiver:
                 self.receiver = User(self.receiver[3:])
+            elif 'u/' in self.receiver:
+                self.receiver = User(self.receiver[2:])
             elif '@' in self.receiver:
                 self.receiver = User(self.receiver[1:])
             # to support send tip to an address
