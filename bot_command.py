@@ -278,7 +278,7 @@ def history_user(msg):
             str_finish = "Pending"
 
             if tip['finish']:
-                str_finish = "Successful"
+                str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
 
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
                 datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),

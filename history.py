@@ -12,7 +12,7 @@ def repare_history(user):
     ver = db.table("version")
     patch = Query()
     data = ver.search(patch.v1 == 'ok')
-    if len(data) is not 0 and data[0]['v1'] is not 'ok':
+    if len(data) is 0 and data[0]['v1'] is not 'ok':
         # not patch apply
         def_table = db.table("_default")
         data_histo = def_table.all()
