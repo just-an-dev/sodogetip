@@ -59,6 +59,13 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
+    def test_tip_dogecar(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " dogecar doge", None)
+        self.assertEqual(tip.amount, config.tip_keyword['dogecar'])
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
     def test_tip_random_verify(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " random10000 doge", None)
