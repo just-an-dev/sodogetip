@@ -40,17 +40,17 @@ message_account_details = "\n\nHere are your account details /u/{{ username }}!"
                             "\n---|---" \
                             "\n^Your ^balance | ^{{ spendable_balance }} ^doge ^(${{ spendable_value_usd }})" \
                             "\n^Your ^pending ^balance | ^{{ pending_balance }} ^doge ^(${{ pending_value_usd }})" \
-                            "\n\nTips to unregistered users: {{ pending_tips }} (${{ pending_tips_value_usd}})" \
+                            "\n^Tips ^to ^unregistered ^users | ^{{ pending_tips }} ^doge ^(${{ pending_tips_value_usd}})" \
                             "\n^Deposit ^address | ^{{ address }}" \
                             "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")" \
-                            "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! "
+                            "\n\n__ATTENTION:__ This bot is \"on chain\" so for every tip you make, you'll pay a small fee (typically 1 DOGE)!"
 
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
 message_balance = "Hello /u/{{ username }}!" \
                   "\n\nYour confirmed balance is: {{ spendable_balance }} (${{ spendable_value_usd }})" \
                   "\n\nYour pending balance is: {{ pending_balance }} (${{ pending_value_usd }})" \
                   "\n\nTips to unregistered users: {{ pending_tips }} (${{ pending_tips_value_usd}})" \
-                  "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! "
+                  "\n\n__ATTENTION:__ This bot is \"on chain\" so for every tip you make, you'll pay a small fee (typically 1 DOGE)!"
 
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGE/{{ txid }})")
@@ -66,9 +66,7 @@ message_footer = ("\n\n*****" \
                  "\n^Help ^me!|^[+help](" + link_help + ")" \
                  "\n\n__PROTIP:__ An example tip would be: +/u/" + config.bot_name + " 100 doge")
 
-# GARYLITTLEMORE OR SOMEONE ELSE PLS PUT A HELPFUL MESSAGE IN message_help BELOW FOR +help COMMAND
-# (put a placeholder for anything like Dogecoin addresses for me to properly code in) :)
-message_help = ("First of all, Welcome to Doge and the DogeTipBot!\n\nThe community is extremely important to us, and we\'re always happy to see new faces and help them get excited about the most fun and social coin out there.\n\nTo learn more about Doge in general, you might want to check out /r/dogecoin, where I\'m sure you\'ll find someone willing to talk your ears off about the coin.\n\nUnlike most tipping services, the DogeTipBot is \"on chain\" and transparent. What this means is that we gave up the ability to send tips super quickly in exchange for your money being verifiably yours.\n\nThis is your wallet ID: {{ address }}\n\nYou can verify the funds are actually deposited by clicking on that link, which shows your balance using block chain explorer.\n\nHow to use the DogeTipBot:\n\nTo tip someone:\n\nReply to their Reddit comment, or Reddit post with: +" + config.bot_name + " [number of doges] doge\n\nFor example:\n\n +" + config.bot_name + " 100 doge\n\nWill tip the poster you are commenting on with 100 Dogecoins. Wow!")
+message_help = ("Welcome to Dogecoin and " + config.bot_name + "!\n\nThe community is extremely important to us, and we\'re always happy to see new faces and help people like you get excited about the most fun and social coin out there :)\n\nTo learn more about Dogecoin and experience our friendly community, check out the /r/dogecoin subreddit. Don't worry, we don't bite (unlike real-life shibes).\n\nUnlike other tipping services," + config.bot_name + " is built on an \"on chain\" platform. This means every tip is verified by the secure Dogecoin network and publically viewable on its database of transactions (called a blockchain) for a small fee (typically 1 DOGE).\n\nThis is your wallet address: {{ address }}\n\nHow to use " + config.bot_name + ":\n\nSend someone a Dogecoin tip by commenting or replying: +/u/" + config.bot_name + " AMOUNT doge. Replace AMOUNT with an amount of Dogecoins (ex. 100 to tip 100 DOGE).\n\n[+history](" + link_history + ") - view your transaction history (includes tips and withdraws)\n\n[+info](" + link_info + ") or [+balance](" + link_balance + ") - view your Dogecoin balance on /u/" + config.bot_name + "\n\n[+withdraw](" + link_withdraw + ") - withdraw Dogecoins from your /u/" + config.bot_name + " balance into a separate Dogecoin address")
 
 message_recipient_register = ("__^[such ^error]__: ^/u/{{ username }} ^needs ^to ^[register](" + link_register + ") ^before ^receiving ^any ^tips. __^\(this ^tip ^has ^been ^saved ^for ^3 ^days)__ ^[[help]](" + link_help + ")")
 message_recipient_need_register_title = ("Someone sent you a Dogecoin tip of Ð{{ amount }}, and you need to register to receive it!")
