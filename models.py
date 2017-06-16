@@ -2,6 +2,7 @@ import datetime
 import random
 import re
 
+import bot_logger
 import config
 import crypto
 import user_function
@@ -78,6 +79,8 @@ class Tip(object):
 
             elif self.amount in config.tip_keyword.keys():
                 self.amount = config.tip_keyword[self.amount]
+
+        bot_logger.logger.debug("self.amount = %s" % str(self.amount))
 
         # if tip is over 1000 doge set verify
         if float(self.amount) >= float(1000):
