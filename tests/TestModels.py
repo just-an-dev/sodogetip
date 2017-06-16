@@ -29,6 +29,22 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
+    def test_tip_roll(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " roll doge", None)
+        self.assertLessEqual(tip.amount, 6)
+        self.assertGreaterEqual(tip.amount, 1)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
+    def test_tip_flip(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " flip doge", None)
+        self.assertLessEqual(tip.amount, 2)
+        self.assertGreaterEqual(tip.amount, 1)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
     def test_tip_random_verify(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " random10000 doge", None)
