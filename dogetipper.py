@@ -52,16 +52,12 @@ class SoDogeTip():
                             bot_command.register_user(self.rpc_main, msg, self.reddit)
                             utils.mark_msg_read(self.reddit, msg)
 
-                        elif msg_body == '+info' and msg_subject == '+info':
+                        elif (msg_body == '+info' and msg_subject == '+info') or (msg_body == '+balance' and msg_subject == '+balance'):
                             bot_command.info_user(self.rpc_main, msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
                             bot_command.help_user(self.rpc_main, msg)
-                            utils.mark_msg_read(self.reddit, msg)
-
-                        elif msg_body == '+balance' and msg_subject == '+balance':
-                            bot_command.balance_user(self.rpc_main, msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
