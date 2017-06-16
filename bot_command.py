@@ -332,7 +332,7 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
 
                 else:
                     bot_logger.logger.info(
-                        "replay check for %s - user %s not registered " % (str(tip['id']), tip['receiver']))
+                        "replay check for %s - user %s not registered " % (str(tip.id), tip.receiver.username))
             else:
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s for %s  " % (

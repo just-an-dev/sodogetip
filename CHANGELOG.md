@@ -1,4 +1,4 @@
-# v1.1 - 1x/06/2017
+# v1.1 - 16/06/2017
 - Add support of new syntax for tip command #57
 - Add donate command
 - Check wallet pass phrase on startup
