@@ -272,25 +272,8 @@ def history_user(msg):
     if user_function.user_exist(msg.author.name):
         data_raw = history.get_user_history(msg.author.name)
         data = data_raw[-30:]
-        history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
-        history_table += "---|---|---|---|:-:|:-:\n"
-        for tip in data[::-1]:
-            str_finish = "Pending"
 
-            if tip['finish']:
-                str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
-
-            str_amount = ""
-            if tip['amount'] != "":
-                str_amount = str(float(tip['amount']))
-                if float(tip['amount']).is_integer():
-                    str_amount = str(int(tip['amount']))
-
-
-            history_table += "%s|%s|%s|%s|%s|%s|\n" % (
-                datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),
-                tip['sender'], tip['receiver'],
-                str_amount, tip['action'], str_finish)
+        history_table = history.build_message(data)
 
         msg.reply(Template(lang.message_history + history_table + lang.message_footer).render(username=msg.author.name))
     else:

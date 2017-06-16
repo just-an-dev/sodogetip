@@ -25,6 +25,9 @@ class TestHistory(unittest.TestCase):
         self.assertEqual(True, tip_verif.finish)
         self.assertEqual("transaction id of tip", tip_verif.tx_id)
 
+    def test_build_history(self):
+        data = history.get_user_history("just-an-dev")
+        history.build_message(data)
 
 if __name__ == '__main__':
     unittest.main()

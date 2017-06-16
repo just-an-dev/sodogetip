@@ -14,6 +14,20 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
+    def test_tip_simpl_float_comma(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " 10,8 doge", None)
+        self.assertEqual(10, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
+    def test_tip_simple_float_dot(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " 10.8 doge", None)
+        self.assertEqual(10, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
     def test_tip_simple_verify(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 100 doge verify", None)

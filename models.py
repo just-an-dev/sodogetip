@@ -27,14 +27,14 @@ class Tip(object):
 
     def parse_message(self, message_to_parse, rpc):
         p = re.compile(
-            '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z]+)\s(doge)\s?(verify)?',
+            '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z,.]+)\s(doge)\s?(verify)?',
             re.IGNORECASE)
         m = p.search(message_to_parse.strip())
         # Group 1 is +/u/sodogetiptest
         # Group 2 is either blank(tip to the commentor), an address, or a user
         self.receiver = m.group(2)
         # Group 3 is the tip amount in integers(ex.  100) or a word(ex.roll)
-        self.amount = m.group(3)
+        self.amount = m.group(3).replace(',', '.')
         # Group 4 is doge
         self.currency = m.group(4)
         # Group 5 is either blank(no verify message) or verify(verify message)
@@ -80,7 +80,7 @@ class Tip(object):
                 self.amount = config.tip_keyword[self.amount]
 
         # if tip is over 1000 doge set verify
-        if int(self.amount) >= 1000:
+        if float(self.amount) >= float(1000):
             self.verify = True
 
     def set_sender(self, sender_username):

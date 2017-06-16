@@ -2,3 +2,5 @@
 *.pyc
 user_file.json
 config.py
+data/
+praw.ini
