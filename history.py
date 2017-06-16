@@ -13,17 +13,19 @@ def repare_history(user):
     patch = Query()
     data = ver.search(patch.v1 == 'ok')
     if len(data) == 0:
-        # not patch apply
-        def_table = db.table("_default")
-        data_histo = def_table.all()
-        for row in data_histo:
-            if not isinstance(row['finish'], bool) and len(row['finish']) == 74 and row['tx_id'] == "":
-                # invert the 2 fields
-                cur_finish = row['finish']
-                db.update({'tx_id': cur_finish}, eids=[row.eid])
-                db.update({'finish': True}, eids=[row.eid])
         ver.insert({'v1': 'ok'})
-        bot_logger.logger.info('update of history of user %s (ok)' % user)
+
+    # not patch apply
+    def_table = db.table("_default")
+    data_histo = def_table.all()
+    for row in data_histo:
+        if not isinstance(row['finish'], bool) and len(row['finish']) == 64 and row['tx_id'] == "":
+            # invert the 2 fields
+            cur_finish = row['finish']
+            db.update({'tx_id': cur_finish}, eids=[row.eid])
+            db.update({'finish': True}, eids=[row.eid])
+    ver.insert({'v1': 'ok'})
+    bot_logger.logger.info('update of history of user %s (ok)' % user)
     db.close()
 
 
@@ -107,4 +109,4 @@ def build_message(data):
             tip['sender'], tip['receiver'],
             str_amount, tip['action'], str_finish)
 
-        return history_table
+    return history_table

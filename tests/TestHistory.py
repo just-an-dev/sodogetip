@@ -7,7 +7,7 @@ import models
 class TestHistory(unittest.TestCase):
     def test_get_history(self):
         data = history.get_user_history("just-an-dev")
-        self.assertEqual(3, len(data))
+        self.assertEqual(4, len(data))
 
     def test_update_history(self):
         # get an old tip
