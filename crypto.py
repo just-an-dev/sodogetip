@@ -15,10 +15,11 @@ def init_passphrase():
     global wallet_passphrase
     wallet_passphrase = getpass.getpass("wallet passphrase : ")
 
+
 def check_passphrase():
     rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
-            rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-            rpc_config['doge_rpc_port']), timeout=120)
+        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
+        rpc_config['doge_rpc_port']), timeout=120)
 
     logging.disable(logging.DEBUG)
     rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
@@ -26,11 +27,10 @@ def check_passphrase():
 
     # check
     wallet_info = rpc.getwalletinfo()
-    if wallet_info['unlocked_until'] < time.time() :
+    if wallet_info['unlocked_until'] < time.time():
         exit()
 
     rpc.walletlock()
-
 
 
 def balance_user(rpc, msg, failover_time):

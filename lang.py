@@ -46,11 +46,6 @@ message_account_details = "\n\nHere are your account details /u/{{ username }}!"
                             "\n\n__ATTENTION:__ This bot is \"on chain\" so for every tip you make, you'll pay a small fee (typically 1 DOGE)!"
 
 message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supported! ^[[help]](" + link_help + ")"
-message_balance = "Hello /u/{{ username }}!" \
-                  "\n\nYour confirmed balance is: {{ spendable_balance }} (${{ spendable_value_usd }})" \
-                  "\n\nYour pending balance is: {{ pending_balance }} (${{ pending_value_usd }})" \
-                  "\n\nTips to unregistered users: {{ pending_tips }} (${{ pending_tips_value_usd}})" \
-                  "\n\n__ATTENTION:__ This bot is \"on chain\" so for every tip you make, you'll pay a small fee (typically 1 DOGE)!"
 
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = ("__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGE/{{ txid }})")
