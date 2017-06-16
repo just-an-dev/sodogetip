@@ -71,6 +71,7 @@ class Tip(object):
             self.amount = crypto.get_user_spendable_balance(rpc, self.sender.address)
 
         if isinstance(self.amount, str):
+            bot_logger.logger.debug("self.amount is str")
             if self.amount == "roll":
                 self.amount = random.randint(1, 6)
 
