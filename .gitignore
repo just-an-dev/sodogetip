@@ -2,5 +2,5 @@
 *.pyc
 user_file.json
 config.py
-data/
+/data/
 praw.ini
