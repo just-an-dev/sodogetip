@@ -280,9 +280,11 @@ def history_user(msg):
             if tip['finish']:
                 str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
 
-            str_amount = str(float(tip['amount']))
-            if float(tip['amount']).is_integer():
-                str_amount = str(int(tip['amount']))
+            str_amount = ""
+            if tip['amount'] != "":
+                str_amount = str(float(tip['amount']))
+                if float(tip['amount']).is_integer():
+                    str_amount = str(int(tip['amount']))
 
 
             history_table += "%s|%s|%s|%s|%s|%s|\n" % (
