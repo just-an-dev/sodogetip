@@ -29,6 +29,7 @@ message_need_register = ("Hello /u/{{ username }}! You need to register an accou
                         "\n\nThe successful register message will contain your Dogecoin address to your tipping account.")
 
 message_invalid_amount = "__^[such ^error]__: ^The ^tip ^amount ^must ^be ^at ^least ^1 ^doge. ^[[help]](" + link_help + ")"
+message_invalid_currency = "__^[such ^error]__: ^The ^tip ^currency ^must ^be ^doge. ^[[help]](" + link_help + ")"
 message_balance_low_tip = ("__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^is ^too ^low ^for ^this ^tip ^[[help]](" + link_help + ")")
 message_balance_pending_tip = ("__^[such ^error]__: ^/u/{{ username }}\'s ^balance ^must ^wait ^for ^pending ^tips ^to ^be ^confirmed ^before ^sending ^this ^tip ^amount ^[[help]](" + link_help + ")")
 message_already_registered = "You are already registered!"

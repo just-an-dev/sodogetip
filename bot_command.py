@@ -176,6 +176,11 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
         return False
 
+    if tip.currency is None:
+        bot_logger.logger.info(lang.message_invalid_currency)
+        reddit.redditor(msg.author.name).message('invalid currency', lang.message_invalid_currency)
+        return False
+
     # update receiver
     tip.set_receiver(msg.parent().author.name)
 
