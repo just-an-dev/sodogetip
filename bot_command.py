@@ -108,7 +108,8 @@ def help_user(rpc, msg):
 def withdraw_user(rpc, msg, failover_time):
     split_message = msg.body.strip().split()
 
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
         sender_address = user_function.get_user_address(msg.author.name)
 
         if utils.check_amount_valid(split_message[1]) and split_message[4] != sender_address:

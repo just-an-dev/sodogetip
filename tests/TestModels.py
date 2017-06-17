@@ -3,6 +3,7 @@ import unittest
 
 import config
 import models
+import user_function
 from MockRpc import MockRpc
 
 
@@ -116,10 +117,14 @@ class TestTip(unittest.TestCase):
 
 
 class TestUser(unittest.TestCase):
-    def test_user_exist(self):
+    def test_user_is_registered(self):
         user = models.User("just-an-dev")
         self.assertEqual("nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", user.address)
         self.assertEqual(True, user.is_registered())
+
+    def test_user_exist(self):
+        self.assertEqual(True, user_function.user_exist('just-an-dev'))
+        self.assertEqual(True, user_function.user_exist('Just-An-dEv'))
 
     def test_user_not_exist(self):
         user = models.User("doge")

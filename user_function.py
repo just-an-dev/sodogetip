@@ -36,7 +36,7 @@ def get_user_address(user):
 
 def user_exist(user):
     user_list = get_users()
-    if user in user_list.keys():
+    if user.lower() in map(unicode.lower, user_list.keys()):
         return True
     else:
         return False
