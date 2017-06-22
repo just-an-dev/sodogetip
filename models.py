@@ -132,6 +132,9 @@ class Tip(object):
         if type(self.time) is datetime.datetime:
             return limit_date > self.time
 
+        if type(self.time) is unicode:
+            return limit_date > datetime.datetime.strptime(self.time, '%Y-%m-%dT%H:%M:%S.%f')
+
 
 class User(object):
     """Class to represent an user"""
