@@ -112,7 +112,13 @@ class TestTip(unittest.TestCase):
 
     def test_tip_expired(self):
         tip = models.Tip()
-        tip.time = datetime.datetime.now() - datetime.timedelta(days=4)
+        tip.time = datetime.datetime.now() - datetime.timedelta(days=5)
+        self.assertEqual(True, tip.is_expired())
+
+    def test_tip_unregistered(self):
+        list_tips = user_function.get_unregistered_tip()
+
+        tip = models.Tip().create_from_array(list_tips[0])
         self.assertEqual(True, tip.is_expired())
 
 

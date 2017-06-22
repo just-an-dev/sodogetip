@@ -96,10 +96,10 @@ def info_user(rpc, msg):
 
 
 def help_user(rpc, msg):
-    if user_function.user_exist(msg.author.name):
-        address = user_function.get_user_address(msg.author.name)
+    user = models.User(msg.author.name)
+    if user.is_registered():
         msg.reply(Template(lang.message_help + lang.message_footer).render(
-            username=msg.author.name, address=address))
+            username=msg.author.name, address=user.address))
     else:
         bot_logger.logger.info('user %s not registered (command : help) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
