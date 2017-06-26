@@ -112,7 +112,7 @@ def withdraw_user(rpc, msg, failover_time):
     if user.is_registered():
         sender_address = user_function.get_user_address(msg.author.name)
 
-        if utils.check_amount_valid(split_message[1]) and split_message[4] != sender_address:
+        if utils.check_amount_valid(split_message[1]) and split_message[4] != user.address:
             amount = float(split_message[1])
             amount = round(amount - 0.5)
 
@@ -126,20 +126,23 @@ def withdraw_user(rpc, msg, failover_time):
                     username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
+
+                history.add_to_history(msg.author.name, user.username, receiver_address, amount, "withdraw")
+
                 if time.time() > int(failover_time.value) + 86400:
-                    send = crypto.send_to(rpc, sender_address, receiver_address, amount)
+                    send = crypto.send_to(rpc, user.address, receiver_address, amount)
                 else:
-                    send = crypto.send_to_failover(rpc, sender_address, receiver_address, amount)
+                    send = crypto.send_to_failover(rpc, user.address, receiver_address, amount)
 
                 if send:
-                    history.add_to_history(msg.author.name, sender_address, receiver_address, amount,
-                                           "withdraw")
+                    history.add_to_history(msg.author.name, user.username, receiver_address, amount,
+                                           "withdraw", True, send)
                     value_usd = utils.get_coin_value(amount)
                     msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
                         username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
                         value_usd=str(value_usd)))
 
-        elif split_message[4] == sender_address:
+        elif split_message[4] == user.address:
             msg.reply(lang.message_withdraw_to_self + lang.message_footer)
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
