@@ -19,6 +19,7 @@ class Tip(object):
         self.currency = None
         self.sender = None
         self.finish = False
+        self.status = None
         self.tx_id = None
 
         self.id = random.randint(0, 99999999)
@@ -118,6 +119,9 @@ class Tip(object):
 
         if 'tx_id' in arr_tip.keys():
             self.tx_id = arr_tip['tx_id']
+
+        if 'status' in arr_tip.keys():
+            self.tx_id = arr_tip['status']
 
         self.time = arr_tip['time']
 

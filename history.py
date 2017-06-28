@@ -49,6 +49,7 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True, 
         "amount": amount,
         "action": action,
         "finish": finish,
+        "status": "",
         "tx_id": tx_id,
         'time': datetime.datetime.now().isoformat(),
     })
@@ -68,6 +69,7 @@ def add_to_history_tip(user_history, action, tip):
         "amount": tip.amount,
         "action": action,
         "finish": tip.finish,
+        "status": tip.status,
         "tx_id": tip.tx_id,
         'time': tip.time,
     })
@@ -84,6 +86,7 @@ def update_tip(user_history, tip):
         tip_query = Query()
         db.update({'finish': True}, tip_query.id == tip.id)
         db.update({'tx_id': tip.tx_id}, tip_query.id == tip.id)
+        db.update({'status': tip.status}, tip_query.id == tip.id)
         db.close()
     else:
         bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip.id))
@@ -94,6 +97,9 @@ def build_message(data):
     history_table += "---|---|---|---|:-:|:-:\n"
     for tip in data[::-1]:
         str_finish = "Pending"
+
+        if 'status' in tip.keys() and tip['status'] != "":
+            str_finish = str_finish + ' - ' + tip['status']
 
         if tip['finish']:
             str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"

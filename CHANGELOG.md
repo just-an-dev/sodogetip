@@ -3,6 +3,7 @@
 - Fix an error on tip to lowercase user registered
 - Fix an error on pending tips
 - Fix an error on withdraw in history
+- Add more info on tips status
 
 # v1.1 - 16/06/2017
 - Add support of new syntax for tip command #57

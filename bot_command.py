@@ -236,6 +236,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
                     ))
         else:
             bot_logger.logger.info('user %s not registered (receiver)' % tip.receiver.username)
+            tip.status = "waiting registration of receiver"
+
             # save tip
             user_function.save_unregistered_tip(tip)
 
@@ -301,18 +303,22 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                             sender=tip.sender.username, receiver=tip.receiver.username, amount=str(tip.amount),
                             value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
 
-                    # update tip status
-                    history.update_tip(tip.sender.username, tip)
-                    history.update_tip(tip.receiver.username, tip)
-
                 else:
+                    tip.status = "waiting registration of receiver"
                     bot_logger.logger.info(
                         "replay check for %s - user %s not registered " % (str(tip.id), tip.receiver.username))
+
             else:
+                tip.status = "receiver not registered in time"
+
                 bot_logger.logger.info(
                     "delete old tipping - %s send %s for %s  " % (
                         tip.sender.username, tip.amount, tip.receiver.username))
                 user_function.remove_pending_tip(tip.id)
+
+            # update tip status
+            history.update_tip(tip.sender.username, tip)
+            history.update_tip(tip.receiver.username, tip)
     else:
         bot_logger.logger.info("no pending tipping")
 
