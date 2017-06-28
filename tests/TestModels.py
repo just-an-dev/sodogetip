@@ -129,6 +129,11 @@ class TestUser(unittest.TestCase):
         self.assertEqual(True, user.is_registered())
 
     def test_user_exist(self):
+        u1 = models.User('just-an-dev')
+        u2 = models.User('Just-An-dEv')
+        self.assertEqual(True, u1.is_registered())
+        self.assertEqual(False, u2.is_registered())
+
         self.assertEqual(True, user_function.user_exist('just-an-dev'))
         self.assertEqual(True, user_function.user_exist('Just-An-dEv'))
 

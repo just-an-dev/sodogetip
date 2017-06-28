@@ -155,17 +155,17 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
     bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
-    # check user who use command is registered
-    if user_function.user_exist(msg.author.name) is not True:
-        bot_logger.logger.info('user %s not registered (sender) ' % msg.author.name)
-        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
-        return False
-
     # create an Tip
     tip = models.Tip()
 
     # update sender
     tip.set_sender(msg.author.name)
+
+    # check user who use command is registered
+    if tip.sender.is_registered() is not True:
+        bot_logger.logger.info('user %s not registered (sender) ' % msg.author.name)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
+        return False
 
     # parse message
     tip.parse_message(msg.body, rpc)
@@ -258,7 +258,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
 
 def history_user(msg):
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
         data_raw = history.get_user_history(msg.author.name)
         data = data_raw[-30:]
 

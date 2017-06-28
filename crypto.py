@@ -6,6 +6,7 @@ import traceback
 from bitcoinrpc.authproxy import AuthServiceProxy
 
 import bot_logger
+import models
 import user_function
 from config import bot_config, rpc_config
 
@@ -34,7 +35,8 @@ def check_passphrase():
 
 
 def balance_user(rpc, msg, failover_time):
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
         if time.time() > int(failover_time.value) + 86400:
             # not in safe mode
             balance = get_user_confirmed_balance(rpc, msg.author.name)
