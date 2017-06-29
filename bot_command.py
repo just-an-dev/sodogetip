@@ -262,7 +262,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 def history_user(msg):
     user = models.User(msg.author.name)
     if user.is_registered():
-        data_raw = history.get_user_history(msg.author.name)
+        data_raw = history.get_user_history(user.username)
         data = data_raw[-30:]
 
         history_table = history.build_message(data)
@@ -310,9 +310,9 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
 
             else:
                 tip.status = "receiver not registered in time"
-
+                tip.finish = ""
                 bot_logger.logger.info(
-                    "delete old tipping - %s send %s for %s  " % (
+                    "delete old tipping - %s send %s to %s  " % (
                         tip.sender.username, tip.amount, tip.receiver.username))
                 user_function.remove_pending_tip(tip.id)
 
@@ -337,7 +337,7 @@ def donate(rpc, reddit, msg, tx_queue, failover_time):
             history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
-            reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
+            reddit.redditor(user.username).message('invalid amount', lang.message_invalid_amount)
     else:
-        bot_logger.logger.info('user %s not registered (command : donate) ' % msg.author.name)
-        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

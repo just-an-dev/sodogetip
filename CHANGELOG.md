@@ -1,4 +1,4 @@
-# v1.2 - x/06/2017
+# v1.2 - 29/06/2017
 - Add error on invalid currency
 - Fix an error on tip to lowercase user registered
 - Fix an error on pending tips
