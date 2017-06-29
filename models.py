@@ -121,7 +121,7 @@ class Tip(object):
             self.tx_id = arr_tip['tx_id']
 
         if 'status' in arr_tip.keys():
-            self.tx_id = arr_tip['status']
+            self.status = arr_tip['status']
 
         self.time = arr_tip['time']
 

@@ -79,12 +79,12 @@ def add_to_history_tip(user_history, action, tip):
 def update_tip(user_history, tip):
     # update only finish tips
     bot_logger.logger.info("update history for user=%s, tip.tx_id=%s" % (user_history, tip.tx_id))
-    if tip.tx_id is not None:
+    if tip.id is not None:
         bot_logger.logger.info("update history for user=%s, tip.id=%s" % (user_history, tip.id))
 
         db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
         tip_query = Query()
-        db.update({'finish': True}, tip_query.id == tip.id)
+        db.update({'finish': tip.finish}, tip_query.id == tip.id)
         db.update({'tx_id': tip.tx_id}, tip_query.id == tip.id)
         db.update({'status': tip.status}, tip_query.id == tip.id)
         db.close()
