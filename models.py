@@ -275,7 +275,7 @@ class UserStorage:
 class VanityGenRequest(object):
     """Class to represent an user"""
 
-    def __init__(self, user,vanity):
+    def __init__(self, user, vanity):
         self.username = user
         self.pattern = None
         self.difficulty = None
