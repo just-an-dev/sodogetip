@@ -35,7 +35,7 @@ class SoDogeTip():
             bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
-                
+
                 for msg in self.reddit.inbox.unread(limit=None):
 
                     if (type(msg) is not Message) and (type(msg) is not Comment):
@@ -52,7 +52,8 @@ class SoDogeTip():
                             bot_command.register_user(self.rpc_main, msg, self.reddit)
                             utils.mark_msg_read(self.reddit, msg)
 
-                        elif (msg_body == '+info' and msg_subject == '+info') or (msg_body == '+balance' and msg_subject == '+balance'):
+                        elif (msg_body == '+info' and msg_subject == '+info') or (
+                                        msg_body == '+balance' and msg_subject == '+balance'):
                             bot_command.info_user(self.rpc_main, msg)
                             utils.mark_msg_read(self.reddit, msg)
 
@@ -89,7 +90,7 @@ class SoDogeTip():
                 bot_logger.logger.error('Main Bot loop crashed...')
                 time.sleep(10)
 
-    def process_pending_tip(self,tx_queue, failover_time):
+    def process_pending_tip(self, tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
             bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit, tx_queue, failover_time)

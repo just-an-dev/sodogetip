@@ -6,31 +6,7 @@ import bot_logger
 from config import DATA_PATH, bot_config
 
 
-# return all history of users
-def repare_history(user):
-    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
-    ver = db.table("version")
-    patch = Query()
-    data = ver.search(patch.v1 == 'ok')
-    if len(data) == 0:
-        ver.insert({'v1': 'ok'})
-
-    # not patch apply
-    def_table = db.table("_default")
-    data_histo = def_table.all()
-    for row in data_histo:
-        if not isinstance(row['finish'], bool) and len(row['finish']) == 64 and row['tx_id'] == "":
-            # invert the 2 fields
-            cur_finish = row['finish']
-            db.update({'tx_id': cur_finish}, eids=[row.eid])
-            db.update({'finish': True}, eids=[row.eid])
-    ver.insert({'v1': 'ok'})
-    bot_logger.logger.info('update of history of user %s (ok)' % user)
-    db.close()
-
-
 def get_user_history(user):
-    repare_history(user)
     db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
     data = db.all()
     db.close()
@@ -98,7 +74,7 @@ def build_message(data):
     for tip in data[::-1]:
         str_finish = "Pending"
 
-        if 'status' in tip.keys() and tip['status'] != "":
+        if 'status' in tip.keys() and tip['status'] is not None and tip['status'] != "":
             str_finish = str_finish + ' - ' + tip['status']
 
         if tip['finish']:

@@ -224,6 +224,8 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
             tip.tx_id = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
                                         failover_time)
             if tip.tx_id:
+                tip.finish = True
+                tip.status = 'ok'
                 bot_logger.logger.info(
                     '%s tip %s to %s' % (msg.author.name, str(tip.amount), tip.receiver.username))
 
@@ -262,7 +264,9 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 def history_user(msg):
     user = models.User(msg.author.name)
     if user.is_registered():
+        # get user history
         data_raw = history.get_user_history(user.username)
+        # keep only 30 last entry
         data = data_raw[-30:]
 
         history_table = history.build_message(data)
