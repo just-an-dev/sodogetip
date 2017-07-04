@@ -226,6 +226,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
             if tip.tx_id:
                 tip.finish = True
                 tip.status = 'ok'
+
                 bot_logger.logger.info(
                     '%s tip %s to %s' % (msg.author.name, str(tip.amount), tip.receiver.username))
 

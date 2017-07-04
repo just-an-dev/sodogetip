@@ -101,9 +101,11 @@ class TestTip(unittest.TestCase):
         mock_rpc = MockRpc()
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR 1000 doge", mock_rpc)
+        tip.set_sender('just-an-dev')
         self.assertEqual(1000, tip.amount)
         self.assertEqual("doge", tip.currency)
         self.assertEqual("nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", tip.receiver.address)
+        self.assertEqual("address-nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR", tip.receiver.username)
 
     def test_tip_not_expired(self):
         tip = models.Tip()
@@ -118,7 +120,7 @@ class TestTip(unittest.TestCase):
     def test_tip_unregistered(self):
         list_tips = user_function.get_unregistered_tip()
 
-        tip = models.Tip().create_from_array(list_tips[0])
+        tip = models.Tip().create_from_array(list_tips[2])
         self.assertEqual(True, tip.is_expired())
 
 

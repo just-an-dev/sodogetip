@@ -1,3 +1,9 @@
+# v1.2.2 - 04/07/2017
+- Fix an error on address tips
+
+# v1.2.1 - 29/06/2017
+- Fix an error on history
+
 # v1.2 - 29/06/2017
 - Add error on invalid currency
 - Fix an error on tip to lowercase user registered

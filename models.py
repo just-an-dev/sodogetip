@@ -53,8 +53,9 @@ class Tip(object):
             elif '@' in self.receiver:
                 self.receiver = User(self.receiver[1:])
             # to support send tip to an address
-            elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid'] == 'true':
+            elif len(self.receiver) == 34 and rpc.validateaddress(self.receiver)['isvalid']:
                 address = self.receiver
+                bot_logger.logger.info("Send an tip to address")
                 self.receiver = User("address-" + address)
                 self.receiver.address = address
 
