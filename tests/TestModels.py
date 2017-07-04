@@ -158,6 +158,8 @@ class TestUser(unittest.TestCase):
         user = models.User("just-an-dev")
         self.assertEqual(1000, user.get_balance_unregistered_tip())
 
+    def test_new_config(self):
+        self.assertEqual('test_config', models.User(config.bot_name).address)
 
 if __name__ == '__main__':
     unittest.main()

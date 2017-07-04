@@ -221,7 +221,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
 
         # check user who receive tip have an account
         if tip.receiver.is_registered():
-            tip.tx_id = crypto.tip_user(rpc, msg.author.name, tip.receiver.username, tip.amount, tx_queue,
+            tip.tx_id = crypto.tip_user(rpc, tip.sender.address, tip.receiver.address, tip.amount, tx_queue,
                                         failover_time)
             if tip.tx_id:
                 tip.finish = True
@@ -296,7 +296,7 @@ def replay_remove_pending_tip(rpc, reddit, tx_queue, failover_time):
                         "replay tipping %s - %s send %s to %s  " % (
                             str(tip.id), tip.sender.username, tip.amount, tip.receiver.username))
 
-                    tip.tx_id = crypto.tip_user(rpc, tip.sender.username, tip.receiver.username, tip.amount, tx_queue,
+                    tip.tx_id = crypto.tip_user(rpc, tip.sender.address, tip.receiver.address, tip.amount, tx_queue,
                                                 failover_time)
                     tip.finish = True
                     user_function.remove_pending_tip(tip.id)
@@ -337,7 +337,8 @@ def donate(rpc, reddit, msg, tx_queue, failover_time):
         amount = split_message[donate_index + 1]
         if utils.check_amount_valid(amount) and split_message[donate_index + 2] == 'doge':
 
-            crypto.tip_user(rpc, user.username, config.bot_name, amount, tx_queue, failover_time)
+            crypto.tip_user(rpc, user.username.address, models.User(config.bot_name).address, amount, tx_queue,
+                            failover_time)
 
             history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
