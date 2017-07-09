@@ -27,9 +27,10 @@ class Tip(object):
         self.message_fullname = None,
         self.time = datetime.datetime.now().isoformat()
 
-    def parse_message(self, message_to_parse):
-        # init rpc to validate address
-        rpc = crypto.get_rpc()
+    def parse_message(self, message_to_parse, rpc=None):
+        if rpc is None:
+            # init rpc to validate address
+            rpc = crypto.get_rpc()
 
         p = re.compile(
             '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z,.]+)\s(doge)\s?(verify)?',
@@ -161,9 +162,25 @@ class User(object):
         else:
             return False
 
+    # get total of tips send to users who are not registered
     def get_balance_unregistered_tip(self):
         return user_function.get_balance_unregistered_tip(self.username)
 
     # user CONFIRMED balance
     def get_balance_confirmed(self):
-        return crypto.get_user_confirmed_balance(None, self.username)
+        # check if user have pending tips
+        pending_tips = self.get_balance_unregistered_tip()
+        bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
+
+        return crypto.get_user_confirmed_balance(self.username) - int(pending_tips)
+
+    # user UN-CONFIRMED balance
+    def get_balance_unconfirmed(self):
+        return crypto.get_user_unconfirmed_balance(self.address)
+
+    def get_new_address(self):
+        # create a new simple address
+        rpc = crypto.get_rpc()
+        self.address = rpc.getnewaddress("reddit-%s" % self.username)
+
+        # todo : register in users table

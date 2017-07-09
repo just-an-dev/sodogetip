@@ -32,6 +32,9 @@ class TestHistory(unittest.TestCase):
         data = history.get_user_history("just-an-dev")
         history.build_message(data)
 
+    def test_add_history(self):
+        user = models.User("just-an-dev")
+        history.add_to_history(user, "", "", "", "")
 
 if __name__ == '__main__':
     unittest.main()

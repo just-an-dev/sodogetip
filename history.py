@@ -3,6 +3,7 @@ import datetime
 from tinydb import TinyDB, Query
 
 import bot_logger
+import models
 from config import DATA_PATH, bot_config
 
 
@@ -14,6 +15,10 @@ def get_user_history(user):
 
 
 def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id=""):
+    # convert object to string of name if necessary
+    if type(user_history) is models.User:
+        user_history = user_history.username
+
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
 
@@ -33,6 +38,10 @@ def add_to_history(user_history, sender, receiver, amount, action, finish=True, 
 
 
 def add_to_history_tip(user_history, action, tip):
+    # convert object to string of name if necessary
+    if type(user_history) is models.User:
+        user_history = user_history.username
+
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, tip.sender.username, tip.receiver.username, tip.amount, action, tip.finish))
 
@@ -53,6 +62,10 @@ def add_to_history_tip(user_history, action, tip):
 
 
 def update_tip(user_history, tip):
+    # convert object to string of name if necessary
+    if type(user_history) is models.User:
+        user_history = user_history.username
+
     # update only finish tips
     bot_logger.logger.info("update history for user=%s, tip.tx_id=%s" % (user_history, tip.tx_id))
     if tip.id is not None:

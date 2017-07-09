@@ -19,9 +19,6 @@ class SoDogeTip():
     def __init__(self):
         self.reddit = praw.Reddit(config.bot_name)
 
-        self.rpc_main = crypto.get_rpc()
-        self.rpc_azntispam = crypto.get_rpc()
-
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
 
@@ -43,16 +40,16 @@ class SoDogeTip():
                         split_message = msg_body.lower().split()
 
                         if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
-                            bot_command.register_user(self.rpc_main, msg, self.reddit)
+                            bot_command.register_user(msg, self.reddit)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif (msg_body == '+info' and msg_subject == '+info') or (
                                         msg_body == '+balance' and msg_subject == '+balance'):
-                            bot_command.info_user(self.rpc_main, msg)
+                            bot_command.info_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
-                            bot_command.help_user(self.rpc_main, msg)
+                            bot_command.help_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
@@ -61,18 +58,18 @@ class SoDogeTip():
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.withdraw_user(self.rpc_main, msg, failover_time)
+                            bot_command.withdraw_user(msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
+                            bot_command.tip_user(self.reddit, msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.donate(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
+                            bot_command.donate(self.reddit, msg, tx_queue, failover_time)
 
                         elif msg_subject == '+gold':
-                            bot_command.gold(self.rpc_main, msg, tx_queue, failover_time)
+                            bot_command.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
                         else:
@@ -91,19 +88,21 @@ class SoDogeTip():
     def process_pending_tip(self, tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.rpc_main, self.reddit, tx_queue, failover_time)
+            bot_command.replay_remove_pending_tip(self.reddit, tx_queue, failover_time)
             time.sleep(60)
 
     def anti_spamming_tx(self):
         # protect against spam attacks of an address having UTXOs.
         while True:
+            rpc_antispam = crypto.get_rpc()
+
             bot_logger.logger.info('Make clean of tx')
             # get list of account
             list_account = user_function.get_users()
             for account, address in list_account.items():
                 # don't flood rpc daemon
                 time.sleep(1)
-                list_tx = self.rpc_antispam.listunspent(1, 99999999999, [address])
+                list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
 
                 if len(list_tx) > int(bot_config['spam_limit']):
                     unspent_amounts = []
@@ -114,7 +113,7 @@ class SoDogeTip():
                             break
 
                     bot_logger.logger.info('Consolidate %s account !' % account)
-                    crypto.send_to(self.rpc_antispam, address, address, sum(unspent_amounts), True)
+                    crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
 
             # wait a bit before re-scan account
             time.sleep(240)
