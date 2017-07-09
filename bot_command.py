@@ -151,8 +151,6 @@ def withdraw_user(msg, failover_time):
 
 
 def tip_user(reddit, msg, tx_queue, failover_time):
-    rpc = crypto.get_rpc()
-
     bot_logger.logger.info('An user mention detected ')
     bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
