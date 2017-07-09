@@ -10,6 +10,7 @@ import bot_logger
 import config
 import crypto
 import lang
+import reddit_gold
 import user_function
 import utils
 from config import bot_config
@@ -69,7 +70,7 @@ class SoDogeTip():
                             bot_command.donate(self.reddit, msg, tx_queue, failover_time)
 
                         elif msg_subject == '+gold':
-                            bot_command.gold(self.reddit, msg, tx_queue, failover_time)
+                            reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
                         else:
