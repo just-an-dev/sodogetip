@@ -73,3 +73,13 @@ message_recipient_need_register_message =  ("Hello /u/{{ username }}! You need t
                         "\n\n3. Receive the successful register message" \
                         "\n\nThe successful register message will contain your Dogecoin address to your tipping account.")
 message_recipient_self = ("__^[such ^error]__: ^You ^cannot ^send ^yourself ^a ^tip")
+
+# Gold Message
+
+message_buy_gold = "TODO : add detail on reddit gold, price (2k) and command to buy"
+
+message_gold_no_more = "Sorry no more gold tickets to sell"
+message_buy_gold_error = "Error during buy of gold credits"
+message_buy_gold_success = "Thanks to buy reddit gold via bot and support hosting cost, all coffee for developpers, etc ..."
+
+message_gold_no_enough_doge = "Sorry it seems your confirmed balance is too low"

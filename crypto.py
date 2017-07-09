@@ -1,3 +1,4 @@
+import datetime
 import getpass
 import logging
 import time
@@ -6,9 +7,22 @@ import traceback
 from bitcoinrpc.authproxy import AuthServiceProxy
 
 import bot_logger
+import config
 import models
 import user_function
 from config import bot_config, rpc_config
+
+
+def get_rpc():
+    return AuthServiceProxy("http://%s:%s@%s:%s" % (
+        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
+        rpc_config['doge_rpc_port']), timeout=120)
+
+
+def backup_wallet():
+    rpc = get_rpc()
+    rpc.backupwallet(
+        config.backup_wallet_path + "backup_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".dat")
 
 
 def init_passphrase():
@@ -18,9 +32,7 @@ def init_passphrase():
 
 
 def check_passphrase():
-    rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
-        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-        rpc_config['doge_rpc_port']), timeout=120)
+    rpc = get_rpc()
 
     logging.disable(logging.DEBUG)
     rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
@@ -34,21 +46,24 @@ def check_passphrase():
     rpc.walletlock()
 
 
-def balance_user(rpc, msg, failover_time):
+def balance_user(msg, failover_time):
     user = models.User(msg.author.name)
     if user.is_registered():
+
+        # get confirmed balance
+        spendable_balance = user.get_balance_confirmed()
+
         if time.time() > int(failover_time.value) + 86400:
-            # not in safe mode
-            balance = get_user_confirmed_balance(rpc, msg.author.name)
-            spendable_balance = get_user_spendable_balance(rpc, msg.author.name) + balance
-        else:
-            # we are in safe mode
-            spendable_balance = get_user_confirmed_balance(rpc, msg.author.name)
+            # not in safe mode so add unconfirmed balance
+            spendable_balance += get_user_spendable_balance(user.username)
 
     return spendable_balance
 
 
 def get_user_spendable_balance(rpc, user):
+    if rpc is None:
+        rpc = get_rpc()
+
     # spendable_balance is the confirmed balance and the unconfirmed balance of
     # transactions that the bot has generated, but not the unconfirmed balance of
     # transactions originating from a wallet address that does not belong to the bot
@@ -78,10 +93,11 @@ def get_user_spendable_balance(rpc, user):
     return int(sum(unspent_amounts) - int(pending_tips))
 
 
-def get_user_confirmed_balance(rpc, user):
+def get_user_confirmed_balance(address):
+    rpc = get_rpc()
+
     unspent_amounts = []
 
-    address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(1, 99999999999, [address])
 
     # in case of no un-spent transaction
@@ -93,18 +109,13 @@ def get_user_confirmed_balance(rpc, user):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
-    # check if user have pending tips
-    pending_tips = user_function.get_balance_unregistered_tip(user)
-
-    bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
-
-    return int(sum(unspent_amounts) - int(pending_tips))
+    return int(sum(unspent_amounts))
 
 
-def get_user_unconfirmed_balance(rpc, user):
+def get_user_unconfirmed_balance(address):
+    rpc = get_rpc()
+
     unspent_amounts = []
-
-    address = user.address
     list_unspent = rpc.listunspent(0, 0, [address])
 
     # in case of no unconfirmed transactions
@@ -119,24 +130,27 @@ def get_user_unconfirmed_balance(rpc, user):
     return int(sum(unspent_amounts))
 
 
-def tip_user(rpc, sender_address, receiver_address, amount_tip, tx_queue, failover_time):
+def tip_user(sender_address, receiver_address, amount_tip, tx_queue, failover_time):
     bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
     if time.time() > int(failover_time.value) + 86400:
         bot_logger.logger.info("tip send in normal mode")
         try:
-            return send_to(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
+            return send_to(None, sender_address, receiver_address, amount_tip, False, tx_queue)
         except:
             traceback.print_exc()
     else:
         bot_logger.logger.info("tip send in safe mode")
         try:
-            return send_to_failover(rpc, sender_address, receiver_address, amount_tip, False, tx_queue)
+            return send_to_failover(None, sender_address, receiver_address, amount_tip, False, tx_queue)
         except:
             traceback.print_exc()
 
 
 def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue=None):
+    if rpc is None:
+        rpc = get_rpc()
+
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])
@@ -218,6 +232,9 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
 
 
 def send_to_failover(rpc, sender_address, receiver_address, amount, take_fee_on_amount=False, tx_queue=None):
+    if rpc is None:
+        rpc = get_rpc()
+
     bot_logger.logger.info("send %s to %s from %s" % (amount, sender_address, receiver_address))
 
     list_unspent = rpc.listunspent(1, 99999999999, [sender_address])

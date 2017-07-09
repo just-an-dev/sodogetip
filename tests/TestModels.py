@@ -161,5 +161,6 @@ class TestUser(unittest.TestCase):
     def test_new_config(self):
         self.assertEqual('test_config', models.User(config.bot_name).address)
 
+
 if __name__ == '__main__':
     unittest.main()
