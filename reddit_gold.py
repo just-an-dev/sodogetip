@@ -21,9 +21,9 @@ def gold(reddit, msg, tx_queue, failover_time):
             # Number of month
             quantity = 1
 
-            # todo : check if we have enough credits
-            gold_month = 1
-            if not gold_month >= 1:
+            # check if we have enough credits
+            gold_month = number_gold_credit()
+            if not gold_month >= quantity:
                 # store in db want an gold, when bot have new credits a PM can be send
                 db = TinyDB(config.DATA_PATH + 'reddit_gold_empty.json')
                 db.insert({
@@ -52,13 +52,15 @@ def gold(reddit, msg, tx_queue, failover_time):
                 # update gold reddit table
                 db = TinyDB(config.DATA_PATH + 'reddit_gold.json')
                 db.insert({
-                    "user": user.username,
+                    "user_buyer": user.username,
                     "quantity": quantity,
                     "price": config.price_reddit_gold,
+                    "currency": 'doge',
                     "amount": config.price_reddit_gold * quantity,
-                    "doge_price": utils.get_coin_value(1, 8),
+                    "usd_price": utils.get_coin_value(1, 8),
+                    "total_price": utils.get_coin_value(config.price_reddit_gold * quantity, 2),
                     'tx_id': tx_id,
-                    'status': True,
+                    'status': "buy",
                     'time': datetime.datetime.now().isoformat(),
                 })
                 db.close()
@@ -79,3 +81,22 @@ def gold(reddit, msg, tx_queue, failover_time):
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+def number_gold_credit():
+    credit = 0
+    db = TinyDB(config.DATA_PATH + 'reddit_gold.json')
+    data = db.all()
+    db.close()
+
+    for gold in data:
+
+        if gold['status'] == "buy":
+            # user have buy credits
+            credit = credit - int(gold['quantity'])
+
+        if gold['status'] == "refill":
+            # user have buy credits
+            credit = credit + int(gold['quantity'])
+
+    return credit
