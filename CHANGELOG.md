@@ -1,4 +1,4 @@
-# v2 - xx/07/2017
+# v2 - 10/07/2017
 - Buy reddit gold
 - Code refactoring
 - Fix error on tip with keyword "all"

@@ -17,12 +17,13 @@ import utils
 def gold(reddit, msg, tx_queue, failover_time):
     user = models.User(msg.author.name)
     if user.is_registered():
+        gold_month = number_gold_credit()
+
         if msg.body.strip() == 'buy':
             # Number of month
             quantity = 1
 
             # check if we have enough credits
-            gold_month = number_gold_credit()
             if not gold_month >= quantity:
                 # store in db want an gold, when bot have new credits a PM can be send
                 db = TinyDB(config.DATA_PATH + 'reddit_gold_empty.json')
@@ -64,7 +65,8 @@ def gold(reddit, msg, tx_queue, failover_time):
 
         else:
             # send info on reddit gold
-            msg.reply(Template(lang.message_buy_gold).render(username=user.username))
+            msg.reply(Template(lang.message_buy_gold).render(username=user.username, gold_credit=gold_month,
+                                                             price=config.price_reddit_gold))
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

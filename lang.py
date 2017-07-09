@@ -14,6 +14,9 @@ link_history = "https://www.reddit.com/message/compose?to=" + config.bot_name + 
 link_info = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Binfo&message=%2Binfo"
 link_balance = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bbalance&message=%2Bbalance"
 
+link_gold = "https://www.reddit.com/gold/about"
+link_gold_buy = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Binfo&message=%2Binfo"
+
 message_register_success = ("Hello /u/{{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: {{ address }}" \
                            "\n\nThis bot is \"on chain\" so when you tip some __mining fee are added__ ! " \
@@ -76,7 +79,11 @@ message_recipient_self = ("__^[such ^error]__: ^You ^cannot ^send ^yourself ^a ^
 
 # Gold Message
 
-message_buy_gold = "TODO : add detail on reddit gold, price (2k) and command to buy"
+message_buy_gold = "You can buy an reddit [gold](" + link_gold + "), price is {{ price }} for one month.\n\n " \
+                                                                 "To buy send a [message](" + link_gold_buy + ") to bot with subject +gold an content 'buy' \n\n" \
+                                                                                                              "The amount will be deducted on your wallet.\n\n" \
+                                                                                                              "There are {{ gold_credit }} credits remaining for sale\n\n" \
+                                                                                                              "The price is bit over than reddit price because it add fee to bitcoin exchange, support hosting cost, etc .."
 
 message_gold_no_more = "Sorry no more gold tickets to sell"
 message_buy_gold_error = "Error during buy of gold credits"
