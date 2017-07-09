@@ -15,7 +15,7 @@ link_info = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&s
 link_balance = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bbalance&message=%2Bbalance"
 
 link_gold = "https://www.reddit.com/gold/about"
-link_gold_buy = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Binfo&message=%2Binfo"
+link_gold_buy = "https://www.reddit.com/message/compose?to=" + config.bot_name + "&subject=%2Bgold&message=buy"
 
 message_register_success = ("Hello /u/{{ username }}! Your account is now registered and ready to tip Dogecoins :)" \
                            "\n\nYour wallet address is: {{ address }}" \
