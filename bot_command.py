@@ -110,7 +110,6 @@ def withdraw_user(rpc, msg, failover_time):
 
     user = models.User(msg.author.name)
     if user.is_registered():
-        sender_address = user_function.get_user_address(msg.author.name)
 
         if utils.check_amount_valid(split_message[1]) and split_message[4] != user.address:
             amount = float(split_message[1])
@@ -168,7 +167,7 @@ def tip_user(rpc, reddit, msg, tx_queue, failover_time):
         return False
 
     # parse message
-    tip.parse_message(msg.body, rpc)
+    tip.parse_message(msg.body)
 
     # set reddit message id
     tip.message_fullname = msg.fullname
@@ -344,6 +343,51 @@ def donate(rpc, reddit, msg, tx_queue, failover_time):
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             reddit.redditor(user.username).message('invalid amount', lang.message_invalid_amount)
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+# buy an reddit gold account for one month
+def gold(rpc_main, msg, tx_queue, failover_time):
+    gold_address = "DGo1dHhU2pRAyU58LgACYU3i3fpaZakG5u"
+    value_gold = "2000"
+
+    user = models.User(msg.author.name)
+    if user.is_registered():
+        if msg.body.strip() == 'buy':
+
+            # todo : check if we have enough credits
+            gold_month = 1
+            if not gold_month >= 1:
+                # todo : store in db want an gold, when bot have new credits a PM can be send
+                msg.reply(Template(lang.message_gold_no_more).render(username=user.username))
+                return False
+
+            # check user confirmed balance is ok
+            if user.get_balance_confirmed() >= value_gold:
+                msg.reply(Template(lang.message_gold_no_enough_doge).render(username=user.username))
+                return False
+
+            # send amount of one month of gold to address
+            tx_id = crypto.tip_user(rpc_main, user.address, gold_address, value_gold, tx_queue, failover_time)
+
+            if tx_id:
+                # todo : send gold reddit
+
+                # todo : update user history
+
+                # todo : update gold reddit table
+
+                # todo : send succes message
+                msg.reply(Template(lang.message_buy_gold_success).render(username=user.username))
+            else:
+                # todo : send error message
+                msg.reply(Template(lang.message_buy_gold_error).render(username=user.username))
+
+        else:
+            # send info on reddit gold
+            msg.reply(Template(lang.message_buy_gold).render(username=user.username))
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

@@ -27,7 +27,10 @@ class Tip(object):
         self.message_fullname = None,
         self.time = datetime.datetime.now().isoformat()
 
-    def parse_message(self, message_to_parse, rpc):
+    def parse_message(self, message_to_parse):
+        # init rpc to validate address
+        rpc = crypto.get_rpc()
+
         p = re.compile(
             '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z,.]+)\s(doge)\s?(verify)?',
             re.IGNORECASE)
@@ -160,3 +163,7 @@ class User(object):
 
     def get_balance_unregistered_tip(self):
         return user_function.get_balance_unregistered_tip(self.username)
+
+    # user CONFIRMED balance
+    def get_balance_confirmed(self):
+        return crypto.get_user_confirmed_balance(None, self.username)

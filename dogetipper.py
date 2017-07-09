@@ -3,7 +3,6 @@ import traceback
 
 import praw
 import requests
-from bitcoinrpc.authproxy import AuthServiceProxy
 from praw.models import Message, Comment
 
 import bot_command
@@ -13,20 +12,15 @@ import crypto
 import lang
 import user_function
 import utils
-from config import rpc_config, bot_config
+from config import bot_config
 
 
 class SoDogeTip():
     def __init__(self):
         self.reddit = praw.Reddit(config.bot_name)
 
-        self.rpc_main = AuthServiceProxy("http://%s:%s@%s:%s" % (
-            rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-            rpc_config['doge_rpc_port']), timeout=120)
-
-        self.rpc_antispam = AuthServiceProxy("http://%s:%s@%s:%s" % (
-            rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-            rpc_config['doge_rpc_port']), timeout=120)
+        self.rpc_main = crypto.get_rpc()
+        self.rpc_azntispam = crypto.get_rpc()
 
     def main(self, tx_queue, failover_time):
         bot_logger.logger.info('Main Bot loop !')
@@ -76,6 +70,10 @@ class SoDogeTip():
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.donate(self.rpc_main, self.reddit, msg, tx_queue, failover_time)
+
+                        elif msg_subject == '+gold':
+                            bot_command.gold(self.rpc_main, msg, tx_queue, failover_time)
+                            utils.mark_msg_read(self.reddit, msg)
 
                         else:
                             utils.mark_msg_read(self.reddit, msg)

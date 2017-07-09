@@ -11,6 +11,11 @@ import user_function
 from config import bot_config, rpc_config
 
 
+def get_rpc():
+    return AuthServiceProxy("http://%s:%s@%s:%s" % (
+        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
+        rpc_config['doge_rpc_port']), timeout=120)
+
 def init_passphrase():
     # enter user passphrase
     global wallet_passphrase
@@ -18,9 +23,7 @@ def init_passphrase():
 
 
 def check_passphrase():
-    rpc = AuthServiceProxy("http://%s:%s@%s:%s" % (
-        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-        rpc_config['doge_rpc_port']), timeout=120)
+    rpc = get_rpc()
 
     logging.disable(logging.DEBUG)
     rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
@@ -77,8 +80,10 @@ def get_user_spendable_balance(rpc, user):
 
     return int(sum(unspent_amounts) - int(pending_tips))
 
-
 def get_user_confirmed_balance(rpc, user):
+    if rpc is None:
+        rpc = get_rpc()
+
     unspent_amounts = []
 
     address = user_function.get_user_address(user)
