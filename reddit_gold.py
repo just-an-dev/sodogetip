@@ -50,20 +50,7 @@ def gold(reddit, msg, tx_queue, failover_time):
                 Redditor(reddit, user.username).gild(months=quantity)
 
                 # update gold reddit table
-                db = TinyDB(config.DATA_PATH + 'reddit_gold.json')
-                db.insert({
-                    "user_buyer": user.username,
-                    "quantity": quantity,
-                    "price": config.price_reddit_gold,
-                    "currency": 'doge',
-                    "amount": config.price_reddit_gold * quantity,
-                    "usd_price": utils.get_coin_value(1, 8),
-                    "total_price": utils.get_coin_value(config.price_reddit_gold * quantity, 2),
-                    'tx_id': tx_id,
-                    'status': "buy",
-                    'time': datetime.datetime.now().isoformat(),
-                })
-                db.close()
+                store_user_buy(user, quantity, tx_id)
 
                 # update user history
                 history.add_to_history(user, sender=user.username, receiver="Reddit", amount=config.price_reddit_gold,
@@ -100,3 +87,20 @@ def number_gold_credit():
             credit = credit + int(gold['quantity'])
 
     return credit
+
+
+def store_user_buy(user, quantity, tx_id):
+    db = TinyDB(config.DATA_PATH + 'reddit_gold.json')
+    db.insert({
+        "user_buyer": user.username,
+        "quantity": quantity,
+        "price": config.price_reddit_gold,
+        "currency": 'doge',
+        "amount": config.price_reddit_gold * quantity,
+        "usd_price": utils.get_coin_value(1, 8),
+        "total_price": utils.get_coin_value(config.price_reddit_gold * quantity, 2),
+        'tx_id': tx_id,
+        'status': "buy",
+        'time': datetime.datetime.now().isoformat(),
+    })
+    db.close()
