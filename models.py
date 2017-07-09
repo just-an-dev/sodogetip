@@ -72,7 +72,7 @@ class Tip(object):
             self.amount = round(float(self.amount) - 0.5)
 
         # if amount is all, get balance
-        if self.amount is 'all':
+        if self.amount == 'all':
             # get user balance
             self.amount = crypto.get_user_spendable_balance(rpc, self.sender.address)
 

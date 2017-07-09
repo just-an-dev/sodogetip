@@ -1,6 +1,7 @@
 # v2 - xx/07/2017
 - Buy reddit gold
 - Code refactoring
+- Fix error on tip with keyword "all"
 
 # v1.2.2 - 04/07/2017
 - Fix an error on address tips
