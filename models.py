@@ -172,7 +172,7 @@ class User(object):
         pending_tips = self.get_balance_unregistered_tip()
         bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
-        return crypto.get_user_confirmed_balance(self.username) - int(pending_tips)
+        return crypto.get_user_confirmed_balance(self.address) - int(pending_tips)
 
     # user UN-CONFIRMED balance
     def get_balance_unconfirmed(self):
