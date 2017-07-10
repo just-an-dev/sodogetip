@@ -74,7 +74,7 @@ class Tip(object):
         # if amount is all, get balance
         if self.amount == 'all':
             # get user balance
-            self.amount = crypto.get_user_spendable_balance(rpc, self.sender.address)
+            self.amount = crypto.get_user_spendable_balance(self.sender.address, rpc)
 
         bot_logger.logger.debug("isinstance self.amount = %s" % str(isinstance(self.amount, str)))
         bot_logger.logger.debug("type self.amount = %s" % str(type(self.amount)))

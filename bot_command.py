@@ -38,7 +38,7 @@ def register_user(msg, reddit):
 
         balance = user.get_balance_confirmed()
         pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
+        spendable_balance = crypto.get_user_spendable_balance(msg.author.name) + balance
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         content_reply = Template(
@@ -72,7 +72,7 @@ def info_user(msg):
         pending_tips = user.get_balance_unregistered_tip()
 
         pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name) + balance
+        spendable_balance = crypto.get_user_spendable_balance(msg.author.name) + balance
 
         bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
         bot_logger.logger.info('user %s spendable_balance = %s' % (msg.author.name, spendable_balance))
@@ -119,7 +119,7 @@ def withdraw_user(msg, failover_time):
             amount = round(amount - 0.5)
 
             user_balance = user.get_balance_confirmed()
-            user_spendable_balance = crypto.get_user_spendable_balance(rpc, msg.author.name)
+            user_spendable_balance = crypto.get_user_spendable_balance(msg.author.name)
 
             if amount >= float(user_balance) + float(user_spendable_balance):
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (

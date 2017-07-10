@@ -60,7 +60,7 @@ def balance_user(msg, failover_time):
     return spendable_balance
 
 
-def get_user_spendable_balance(rpc, user):
+def get_user_spendable_balance(user, rpc=None):
     if rpc is None:
         rpc = get_rpc()
 
