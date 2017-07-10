@@ -63,6 +63,16 @@ def gold(reddit, msg, tx_queue, failover_time):
                 # send error message
                 msg.reply(Template(lang.message_buy_gold_error).render(username=user.username))
 
+        elif msg.body.strip() == 'remind':
+            # store in db want an gold, when bot have new credits a PM can be send
+            db = TinyDB(config.DATA_PATH + 'reddit_gold_empty.json')
+            db.insert({
+                "user": user.username,
+                "remind": "True",
+                'time': datetime.datetime.now().isoformat(),
+            })
+            db.close()
+
         else:
             # send info on reddit gold
             msg.reply(Template(lang.message_buy_gold).render(username=user.username, gold_credit=gold_month,
