@@ -30,7 +30,7 @@ def get_coin_value(balance, format=2):
         jc_currency = c_currency.json()
         bot_logger.logger.info('value is $%s' % str(jc_currency['ticker']['price']))
         usd_currency = float(
-            "{0:." + str(format) + "f}".format(
+            str("{0:." + str(format) + "f}").format(
                 int(balance) * float(jc_currency['ticker']['price'])))
         return usd_currency
     except:
@@ -38,14 +38,14 @@ def get_coin_value(balance, format=2):
             c_currency = requests.get(url_get_value['coincap'])
             jc_currency = c_currency.json()
             bot_logger.logger.info('value is $%s' % str(jc_currency['usdPrice']))
-            usd_currency = float("{0:." + str(format) + "f}".format(int(balance) * float(jc_currency['usdPrice'])))
+            usd_currency = float(str("{0:." + str(format) + "f}").format(int(balance) * float(jc_currency['usdPrice'])))
             return usd_currency
         except:
             try:
                 c_currency = requests.get(url_get_value['cryptocompare'])
                 jc_currency = c_currency.json()
                 bot_logger.logger.info('value is $%s' % str(jc_currency['Data'][0]['Price']))
-                usd_currency = float("{0:." + str(format) + "f}".format(
+                usd_currency = float(str("{0:." + str(format) + "f}").format(
                     int(balance) * float(jc_currency['Data'][0]['Price'])))
                 return usd_currency
             except:
