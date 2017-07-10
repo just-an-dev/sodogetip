@@ -297,16 +297,17 @@ def replay_remove_pending_tip(reddit, tx_queue, failover_time):
 
                     tip.tx_id = crypto.tip_user(tip.sender.address, tip.receiver.address, tip.amount, tx_queue,
                                                 failover_time)
-                    tip.finish = True
+                    if tip.tx_id:
+                        tip.finish = True
 
-                    user_function.remove_pending_tip(tip.id)
+                        user_function.remove_pending_tip(tip.id)
 
-                    if tip.message_fullname is not None:
-                        msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
-                        msg = Comment(reddit, msg_id)
-                        msg.reply(Template(lang.message_tip).render(
-                            sender=tip.sender.username, receiver=tip.receiver.username, amount=str(tip.amount),
-                            value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
+                        if tip.message_fullname is not None:
+                            msg_id = re.sub(r't\d+_(?P<id>\w+)', r'\g<id>', tip.message_fullname)
+                            msg = Comment(reddit, msg_id)
+                            msg.reply(Template(lang.message_tip).render(
+                                sender=tip.sender.username, receiver=tip.receiver.username, amount=str(tip.amount),
+                                value_usd=str(tip.get_value_usd()), txid=tip.tx_id))
 
                 else:
                     tip.status = "waiting registration of receiver"
