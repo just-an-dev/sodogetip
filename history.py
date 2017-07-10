@@ -14,7 +14,7 @@ def get_user_history(user):
     return data
 
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=True, tx_id=""):
+def add_to_history(user_history, sender, receiver, amount, action, finish=False, tx_id=""):
     # convert object to string of name if necessary
     if type(user_history) is models.User:
         user_history = user_history.username
