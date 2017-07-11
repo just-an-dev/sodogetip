@@ -65,7 +65,7 @@ def gold(reddit, msg, tx_queue, failover_time):
 
         elif msg.body.strip() == 'remind':
             # store in db want an gold, when bot have new credits a PM can be send
-            db = TinyDB(config.DATA_PATH + 'reddit_gold_empty.json')
+            db = TinyDB(config.DATA_PATH + 'reddit_gold_remind.json')
             db.insert({
                 "user": user.username,
                 "remind": "True",
