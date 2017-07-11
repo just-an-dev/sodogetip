@@ -1,3 +1,7 @@
+# v2.0.1 - 10/07/2017
+- Fix an error on formatting
+- Little improvement on history
+
 # v2 - 10/07/2017
 - Buy reddit gold
 - Code refactoring

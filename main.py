@@ -39,7 +39,7 @@ if __name__ == "__main__":
             Bot = SoDogeTip()
 
             # thread to process reddit commands
-            thread_master = Thread(target=Bot.main, args=(tx_queue, failover_time,))
+            thread_master = Thread(name='app', target=Bot.main, args=(tx_queue, failover_time,))
             # thread to process pending tips
             thread_pending_tip = Thread(name='pending_tip', target=Bot.process_pending_tip,
                                         args=(tx_queue, failover_time,))
