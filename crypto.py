@@ -35,7 +35,7 @@ def check_passphrase():
     rpc = get_rpc()
 
     logging.disable(logging.DEBUG)
-    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
+    rpc.walletpassphrase(wallet_passphrase, float(config.rpc_config['timeout']))
     logging.disable(logging.NOTSET)
 
     # check
