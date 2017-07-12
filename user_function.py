@@ -3,12 +3,12 @@ import json
 from tinydb import TinyDB, Query
 
 import bot_logger
-from config import bot_config, DATA_PATH
+import config
 
 
 # read file
 def get_users():
-    with open(DATA_PATH + bot_config['user_file'], 'r') as f:
+    with open(config.user_file, 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
@@ -21,7 +21,7 @@ def get_users():
 def add_user(user, address):
     bot_logger.logger.info("Add user " + user + ' ' + address)
     data = get_users()
-    with open(DATA_PATH + bot_config['user_file'], 'w') as f:
+    with open(config.user_file, 'w') as f:
         data[user] = address
         json.dump(data, f)
 
@@ -43,7 +43,7 @@ def user_exist(user):
 
 
 def get_unregistered_tip():
-    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    db = TinyDB(config.unregistered_tip_user)
     data = db.all()
     db.close()
     return data
@@ -51,7 +51,7 @@ def get_unregistered_tip():
 
 def save_unregistered_tip(tip):
     bot_logger.logger.info("Save tip form %s to %s " % (tip.sender.username, tip.receiver.username))
-    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    db = TinyDB(config.unregistered_tip_user)
     db.insert({
         'id': tip.id,
         'amount': tip.amount,
@@ -64,7 +64,7 @@ def save_unregistered_tip(tip):
 
 
 def remove_pending_tip(id_tip):
-    db = TinyDB(DATA_PATH + bot_config['unregistered_tip_user'])
+    db = TinyDB(config.unregistered_tip_user)
     tip = Query()
     db.remove(tip.id == id_tip)
     db.close()

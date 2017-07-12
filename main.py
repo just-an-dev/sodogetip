@@ -6,9 +6,9 @@ from multiprocessing import Value
 from threading import Thread
 
 import bot_logger
+import config
 import crypto
 import utils
-from config import bot_config, DATA_PATH
 from dogetipper import SoDogeTip
 
 if __name__ == "__main__":
@@ -23,8 +23,8 @@ if __name__ == "__main__":
     while True:
         try:
             # create directory to store user history
-            if not os.path.exists(DATA_PATH + bot_config['user_history_path']):
-                os.makedirs(DATA_PATH + bot_config['user_history_path'])
+            if not os.path.exists(config.history_path):
+                os.makedirs(config.history_path)
 
             # create file if not exist (user storage)
             utils.create_user_storage()

@@ -1,29 +1,34 @@
 import datetime
+import random
 
 from tinydb import TinyDB, Query
 
 import bot_logger
+import config
 import models
-from config import DATA_PATH, bot_config
 
 
 def get_user_history(user):
-    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user + '.json')
+    db = TinyDB(config.history_path + user + '.json')
     data = db.all()
     db.close()
     return data
 
 
-def add_to_history(user_history, sender, receiver, amount, action, finish=False, tx_id=""):
+def add_to_history(user_history, sender, receiver, amount, action, finish=False, tx_id="", tip_id=""):
     # convert object to string of name if necessary
     if type(user_history) is models.User:
         user_history = user_history.username
 
+    if tip_id == "":
+        tip_id = random.randint(0, 99999999)
+
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, sender, receiver, amount, action, finish))
 
-    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
+    db = TinyDB(config.history_path + user_history + '.json')
     db.insert({
+        "id": tip_id,
         "user": user_history,
         "sender": sender,
         "receiver": receiver,
@@ -45,7 +50,7 @@ def add_to_history_tip(user_history, action, tip):
     bot_logger.logger.info("Save for history user=%s, sender=%s, receiver=%s, amount=%s, action=%s, finish=%s" % (
         user_history, tip.sender.username, tip.receiver.username, tip.amount, action, tip.finish))
 
-    db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
+    db = TinyDB(config.history_path + user_history + '.json')
     db.insert({
         "user": user_history,
         "id": tip.id,
@@ -71,7 +76,7 @@ def update_tip(user_history, tip):
     if tip.id is not None:
         bot_logger.logger.info("update history for user=%s, tip.id=%s" % (user_history, tip.id))
 
-        db = TinyDB(DATA_PATH + bot_config['user_history_path'] + user_history + '.json')
+        db = TinyDB(config.history_path + user_history + '.json')
         tip_query = Query()
         db.update({'finish': tip.finish}, tip_query.id == tip.id)
         db.update({'tx_id': tip.tx_id}, tip_query.id == tip.id)
@@ -105,3 +110,22 @@ def build_message(data):
             str_amount, tip['action'], str_finish)
 
     return history_table
+
+
+def update_withdraw(user_history, status, tx_id, tip_id):
+    # convert object to string of name if necessary
+    if type(user_history) is models.User:
+        user_history = user_history.username
+
+    # update only finish tips
+    if tip_id is not None:
+        bot_logger.logger.info("update history for user=%s, tip.id=%s" % (user_history, tip_id))
+
+        db = TinyDB(config.history_path + user_history + '.json')
+        tip_query = Query()
+        db.update({'finish': status}, tip_query.id == tip_id)
+        db.update({'tx_id': tx_id}, tip_query.id == tip_id)
+        db.update({'status': "finish"}, tip_query.id == tip_id)
+        db.close()
+    else:
+        bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip.id))

@@ -10,13 +10,13 @@ import bot_logger
 import config
 import models
 import user_function
-from config import bot_config, rpc_config
 
 
 def get_rpc():
     return AuthServiceProxy("http://%s:%s@%s:%s" % (
-        rpc_config['doge_rpc_username'], rpc_config['doge_rpc_password'], rpc_config['doge_rpc_host'],
-        rpc_config['doge_rpc_port']), timeout=120)
+        config.rpc_config['doge_rpc_username'], config.rpc_config['doge_rpc_password'],
+        config.rpc_config['doge_rpc_host'],
+        config.rpc_config['doge_rpc_port']), timeout=config.rpc_config['timeout'])
 
 
 def backup_wallet():
@@ -35,7 +35,7 @@ def check_passphrase():
     rpc = get_rpc()
 
     logging.disable(logging.DEBUG)
-    rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
     logging.disable(logging.NOTSET)
 
     # check
@@ -216,7 +216,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
     logging.disable(logging.DEBUG)
-    rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
     logging.disable(logging.NOTSET)
 
     signed = rpc.signrawtransaction(raw_tx)
@@ -284,7 +284,7 @@ def send_to_failover(rpc, sender_address, receiver_address, amount, take_fee_on_
     bot_logger.logger.info('send %s Doge form %s to %s ' % (str(amount), receiver_address, receiver_address))
 
     logging.disable(logging.DEBUG)
-    rpc.walletpassphrase(wallet_passphrase, int(bot_config['timeout']))
+    rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
     logging.disable(logging.NOTSET)
 
     signed = rpc.signrawtransaction(raw_tx)
@@ -303,7 +303,7 @@ def calculate_fee(nb_input, nb_out):
     size = calculate_size(nb_input, nb_out)
     # bot_logger.logger.debug("size of tx : %s" % size)
 
-    fee_rate = float(bot_config['rate_fee'])
+    fee_rate = float(config.rate_fee)
     fee = 1
     if size > 1000:
         fee = (size / 1000) * fee_rate

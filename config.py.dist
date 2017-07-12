@@ -15,15 +15,14 @@ DATA_PATH = '/data/'
 bot_name = "sodogetiptest"
 backup_wallet_path = "/path/of/wallet/backup/"
 
-bot_config = {
-    'user_file': 'user_files.json',
-    'unregistered_tip_user': 'unregistered_tip_user.json',
-    'user_history_path': 'user_history/',
-    'logs_path': 'logs/',
-    'rate_fee': '1',
-    'spam_limit': '500'
-    'timeout': '30'
-}
+user_file = DATA_PATH + 'user_files.json'
+unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json',
+
+logs_path = DATA_PATH + 'logs/'
+history_path = DATA_PATH + 'history/'
+
+spam_limit = 1000
+rate_fee = 1
 
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
