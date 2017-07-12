@@ -13,7 +13,6 @@ import lang
 import reddit_gold
 import user_function
 import utils
-from config import bot_config
 
 
 class SoDogeTip():
@@ -105,7 +104,7 @@ class SoDogeTip():
                 time.sleep(1)
                 list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
 
-                if len(list_tx) > int(bot_config['spam_limit']):
+                if len(list_tx) > int(config.spam_limit):
                     unspent_amounts = []
                     for i in range(0, len(list_tx), 1):
                         unspent_amounts.append(list_tx[i]['amount'])

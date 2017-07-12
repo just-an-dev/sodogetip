@@ -1,3 +1,4 @@
+import random
 import re
 
 from jinja2 import Template
@@ -108,7 +109,6 @@ def help_user(msg):
 
 
 def withdraw_user(msg, failover_time):
-    rpc = crypto.get_rpc()
     split_message = msg.body.strip().split()
 
     user = models.User(msg.author.name)
@@ -119,26 +119,27 @@ def withdraw_user(msg, failover_time):
             amount = round(amount - 0.5)
 
             user_balance = user.get_balance_confirmed()
-            user_spendable_balance = crypto.get_user_spendable_balance(msg.author.name)
+            user_spendable_balance = crypto.get_user_spendable_balance(user.username)
 
             if amount >= float(user_balance) + float(user_spendable_balance):
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
-                    msg.author.name, amount, user_balance))
+                user.username, amount, user_balance))
                 msg.reply(Template(lang.message_balance_low_withdraw).render(
-                    username=msg.author.name, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
+                    username=user.username, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
                 receiver_address = split_message[4]
+                tip_id = random.randint(0, 99999999)
 
-                history.add_to_history(msg.author.name, user.username, receiver_address, amount, "withdraw")
+                history.add_to_history(user.username, user.username, receiver_address, amount, "withdraw", "", tip_id)
 
                 send = crypto.tip_user(user.address, receiver_address, amount, None, failover_time)
 
                 if send:
-                    history.add_to_history(msg.author.name, user.username, receiver_address, amount,
-                                           "withdraw", True, send)
+                    history.update_withdraw(user.username, True, send, tip_id)
+
                     value_usd = utils.get_coin_value(amount)
                     msg.reply(Template(lang.message_withdraw + lang.message_footer).render(
-                        username=msg.author.name, receiver_address=receiver_address, amount=str(amount),
+                        username=user.username, receiver_address=receiver_address, amount=str(amount),
                         value_usd=str(value_usd)))
 
         elif split_message[4] == user.address:
