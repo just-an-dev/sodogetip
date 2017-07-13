@@ -33,7 +33,7 @@ formater = args.f
 print "Formater used for analysis is " + formater
 
 # check users history, list file in path
-history_path = config.DATA_PATH + config.bot_config['user_history_path']
+history_path = config.history_path
 only_files = [f for f in listdir(history_path) if isfile(join(history_path, f))]
 
 for username in only_files:
@@ -41,7 +41,7 @@ for username in only_files:
 
     u = models.User(clean_user)
 
-    db = TinyDB(config.DATA_PATH + config.bot_config['user_history_path'] + clean_user + '.json')
+    db = TinyDB(config.history_path + clean_user + '.json')
     data_histo = db.all()
     for row in data_histo:
 
