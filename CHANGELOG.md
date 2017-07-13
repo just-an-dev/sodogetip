@@ -2,6 +2,7 @@
 - Add remind function
 - Add monthly report script
 - Fix an error on withdraw
+- Add gild as alias of gold command
 
 # v2.0.1 - 10/07/2017
 - Fix an error on formatting

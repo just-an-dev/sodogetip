@@ -68,7 +68,7 @@ class SoDogeTip():
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.donate(self.reddit, msg, tx_queue, failover_time)
 
-                        elif msg_subject == '+gold':
+                        elif msg_subject == '+gold' or msg_subject == '+gild':
                             reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
