@@ -15,8 +15,6 @@ import utils
 
 
 def register_user(msg, reddit):
-    rpc = crypto.get_rpc()
-
     user = models.User(msg.author.name)
     if not user.is_registered():
         user.get_new_address()
@@ -63,8 +61,6 @@ def register_user(msg, reddit):
 
 
 def info_user(msg):
-    rpc = crypto.get_rpc()
-
     user = models.User(msg.author.name)
     if user.is_registered():
         balance = user.get_balance_confirmed()
