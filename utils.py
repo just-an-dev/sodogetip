@@ -26,33 +26,26 @@ def create_unregistered_tip_storage():
 
 
 def get_coin_value(balance, format=2):
+    str_format = str("{0:." + str(format) + "f}")
+
     try:
-        c_currency = requests.get(url_get_value['cryptonator'])
-        jc_currency = c_currency.json()
-        bot_logger.logger.info('value is $%s' % str(jc_currency['ticker']['price']))
-        usd_currency = float(
-            str("{0:." + str(format) + "f}").format(
-                int(balance) * float(jc_currency['ticker']['price'])))
-        return usd_currency
+        jc_currency = requests.get(url_get_value['cryptonator']).json()
+        coin_val = xpath_get(jc_currency, "/ticker/price")
     except:
         try:
-            c_currency = requests.get(url_get_value['coincap'])
-            jc_currency = c_currency.json()
-            bot_logger.logger.info('value is $%s' % str(jc_currency['usdPrice']))
-            usd_currency = float(str("{0:." + str(format) + "f}").format(int(balance) * float(jc_currency['usdPrice'])))
-            return usd_currency
+            jc_currency = requests.get(url_get_value['coincap']).json()
+            coin_val = xpath_get(jc_currency, "/usdPrice")
         except:
             try:
-                c_currency = requests.get(url_get_value['cryptocompare'])
-                jc_currency = c_currency.json()
-                bot_logger.logger.info('value is $%s' % str(jc_currency['Data'][0]['Price']))
-                usd_currency = float(str("{0:." + str(format) + "f}").format(
-                    int(balance) * float(jc_currency['Data'][0]['Price'])))
-                return usd_currency
+                jc_currency = requests.get(url_get_value['cryptocompare']).json()
+                coin_val = xpath_get(jc_currency, "/Data/O/Price")
             except:
                 traceback.print_exc()
                 return 0
 
+    bot_logger.logger.info('value is $%s' % str(coin_val))
+    usd_currency = float(str_format.format(int(balance) * float(coin_val)))
+    return usd_currency
 
 
 def check_amount_valid(amount):
@@ -64,6 +57,21 @@ def check_amount_valid(amount):
             return False
     except (UnicodeEncodeError, ValueError):
         return False
+
+
+def xpath_get(mydict, path):
+    elem = mydict
+    try:
+        for x in path.strip("/").split("/"):
+            try:
+                x = int(x)
+                elem = elem[x]
+            except ValueError:
+                elem = elem.get(x)
+    except:
+        pass
+
+    return elem
 
 
 def mark_msg_read(reddit, msg):
