@@ -4,6 +4,7 @@ import datetime
 from os import listdir
 from os.path import isfile, join
 
+import praw
 from tinydb import TinyDB
 
 import config
@@ -24,13 +25,12 @@ average_tip = {'all': []}
 
 # parse argument
 parser = argparse.ArgumentParser(description='Bot Monthly stats')
-parser.add_argument('-f', help='Date formater for analyse', type=str, default="%Y-%m")
-parser.add_argument('-d', help='Debug', type=bool)
+parser.add_argument('-f', help='Date formater for analyse', type=str, dest='formater', default="%Y-%m")
+parser.add_argument('--gold', help='Gold', type=bool, dest='gold')
+parser.add_argument('--debug', help='Debug', type=bool)
 args = parser.parse_args()
 
-formater = args.f
-
-print "Formater used for analysis is " + formater
+print "Formater used for analysis is " + args.formater
 
 # check users history, list file in path
 history_path = config.history_path
@@ -46,7 +46,7 @@ for username in only_files:
     for row in data_histo:
 
         date_check = datetime.datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.%f')
-        key = date_check.strftime(formater)
+        key = date_check.strftime(args.formater)
 
         # Compute registration
         if u.is_registered():
@@ -115,3 +115,8 @@ for (month, item) in average_tip.items():
 print "\n\n Total amount of Tip :"
 for (month, item) in average_tip.items():
     print month + " => " + str(sum(item))
+
+if args.gold:
+    print "\n\n Gold Creddit :"
+    reddit = praw.Reddit(config.bot_config)
+    print "Current gold credit  => " + str(reddit.user.me().gold_creddits)
