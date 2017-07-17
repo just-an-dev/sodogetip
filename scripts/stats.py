@@ -90,30 +90,30 @@ for username in only_files:
             average_tip[key].append(row['amount'])
 
 print "\n\n Registration :"
-for (month, item) in list_of_user.items():
+for (month, item) in sorted(list_of_user.items(), reverse=True):
     print month + " => " + str(len(item))
 
 print "\n\n Missing Registration :"
-for (month, item) in list_of_user_miss.items():
+for (month, item) in sorted(list_of_user_miss.items(), reverse=True):
     print month + " => " + str(len(item))
 
 print "\n\n High Tip :"
-for (month, item) in high_tip.items():
+for (month, item) in sorted(high_tip.items(), reverse=True):
     if args.d:
         print month + " => " + str(item)
     else:
         print month + " => " + item['sender'] + " send " + str(item['amount']) + " to " + item['receiver']
 
 print "\n\n Average Tip :"
-for (month, item) in average_tip.items():
+for (month, item) in sorted(average_tip.items(), reverse=True):
     print month + " => " + str(sum(item) / len(item))
 
 print "\n\n Number of Tip :"
-for (month, item) in average_tip.items():
+for (month, item) in sorted(average_tip.items(), reverse=True):
     print month + " => " + str(len(item))
 
 print "\n\n Total amount of Tip :"
-for (month, item) in average_tip.items():
+for (month, item) in sorted(average_tip.items(), reverse=True):
     print month + " => " + str(sum(item))
 
 if args.gold:
