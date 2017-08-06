@@ -1,4 +1,4 @@
-class MockRpc():
+class MockRpc:
     def validateaddress(self, address):
         data = {"account": "reddit-just-an-dev", "ismine": 'true', "isvalid": 'true', "iscompressed": 'true',
                 "isscript": 'false', "iswatchonly": 'false', "address": "nnz4zsVZtpngPVmARnvzBS79DwV6k7vRvS",

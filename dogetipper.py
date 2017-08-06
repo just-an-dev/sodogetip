@@ -15,7 +15,7 @@ import user_function
 import utils
 
 
-class SoDogeTip():
+class SoDogeTip:
     def __init__(self):
         self.reddit = praw.Reddit(config.bot_name)
 

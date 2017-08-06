@@ -33,11 +33,11 @@ def register_user(msg, reddit):
         else:
             bot_logger.logger.warning('Error during register !')
     else:
-        bot_logger.logger.info('%s are already registered ' % msg.author.name)
+        bot_logger.logger.info('%s are already registered ' % user.username)
 
         balance = user.get_balance_confirmed()
         pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(msg.author.name) + balance
+        spendable_balance = crypto.get_user_spendable_balance(user.address) + balance
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         content_reply = Template(
@@ -69,17 +69,17 @@ def info_user(msg):
         pending_tips = user.get_balance_unregistered_tip()
 
         pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(msg.author.name) + balance
+        spendable_balance = crypto.get_user_spendable_balance(user.address) + balance
 
-        bot_logger.logger.info('user %s balance = %s' % (msg.author.name, balance))
-        bot_logger.logger.info('user %s spendable_balance = %s' % (msg.author.name, spendable_balance))
+        bot_logger.logger.info('user %s balance = %s' % (user.username, balance))
+        bot_logger.logger.info('user %s spendable_balance = %s' % (user.username, spendable_balance))
 
         pending_value_usd = utils.get_coin_value(pending_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         pending_tips_value_usd = utils.get_coin_value(pending_tips)
 
         msg.reply(Template(lang.message_account_details + lang.message_footer).render(
-            username=msg.author.name,
+            username=user.username,
             spendable_balance=str(spendable_balance),
             spendable_value_usd=str(spendable_value_usd),
             pending_balance=str(pending_balance),
@@ -88,7 +88,7 @@ def info_user(msg):
             pending_tips_value_usd=str(pending_tips_value_usd),
             address=user.address))
 
-        history.add_to_history(msg.author.name, "", "", spendable_balance, "info")
+        history.add_to_history(user.username, "", "", spendable_balance, "info")
     else:
         bot_logger.logger.info('user %s not registered (command : info) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
@@ -115,11 +115,11 @@ def withdraw_user(msg, failover_time):
             amount = round(amount - 0.5)
 
             user_balance = user.get_balance_confirmed()
-            user_spendable_balance = crypto.get_user_spendable_balance(user.username)
+            user_spendable_balance = crypto.get_user_spendable_balance(user.address)
 
             if amount >= float(user_balance) + float(user_spendable_balance):
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
-                user.username, amount, user_balance))
+                    user.username, amount, user_balance))
                 msg.reply(Template(lang.message_balance_low_withdraw).render(
                     username=user.username, user_balance=str(user_balance), amount=str(amount)) + lang.message_footer)
             else:
@@ -229,7 +229,7 @@ def tip_user(reddit, msg, tx_queue, failover_time):
                 # if user have 'verify' in this command he will have confirmation
                 if tip.verify:
                     msg.reply(Template(lang.message_tip).render(
-                        sender=msg.author.name, receiver=tip.receiver.username,
+                        sender=tip.sender.username, receiver=tip.receiver.username,
                         amount=str(int(tip.amount)),
                         value_usd=str(tip.get_value_usd()), txid=tip.tx_id
                     ))
@@ -345,4 +345,3 @@ def donate(reddit, msg, tx_queue, failover_time):
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
-

@@ -128,4 +128,4 @@ def update_withdraw(user_history, status, tx_id, tip_id):
         db.update({'status': "finish"}, tip_query.id == tip_id)
         db.close()
     else:
-        bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip.id))
+        bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip_id))

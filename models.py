@@ -105,11 +105,10 @@ class Tip(object):
             self.receiver = User(receiver_username)
 
     def get_value_usd(self):
-        return utils.get_coin_value(self.amount)
+        return utils.get_coin_value(self.amount, self.currency)
 
     def create_from_array(self, arr_tip):
         # import user
-
         self.receiver = User(arr_tip['receiver'])
         self.sender = User(arr_tip['sender'])
 
@@ -150,10 +149,12 @@ class User(object):
 
     def __init__(self, user):
         self.username = user
+
+        # address is activate address (only one address can be active)
         self.address = None
 
-        if user_function.user_exist(self.username):
-            self.address = user_function.get_user_address(self.username)
+        if self.exist(self.username):
+            self.address = self.get_user_address()
 
     def is_registered(self):
         # if user have address it's registered
@@ -184,3 +185,23 @@ class User(object):
         self.address = rpc.getnewaddress("reddit-%s" % self.username)
 
         # todo : register in users table
+
+    def get_user_address(self, username=None):
+        if username is None:
+            username = self.username
+
+        user_list = user_function.get_users()
+        try:
+            return user_list[username]
+        except KeyError:
+            return None
+
+    def exist(self, username=None):
+        if username is None:
+            username = self.username
+
+        user_list = user_function.get_users()
+        if username.lower() in map(unicode.lower, user_list.keys()):
+            return True
+        else:
+            return False

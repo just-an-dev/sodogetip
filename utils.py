@@ -25,7 +25,7 @@ def create_unregistered_tip_storage():
         db.close()
 
 
-def get_coin_value(balance, format=2):
+def get_coin_value(balance, currency=None, format=2):
     str_format = str("{0:." + str(format) + "f}")
 
     try:

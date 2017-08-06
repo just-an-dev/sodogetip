@@ -26,22 +26,6 @@ def add_user(user, address):
         json.dump(data, f)
 
 
-def get_user_address(user):
-    user_list = get_users()
-    try:
-        return user_list[user]
-    except KeyError:
-        return None
-
-
-def user_exist(user):
-    user_list = get_users()
-    if user.lower() in map(unicode.lower, user_list.keys()):
-        return True
-    else:
-        return False
-
-
 def get_unregistered_tip():
     db = TinyDB(config.unregistered_tip_user)
     data = db.all()

@@ -55,12 +55,12 @@ def balance_user(msg, failover_time):
 
         if time.time() > int(failover_time.value) + 86400:
             # not in safe mode so add unconfirmed balance
-            spendable_balance += get_user_spendable_balance(user.username)
+            spendable_balance += get_user_spendable_balance(user.address)
 
     return spendable_balance
 
 
-def get_user_spendable_balance(user, rpc=None):
+def get_user_spendable_balance(address, rpc=None):
     if rpc is None:
         rpc = get_rpc()
 
@@ -69,7 +69,6 @@ def get_user_spendable_balance(user, rpc=None):
     # transactions originating from a wallet address that does not belong to the bot
 
     unspent_amounts = []
-    address = user_function.get_user_address(user)
     list_unspent = rpc.listunspent(0, 0, [address])
 
     # in case of no un-spent transaction

@@ -36,5 +36,6 @@ class TestHistory(unittest.TestCase):
         user = models.User("just-an-dev")
         history.add_to_history(user, "", "", "", "")
 
+
 if __name__ == '__main__':
     unittest.main()
