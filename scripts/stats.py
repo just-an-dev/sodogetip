@@ -26,8 +26,8 @@ average_tip = {'all': []}
 # parse argument
 parser = argparse.ArgumentParser(description='Bot Monthly stats')
 parser.add_argument('-f', help='Date formater for analyse', type=str, dest='formater', default="%Y-%m")
-parser.add_argument('--gold', help='Gold', type=bool, dest='gold')
-parser.add_argument('--debug', help='Debug', type=bool)
+parser.add_argument('--gold', help='Gold', type=bool, dest='gold', default=False)
+parser.add_argument('--debug', help='Debug', type=bool, dest='debug', default=False)
 args = parser.parse_args()
 
 print "Formater used for analysis is " + args.formater
@@ -99,7 +99,7 @@ for (month, item) in sorted(list_of_user_miss.items(), reverse=True):
 
 print "\n\n High Tip :"
 for (month, item) in sorted(high_tip.items(), reverse=True):
-    if args.d:
+    if args.debug:
         print month + " => " + str(item)
     else:
         print month + " => " + item['sender'] + " send " + str(item['amount']) + " to " + item['receiver']
