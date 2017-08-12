@@ -5,7 +5,8 @@ rpc_config = {
     "doge_rpc_port": "22545",
     "doge_rpc_host": "127.0.0.1",
     "doge_rpc_username": "dogecoinrpc",
-    "doge_rpc_password": "dogecoinpassword"
+    "doge_rpc_password": "dogecoinpassword",
+    "timeout": 60
 }
 
 # with ending /
