@@ -11,8 +11,8 @@ import config
 import crypto
 import lang
 import reddit_gold
-import user_function
 import utils
+from models import UserStorage
 
 
 class SoDogeTip:
@@ -98,8 +98,9 @@ class SoDogeTip:
 
             bot_logger.logger.info('Make clean of tx')
             # get list of account
-            list_account = user_function.get_users()
-            for account, address in list_account.items():
+            list_account = UserStorage.get_users()
+            for account in list_account.items():
+                address = UserStorage.get_user_address(account)
                 # don't flood rpc daemon
                 time.sleep(1)
                 list_tx = rpc_antispam.listunspent(1, 99999999999, [address])

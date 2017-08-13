@@ -79,7 +79,7 @@ def get_user_spendable_balance(address, rpc=None):
         trans = rpc.decoderawtransaction(rpc.getrawtransaction(list_unspent[i]['txid']))
         # for v_in in range(0,len(trans['vin']),1):
         vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][0]['txid']))
-        if vin['vout'][0]['scriptPubKey']['addresses'][0] in user_function.get_users().values():
+        if vin['vout'][0]['scriptPubKey']['addresses'][0] in models.UserStorage.get_all_users_address().values():
             unspent_amounts.append(list_unspent[i]['amount'])
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
@@ -175,7 +175,7 @@ def send_to(rpc, sender_address, receiver_address, amount, take_fee_on_amount=Fa
     for i in range(0, len(list_unspent), 1):
         trans = rpc.decoderawtransaction(rpc.getrawtransaction(list_unspent[i]['txid']))
         vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][0]['txid']))
-        if vin['vout'][0]['scriptPubKey']['addresses'][0] in user_function.get_users().values():
+        if vin['vout'][0]['scriptPubKey']['addresses'][0] in models.UserStorage.get_all_users_address().values():
             unspent_amounts.append(list_unspent[i]['amount'])
             tx = {
                 "txid": str(list_unspent[i]['txid']),

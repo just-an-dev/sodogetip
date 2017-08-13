@@ -2,6 +2,8 @@ import datetime
 import random
 import re
 
+from tinydb import TinyDB, Query
+
 import bot_logger
 import config
 import crypto
@@ -61,6 +63,7 @@ class Tip(object):
                 address = self.receiver
                 bot_logger.logger.info("Send an tip to address")
                 self.receiver = User("address-" + address)
+                self.receiver.username = ("address-" + address)
                 self.receiver.address = address
 
         # to support any type of randomXXX amount
@@ -148,13 +151,13 @@ class User(object):
     """Class to represent an user"""
 
     def __init__(self, user):
-        self.username = user
+        self.username = user.lower()
 
         # address is activate address (only one address can be active)
         self.address = None
 
-        if self.exist(self.username):
-            self.address = self.get_user_address()
+        if UserStorage.exist(self.username):
+            self.address = UserStorage.get_user_address(self.username)
 
     def is_registered(self):
         # if user have address it's registered
@@ -179,29 +182,72 @@ class User(object):
     def get_balance_unconfirmed(self):
         return crypto.get_user_unconfirmed_balance(self.address)
 
-    def get_new_address(self):
+    def get_new_address(self, rpc=None):
         # create a new simple address
-        rpc = crypto.get_rpc()
+        if rpc is None:
+            rpc = crypto.get_rpc()
         self.address = rpc.getnewaddress("reddit-%s" % self.username)
 
-        # todo : register in users table
+    def register(self):
+        if self.address is None and UserStorage.exist(self.username) is not True:
+            self.get_new_address()
 
-    def get_user_address(self, username=None):
-        if username is None:
-            username = self.username
+        # register in users table
+        UserStorage.add_address(self.username, self.address)
 
-        user_list = user_function.get_users()
-        try:
-            return user_list[username]
-        except KeyError:
-            return None
 
-    def exist(self, username=None):
-        if username is None:
-            username = self.username
+class UserStorage:
+    @staticmethod
+    def add_address(username, address, active=True):
+        db = TinyDB(config.user_file)
+        table = db.table(username)
 
-        user_list = user_function.get_users()
-        if username.lower() in map(unicode.lower, user_list.keys()):
+        # check if address not already exist
+        user_db = Query()
+        data = table.count(user_db.address == address)
+
+        if data == 0:
+            table.insert({"type": "simple", "address": address, "coin": "doge", "enable": active})
+        else:
+            bot_logger.logger.error("address %s already registered for  %s " % (str(address), str(username)))
+
+    @staticmethod
+    def exist(username):
+        db = TinyDB(config.user_file)
+        user_list = db.tables()
+        user_list.remove('_default')
+        if unicode(username).lower() in map(unicode.lower, user_list):
             return True
         else:
             return False
+
+    @classmethod
+    def get_users(cls):
+        db = TinyDB(config.user_file)
+        user_list = db.tables()
+        data = map(unicode.lower, user_list)
+        data.remove('_default')
+        return data
+
+    @classmethod
+    def get_all_users_address(cls):
+        list_address = {}
+        db = TinyDB(config.user_file)
+        user_list = db.tables()
+        data = map(unicode.lower, user_list)
+        data.remove('_default')
+        for account in data:
+            list_address[account] = UserStorage.get_user_address(account)
+
+        return list_address
+
+    @classmethod
+    def get_user_address(cls, username):
+        if UserStorage.exist(username):
+            db = TinyDB(config.user_file)
+            table = db.table(username)
+            user_db = Query()
+            data = table.search(user_db.enable == True)
+            return data[0].get('address')
+        else:
+            bot_logger.logger.error("get address of un-registered user  %s " % (str(username)))
