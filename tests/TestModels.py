@@ -123,6 +123,17 @@ class TestTip(unittest.TestCase):
         tip = models.Tip().create_from_array(list_tips[2])
         self.assertEqual(True, tip.is_expired())
 
+    def test_create_from_array(self):
+        list_tips = user_function.get_unregistered_tip()
+
+        tip = models.Tip().create_from_array(list_tips[1])
+        self.assertEqual(list_tips[1]['amount'], tip.amount)
+        self.assertEqual(list_tips[1]['sender'], tip.sender.username)
+        self.assertEqual(list_tips[1]['receiver'], tip.receiver.username)
+        self.assertEqual(list_tips[1]['message_fullname'], tip.message_fullname)
+        self.assertEqual(list_tips[1]['time'], tip.time)
+        self.assertEqual(list_tips[1]['id'], tip.id)
+
 
 class TestUser(unittest.TestCase):
     def test_user_is_registered(self):

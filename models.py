@@ -115,23 +115,12 @@ class Tip(object):
         # import user
         self.receiver = User(arr_tip['receiver'])
         self.sender = User(arr_tip['sender'])
+        del arr_tip['receiver']
+        del arr_tip['sender']
 
-        self.id = arr_tip['id']
-        self.amount = arr_tip['amount']
+        for key in arr_tip.keys():
+            setattr(self, key, arr_tip[key])
 
-        if 'message_fullname' in arr_tip.keys():
-            self.message_fullname = arr_tip['message_fullname']
-
-        if 'finish' in arr_tip.keys():
-            self.finish = arr_tip['finish']
-
-        if 'tx_id' in arr_tip.keys():
-            self.tx_id = arr_tip['tx_id']
-
-        if 'status' in arr_tip.keys():
-            self.status = arr_tip['status']
-
-        self.time = arr_tip['time']
 
         return self
 
@@ -281,3 +270,4 @@ class VanityGenRequest(object):
         self.difficulty = None
         self.address = None
         self.privkey = None
+
