@@ -1,0 +1,11 @@
+{
+  "_default": {},
+  "sodogetiptest": {
+    "1": {
+      "enable": true,
+      "type": "simple",
+      "coin": "doge",
+      "address": "test_config"
+    }
+  }
+}
