@@ -17,7 +17,7 @@ bot_name = "sodogetiptest"
 backup_wallet_path = "/path/of/wallet/backup/"
 
 user_file = DATA_PATH + 'user_files.json'
-unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json',
+unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json'
 
 logs_path = DATA_PATH + 'logs/'
 history_path = DATA_PATH + 'history/'
