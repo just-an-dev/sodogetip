@@ -9,7 +9,6 @@ from bitcoinrpc.authproxy import AuthServiceProxy
 import bot_logger
 import config
 import models
-import user_function
 
 
 def get_rpc():
@@ -45,30 +44,17 @@ def check_passphrase():
 
     rpc.walletlock()
 
-
-def balance_user(msg, failover_time):
-    user = models.User(msg.author.name)
-    if user.is_registered():
-
-        # get confirmed balance
-        spendable_balance = user.get_balance_confirmed()
-
-        if time.time() > int(failover_time.value) + 86400:
-            # not in safe mode so add unconfirmed balance
-            spendable_balance += get_user_spendable_balance(user.address)
-
-    return spendable_balance
-
-
 def get_user_spendable_balance(address, rpc=None):
     if rpc is None:
         rpc = get_rpc()
 
-    # spendable_balance is the confirmed balance and the unconfirmed balance of
-    # transactions that the bot has generated, but not the unconfirmed balance of
-    # transactions originating from a wallet address that does not belong to the bot
+    # spendable_amounts is the unconfirmed balance of transactions that the bot has generated,
+    # but not the unconfirmed balance of transactions originating from
+    # a wallet address that does not belong to the bot
 
-    unspent_amounts = []
+    # TODO : check if confirm tx are in list when using 0 0
+
+    spendable_amounts = []
     list_unspent = rpc.listunspent(0, 0, [address])
 
     # in case of no un-spent transaction
@@ -80,16 +66,11 @@ def get_user_spendable_balance(address, rpc=None):
         # for v_in in range(0,len(trans['vin']),1):
         vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][0]['txid']))
         if vin['vout'][0]['scriptPubKey']['addresses'][0] in models.UserStorage.get_all_users_address().values():
-            unspent_amounts.append(list_unspent[i]['amount'])
+            spendable_amounts.append(list_unspent[i]['amount'])
 
-    bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
+    bot_logger.logger.debug("unspent_amounts %s" % (str(sum(spendable_amounts))))
 
-    # check if user have pending tips
-    pending_tips = user_function.get_balance_unregistered_tip(user)
-
-    bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
-
-    return int(sum(unspent_amounts) - int(pending_tips))
+    return int(sum(spendable_amounts))
 
 
 def get_user_confirmed_balance(address):

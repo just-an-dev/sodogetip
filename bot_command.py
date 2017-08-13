@@ -34,19 +34,27 @@ def register_user(msg, reddit):
     else:
         bot_logger.logger.info('%s are already registered ' % user.username)
 
-        balance = user.get_balance_confirmed()
-        pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(user.address) + balance
-        pending_value_usd = utils.get_coin_value(pending_balance)
+        # pending_tips is balance of tip send to unregistered users
+        pending_tips = user.get_balance_pending_tip()
+        unconfirmed_balance = user.get_balance_unconfirmed()
+        spendable_balance = user.get_balance(user.address)
+
+        bot_logger.logger.info('user %s spendable_balance = %s' % (user.username, spendable_balance))
+
+        unconfirmed_value_usd = utils.get_coin_value(unconfirmed_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
+        pending_tips_value_usd = utils.get_coin_value(pending_tips)
+
         content_reply = Template(
             lang.message_already_registered + lang.message_account_details + lang.message_footer).render(
             username=msg.author.name,
             address=user.address,
-            pending_balance=str(pending_balance),
-            pending_value_usd=str(pending_value_usd),
             spendable_balance=str(spendable_balance),
-            spendable_value_usd=str(spendable_value_usd)
+            spendable_value_usd=str(spendable_value_usd),
+            unconfirmed_balance=str(unconfirmed_balance),
+            unconfirmed_value_usd=str(unconfirmed_value_usd),
+            pending_tips=str(pending_tips),
+            pending_tips_value_usd=str(pending_tips_value_usd)
         )
         tittle_reply = 'you are already registered'
 
@@ -62,18 +70,15 @@ def register_user(msg, reddit):
 def info_user(msg):
     user = models.User(msg.author.name)
     if user.is_registered():
-        balance = user.get_balance_confirmed()
 
         # pending_tips is balance of tip send to unregistered users
-        pending_tips = user.get_balance_unregistered_tip()
+        pending_tips = user.get_balance_pending_tip()
+        unconfirmed_balance = user.get_balance_unconfirmed()
+        spendable_balance = user.get_balance(user.address)
 
-        pending_balance = user.get_balance_unconfirmed()
-        spendable_balance = crypto.get_user_spendable_balance(user.address) + balance
-
-        bot_logger.logger.info('user %s balance = %s' % (user.username, balance))
         bot_logger.logger.info('user %s spendable_balance = %s' % (user.username, spendable_balance))
 
-        pending_value_usd = utils.get_coin_value(pending_balance)
+        unconfirmed_value_usd = utils.get_coin_value(unconfirmed_balance)
         spendable_value_usd = utils.get_coin_value(spendable_balance)
         pending_tips_value_usd = utils.get_coin_value(pending_tips)
 
@@ -81,8 +86,8 @@ def info_user(msg):
             username=user.username,
             spendable_balance=str(spendable_balance),
             spendable_value_usd=str(spendable_value_usd),
-            pending_balance=str(pending_balance),
-            pending_value_usd=str(pending_value_usd),
+            unconfirmed_balance=str(unconfirmed_balance),
+            unconfirmed_value_usd=str(unconfirmed_value_usd),
             pending_tips=str(pending_tips),
             pending_tips_value_usd=str(pending_tips_value_usd),
             address=user.address))
@@ -113,10 +118,9 @@ def withdraw_user(msg, failover_time):
             amount = float(split_message[1])
             amount = round(amount - 0.5)
 
-            user_balance = user.get_balance_confirmed()
-            user_spendable_balance = crypto.get_user_spendable_balance(user.address)
+            user_balance = user.get_balance()
 
-            if amount >= float(user_balance) + float(user_spendable_balance):
+            if amount >= float(user_balance):
                 bot_logger.logger.info('user %s not have enough to withdraw this amount (%s), balance = %s' % (
                     user.username, amount, user_balance))
                 msg.reply(Template(lang.message_balance_low_withdraw).render(
@@ -190,8 +194,8 @@ def tip_user(reddit, msg, tx_queue, failover_time):
                                                          username=tip.sender.username))
         return False
 
-    # check we have enough
-    user_spendable_balance = crypto.balance_user(msg, failover_time)
+    # check sender have enough
+    user_spendable_balance = tip.sender.get_balance(failover_time)
     bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
     # in failover we need to use only user_balance

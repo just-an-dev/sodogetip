@@ -47,7 +47,7 @@ message_account_details = "\n\nHere are your account details /u/{{ username }}!"
                           "\n\n^very ^info | &nbsp;" \
                           "\n---|---" \
                           "\n^Your ^balance | ^{{ spendable_balance }} ^doge ^(${{ spendable_value_usd }})" \
-                          "\n^Your ^pending ^balance | ^{{ pending_balance }} ^doge ^(${{ pending_value_usd }})" \
+                          "\n^Your ^pending ^balance | ^{{ unconfirmed_balance }} ^doge ^(${{ unconfirmed_value_usd }})" \
                           "\n^Tips ^to ^unregistered ^users | ^{{ pending_tips }} ^doge ^(${{ pending_tips_value_usd}})" \
                           "\n^Deposit ^address | ^{{ address }}" \
                           "\n^Withdraw | ^[+withdraw](" + link_withdraw + ")" \

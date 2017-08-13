@@ -154,11 +154,11 @@ class TestUser(unittest.TestCase):
 
     def test_unregistered_tip_empty(self):
         user = models.User("doge")
-        self.assertEqual(0, user.get_balance_unregistered_tip())
+        self.assertEqual(0, user.get_balance_pending_tip())
 
     def test_unregistered_tip(self):
         user = models.User("just-an-dev")
-        self.assertEqual(1000, user.get_balance_unregistered_tip())
+        self.assertEqual(1000, user.get_balance_pending_tip())
 
     def test_new_config(self):
         self.assertEqual('test_config', models.User(config.bot_name).address)

@@ -29,6 +29,7 @@ class Tip(object):
         self.message_fullname = None,
         self.time = datetime.datetime.now().isoformat()
 
+    # you need to set send before using this function
     def parse_message(self, message_to_parse, rpc=None):
         if rpc is None:
             # init rpc to validate address
@@ -77,7 +78,7 @@ class Tip(object):
         # if amount is all, get balance
         if self.amount == 'all':
             # get user balance
-            self.amount = crypto.get_user_spendable_balance(self.sender.address, rpc)
+            self.amount = self.sender.get_balance()
 
         bot_logger.logger.debug("isinstance self.amount = %s" % str(isinstance(self.amount, str)))
         bot_logger.logger.debug("type self.amount = %s" % str(type(self.amount)))
@@ -167,13 +168,13 @@ class User(object):
             return False
 
     # get total of tips send to users who are not registered
-    def get_balance_unregistered_tip(self):
+    def get_balance_pending_tip(self):
         return user_function.get_balance_unregistered_tip(self.username)
 
-    # user CONFIRMED balance
+    # user CONFIRMED balance with pending tips
     def get_balance_confirmed(self):
         # check if user have pending tips
-        pending_tips = self.get_balance_unregistered_tip()
+        pending_tips = self.get_balance_pending_tip()
         bot_logger.logger.debug("pending_tips %s" % (str(pending_tips)))
 
         return crypto.get_user_confirmed_balance(self.address) - int(pending_tips)
@@ -181,6 +182,25 @@ class User(object):
     # user UN-CONFIRMED balance
     def get_balance_unconfirmed(self):
         return crypto.get_user_unconfirmed_balance(self.address)
+
+    # generic balance function
+    def get_balance(self, failover_time=None):
+        balance = 0
+        if self.is_registered():
+
+            # get confirmed balance
+            balance = float(self.get_balance_confirmed())
+
+            # get unconfirmed balance come of bot
+            balance += float(crypto.get_user_spendable_balance(self.address))
+
+            if failover_time is not None:
+                # if we call function without failover_time, we consider we are in safe mode
+                if datetime.time.time() > int(failover_time.value) + 86400:
+                    # not in safe mode so add unconfirmed balance
+                    balance += float(self.get_balance_unconfirmed())
+
+        return balance
 
     def get_new_address(self, rpc=None):
         # create a new simple address
