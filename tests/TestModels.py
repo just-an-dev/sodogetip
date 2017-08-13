@@ -133,11 +133,13 @@ class TestUser(unittest.TestCase):
     def test_user_exist(self):
         u1 = models.User('just-an-dev')
         u2 = models.User('Just-An-dEv')
+        u3 = models.User('not-exist')
         self.assertEqual(True, u1.is_registered())
-        self.assertEqual(False, u2.is_registered())
+        self.assertEqual(True, u2.is_registered())
+        self.assertEqual(False, u3.is_registered())
 
-        self.assertEqual(True, user_function.user_exist('just-an-dev'))
-        self.assertEqual(True, user_function.user_exist('Just-An-dEv'))
+        self.assertEqual(True, models.UserStorage.exist('just-an-dev'))
+        self.assertEqual(True, models.UserStorage.exist('Just-An-dEv'))
 
     def test_user_not_exist(self):
         user = models.User("doge")
@@ -160,6 +162,33 @@ class TestUser(unittest.TestCase):
 
     def test_new_config(self):
         self.assertEqual('test_config', models.User(config.bot_name).address)
+
+    def test_register(self):
+        user = models.User("just-an-dev")
+        mock_rpc = MockRpc()
+        user.get_new_address(mock_rpc)
+        user.register()
+
+
+class TestUserStorage(unittest.TestCase):
+    def test_get_user_migration(self):
+        self.assertEqual(user_function.get_users_old(), models.UserStorage.get_all_users_address())
+
+    def test_get_user_old(self):
+        self.assertEqual(user_function.get_users_old(),
+                         {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
+
+    def test_get_user_new(self):
+        self.assertEqual(models.UserStorage.get_users(), ['sodogetiptest', 'just-an-dev'])
+
+    def test_get_user_new_addr(self):
+        self.assertEqual(models.UserStorage.get_all_users_address(),
+                         {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
+
+    def test_get_user_new_addr_value(self):
+        self.assertEqual(user_function.get_users_old().values(), ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
+        self.assertEqual(models.UserStorage.get_all_users_address().values(),
+                         ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
 
 
 if __name__ == '__main__':
