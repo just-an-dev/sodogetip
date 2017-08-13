@@ -24,8 +24,7 @@ def register_user(msg, reddit):
                 address=user.address)
             tittle_reply = 'you are registered'
 
-            user_function.add_user(msg.author.name, user.address)
-
+            user.register()
             history.add_to_history(msg.author.name, "", "", "", "register")
 
             # create a backup of wallet

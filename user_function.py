@@ -7,23 +7,15 @@ import config
 
 
 # read file
-def get_users():
-    with open(config.user_file, 'r') as f:
+# Todo : to remove after migration of user base
+def get_users_old():
+    with open(config.DATA_PATH + 'user_files.json', 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
             bot_logger.logger.warning("Error on read user file")
             data = {}
         return data
-
-
-# save to file:
-def add_user(user, address):
-    bot_logger.logger.info("Add user " + user + ' ' + address)
-    data = get_users()
-    with open(config.user_file, 'w') as f:
-        data[user] = address
-        json.dump(data, f)
 
 
 def get_unregistered_tip():
