@@ -121,7 +121,6 @@ class Tip(object):
         for key in arr_tip.keys():
             setattr(self, key, arr_tip[key])
 
-
         return self
 
     def is_expired(self):
@@ -261,13 +260,45 @@ class UserStorage:
         else:
             bot_logger.logger.error("get address of un-registered user  %s " % (str(username)))
 
+
 class VanityGenRequest(object):
     """Class to represent an user"""
 
     def __init__(self, user, vanity):
-        self.username = user
+        self.user = User(user)
         self.pattern = None
         self.difficulty = None
         self.address = None
         self.privkey = None
 
+    def parse_message(self, message_to_parse, rpc=None):
+        split_message = message_to_parse.split()
+
+        donate_index = split_message.index('+vanity')
+        pattern = split_message[donate_index + 1]
+
+    def save_resquest(self):
+        pass
+
+    def create_from_array(self, arr_vanity):
+        self.user = User(arr_vanity['user'])
+        del arr_vanity['user']
+
+        for key in arr_vanity.keys():
+            setattr(self, key, arr_vanity[key])
+
+    def generate(self):
+        # parse output
+        address_generated = ""
+
+    def move_funds(self, tx_queue, failover_time):
+        amount = self.user.get_balance()
+        if crypto.tip_user(self.user.address, self.address, amount, tx_queue, failover_time):
+            # update user storage file
+            UserStorage.add_address(self.user.username, self.address)
+
+            # Todo : update history of user
+
+    def import_address(self):
+        # todo : on import success clean key from memory
+        self.privkey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"

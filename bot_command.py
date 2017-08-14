@@ -348,3 +348,24 @@ def donate(reddit, msg, tx_queue, failover_time):
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+def vanity(reddit, msg):
+    user = models.User(msg.author.name)
+    if user.is_registered():
+
+        v = models.VanityGenRequest()
+        v.parse_message(msg.body.lower().strip())
+        if v.save_resquest():
+            # todo : send money to vanity account
+            amount = config.vanitygen[len(v.pattern)] - 1  # reduce fee to move funds after generation
+
+            # todo: send message
+            pass
+        else:
+            # todo: send error message
+            pass
+
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

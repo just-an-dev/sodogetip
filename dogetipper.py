@@ -13,7 +13,7 @@ import crypto
 import lang
 import reddit_gold
 import utils
-from models import UserStorage
+from models import UserStorage, VanityGenRequest
 
 
 class SoDogeTip:
@@ -68,6 +68,10 @@ class SoDogeTip:
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.donate(self.reddit, msg, tx_queue, failover_time)
+
+                        elif split_message.count('+vanity'):
+                            utils.mark_msg_read(self.reddit, msg)
+                            bot_command.vanity(self.reddit, msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
                             reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
@@ -147,14 +151,21 @@ class SoDogeTip:
         while True:
             bot_logger.logger.info('Check if we need to generate address')
             # get user request of gen
-            db = TinyDB(DATA_PATH + bot_config['vanitygen'])
+            db = TinyDB(config.vanitygen)
             for gen_request in db.all():
-                print gen_request
+                vanity_request = VanityGenRequest.create_from_array(gen_request)
+
+                # todo: send message to warn user (it's start)
 
                 # generate address
+                vanity_request.generate()
 
-                # parse output
+                # import address into wallet (set account of this address) - no rescan
+                vanity_request.import_address()
 
                 # transfer funds
+                vanity_request.move_funds(tx_queue, failover_time)
 
-                # update user storage file
+                # todo: set request finish (add time)
+
+                # todo: send message to warn user (it's finish)
