@@ -198,8 +198,8 @@ def tip_user(reddit, msg, tx_queue, failover_time):
     user_spendable_balance = tip.sender.get_balance(failover_time)
     bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
-    # in failover we need to use only user_balance
-    if tip.amount >= float(user_spendable_balance):
+    # check user not send more they have
+    if tip.amount > float(user_spendable_balance):
         user_pending_balance = tip.sender.get_balance_unconfirmed()
         # not enough for tip
         if tip.amount < float(user_pending_balance):
