@@ -278,7 +278,7 @@ def history_user(msg):
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_remove_pending_tip(reddit, tx_queue, failover_time):
+def replay_pending_tip(reddit, tx_queue, failover_time):
     # check if user have pending tips
     list_tips = user_function.get_unregistered_tip()
 

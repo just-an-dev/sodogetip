@@ -93,7 +93,7 @@ class SoDogeTip:
     def process_pending_tip(self, tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.reddit, tx_queue, failover_time)
+            bot_command.replay_pending_tip(self.reddit, tx_queue, failover_time)
             time.sleep(60)
 
     def anti_spamming_tx(self):
