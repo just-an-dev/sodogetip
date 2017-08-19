@@ -271,11 +271,23 @@ class VanityGenRequest(object):
         self.address = None
         self.privkey = None
 
+        # to check if we move funds of user
+        self.use = None
+
     def parse_message(self, message_to_parse, rpc=None):
         split_message = message_to_parse.split()
 
+        # parse message like : +vanity use Dpatern
         donate_index = split_message.index('+vanity')
-        pattern = split_message[donate_index + 1]
+        use_address = split_message[donate_index + 1]
+        pattern = split_message[donate_index + 2]
+
+        if use_address == "use":
+            self.use = True
+        if use_address == "not-use":
+            self.use = False
+
+            # check patern is ok
 
     def save_resquest(self):
         pass
@@ -302,3 +314,4 @@ class VanityGenRequest(object):
     def import_address(self):
         # todo : on import success clean key from memory
         self.privkey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        self.privkey = None

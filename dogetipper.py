@@ -161,11 +161,12 @@ class SoDogeTip:
                 vanity_request.generate()
 
                 # import address into wallet (set account of this address) - no rescan
-                vanity_request.import_address()
+                if vanity_request.import_address():
+                    # make sure address is correctly import before move fund
 
-                # transfer funds
-                vanity_request.move_funds(tx_queue, failover_time)
+                    # transfer funds
+                    vanity_request.move_funds(tx_queue, failover_time)
 
-                # todo: set request finish (add time)
+                    # todo: set request finish (add time)
 
                 # todo: send message to warn user (it's finish)
