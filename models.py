@@ -1,7 +1,6 @@
 import datetime
 import random
 import re
-
 from tinydb import TinyDB, Query
 
 import bot_logger
@@ -215,7 +214,10 @@ class UserStorage:
         data = table.count(user_db.address == address)
 
         if data == 0:
-            table.insert({"type": "simple", "address": address, "coin": "doge", "enable": active})
+            table.insert({"type": "simple", "address": address, "coin": "doge", "enable": False})
+
+            if active is True:
+                active_user_address(username, address)
         else:
             bot_logger.logger.error("address %s already registered for  %s " % (str(address), str(username)))
 
@@ -259,6 +261,28 @@ class UserStorage:
             return data[0].get('address')
         else:
             bot_logger.logger.error("get address of un-registered user  %s " % (str(username)))
+
+    @classmethod
+    def active_user_address(cls, username, address):
+        if UserStorage.exist(username):
+            db = TinyDB(config.user_file)
+            table = db.table(username)
+
+            # check if address not already exist
+            user_db = Query()
+            data = table.count(user_db.address == address)
+
+            if data == 0:
+                # disable all other address
+                table.update(set("enable", False))
+
+                # enable only one
+                table.update(set("enable", True), user_db.address == address)
+            else:
+                bot_logger.logger.error("active a not found address (%s)  of user  %s " % (str(address), str(username)))
+
+        else:
+            bot_logger.logger.error("active address of un-registered user  %s " % (str(username)))
 
 
 class VanityGenRequest(object):
@@ -304,14 +328,18 @@ class VanityGenRequest(object):
         address_generated = ""
 
     def move_funds(self, tx_queue, failover_time):
-        amount = self.user.get_balance()
-        if crypto.tip_user(self.user.address, self.address, amount, tx_queue, failover_time):
-            # update user storage file
-            UserStorage.add_address(self.user.username, self.address)
+        if self.use is True:
+            amount = self.user.get_balance()
+            if crypto.tip_user(self.user.address, self.address, amount, tx_queue, failover_time):
+                # update user storage file
+                UserStorage.add_address(self.user.username, self.address)
 
-            # Todo : update history of user
+                # Todo : update history of user
 
     def import_address(self):
-        # todo : on import success clean key from memory
+        rpc = crypto.get_rpc()
+        rpc.importprivkey(self.privkey, "reddit-vanity-" + self.user.username, false)
+
+        # on import success clean key from memory
         self.privkey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         self.privkey = None
