@@ -9,6 +9,15 @@ import crypto
 import user_function
 import utils
 
+B58_DIGITS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+
+def base58_is_valid(string):
+    for car in string:
+        if car not in B58_DIGITS:
+            return False
+
+    return True
 
 class Tip(object):
     """Class to represent a tip of user"""
@@ -288,7 +297,7 @@ class UserStorage:
 class VanityGenRequest(object):
     """Class to represent an user"""
 
-    def __init__(self, user, vanity):
+    def __init__(self, user):
         self.user = User(user)
         self.pattern = None
         self.difficulty = None
@@ -311,7 +320,9 @@ class VanityGenRequest(object):
         if use_address == "not-use":
             self.use = False
 
-            # check patern is ok
+        # check patern is ok
+        if pattern[0] == "D" and base58_is_valid(pattern):
+            self.pattern = pattern
 
     def save_resquest(self):
         pass

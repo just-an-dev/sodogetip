@@ -1,6 +1,5 @@
 import random
 import re
-
 from jinja2 import Template
 from praw.models import Comment, Message
 
@@ -354,7 +353,7 @@ def vanity(reddit, msg):
     user = models.User(msg.author.name)
     if user.is_registered():
 
-        v = models.VanityGenRequest()
+        v = models.VanityGenRequest(user)
         v.parse_message(msg.body.lower().strip())
         if v.save_resquest():
             # todo : send money to vanity account
