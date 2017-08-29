@@ -1,6 +1,7 @@
 import datetime
 import random
 import re
+import subprocess
 
 import praw
 from tinydb import TinyDB, Query
@@ -20,6 +21,7 @@ def base58_is_valid(string):
             return False
 
     return True
+
 
 class Tip(object):
     """Class to represent a tip of user"""
@@ -344,8 +346,11 @@ class VanityGenRequest(object):
         return self
 
     def generate(self):
-        # parse output
-        address_generated = ""
+        out = subprocess.check_output(['vanitygen', '-X', '30', str(self.pattern)], stderr=subprocess.STDOUT)
+        line = out.split('\n')
+        self.difficulty = str((line[0]).split(':')[1]).strip()
+        self.address = str((line[1]).split(':')[1]).strip()
+        self.privkey = str((line[2]).split(':')[1]).strip()
 
     def move_funds(self, tx_queue, failover_time):
         if self.use is True:
