@@ -311,7 +311,7 @@ class VanityGenRequest(object):
         self.pattern = None
         self.difficulty = None
         self.address = None
-        self.privkey = None
+        self.private_key = None
         self.duration = 0
 
         self.id = random.randint(0, 99999999)
@@ -337,17 +337,21 @@ class VanityGenRequest(object):
             self.pattern = pattern
 
     def save_resquest(self):
-        db = TinyDB(config.vanitygen)
-        db.insert({
-            "id": self.id,
-            "user": self.user.username,
-            "use": self.use,
-            "pattern": self.pattern,
-            "finish": False,
-            "address": self.address,
-            "difficulty": self.difficulty,
-            "duration": 0
-        })
+        if self.pattern is not None:
+            db = TinyDB(config.vanitygen)
+            db.insert({
+                "id": self.id,
+                "user": self.user.username,
+                "use": self.use,
+                "pattern": self.pattern,
+                "finish": False,
+                "address": self.address,
+                "difficulty": self.difficulty,
+                "duration": 0
+            })
+            return True
+        else:
+            return False
 
     def create_from_array(self, arr_vanity):
         self.user = User(arr_vanity['user'])
@@ -363,7 +367,7 @@ class VanityGenRequest(object):
         line = out.split('\n')
         self.difficulty = str((line[0]).split(':')[1]).strip()
         self.address = str((line[1]).split(':')[1]).strip()
-        self.privkey = str((line[2]).split(':')[1]).strip()
+        self.private_key = str((line[2]).split(':')[1]).strip()
 
     def move_funds(self, tx_queue, failover_time):
         if self.use is True:
@@ -376,11 +380,11 @@ class VanityGenRequest(object):
 
     def import_address(self):
         rpc = crypto.get_rpc()
-        rpc.importprivkey(self.privkey, "reddit-vanity-" + self.user.username, false)
+        rpc.importprivkey(self.private_key, "reddit-vanity-" + self.user.username, false)
 
         # on import success clean key from memory
-        self.privkey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        self.privkey = None
+        self.private_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        self.private_key = None
 
     def update_data(self):
         db = TinyDB(config.vanitygen)
