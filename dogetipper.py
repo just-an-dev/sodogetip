@@ -1,7 +1,8 @@
-import praw
-import requests
 import time
 import traceback
+
+import praw
+import requests
 from praw.models import Message, Comment
 from tinydb import TinyDB
 
@@ -40,7 +41,7 @@ class SoDogeTip:
                         split_message = msg_body.lower().split()
 
                         if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
-                            bot_command.register_user(msg, self.reddit)
+                            bot_command.register_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif (msg_body == '+info' and msg_subject == '+info') or (
@@ -62,15 +63,15 @@ class SoDogeTip:
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.reddit, msg, tx_queue, failover_time)
+                            bot_command.tip_user(msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.donate(self.reddit, msg, tx_queue, failover_time)
+                            bot_command.donate(msg, tx_queue, failover_time)
 
                         elif split_message.count('+vanity'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.vanity(self.reddit, msg)
+                            bot_command.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
                             reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
@@ -156,6 +157,8 @@ class SoDogeTip:
                 vanity_request = VanityGenRequest.create_from_array(gen_request)
 
                 # todo: send message to warn user (it's start)
+                vanity_request.user.send_private_message("Vanity Generation : Start",
+                                                         "Vanity address generation have start :)")
 
                 # generate address
                 vanity_request.generate()
@@ -170,3 +173,5 @@ class SoDogeTip:
                     # todo: set request finish (add time)
 
                     # todo: send message to warn user (it's finish)
+                    vanity_request.user.send_private_message("Vanity Generation : Finish",
+                                                             "Vanity address is finish, you can use our new address, and thanks to support " + config.bot_name)
