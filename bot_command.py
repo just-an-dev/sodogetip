@@ -356,19 +356,22 @@ def vanity(msg):
 
         v = models.VanityGenRequest(user)
         v.parse_message(msg.body.lower().strip())
-        if v.save_resquest():
-            # send money to vanity account
-            amount = config.vanitygen[len(v.pattern)] - 2  # reduce fee to move funds after generation
-            crypto.send_to(None, user.address, config.vanitygen_address, amount)
-
-            # send message
-            user.send_private_message("Vanity Request : Received", "Your request will be process in few time")
-        else:
-            # send error message
+        if len(v.pattern) not in config.vanitygen_price.keys():
             user.send_private_message("Vanity Request : Error",
-                                      "Your request can't be process, check your pattern is a valid base58 string, and start with D")
+                                      "Your request can't be process, pattern too long or too short")
+        else:
+            if v.save_resquest():
+                # send money to vanity account
 
+                amount = config.vanitygen_price[len(v.pattern)] - 2  # reduce fee to move funds after generation
+                crypto.send_to(None, user.address, config.vanitygen_address, amount)
 
+                # send message
+                user.send_private_message("Vanity Request : Received", "Your request will be process in few time")
+            else:
+                # send error message
+                user.send_private_message("Vanity Request : Error",
+                                          "Your request can't be process, check your pattern is a valid base58 string, and start with D")
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
@@ -380,6 +383,8 @@ def hall_of_fame(msg):
         message = "Donation Tip to " + config.bot_name + " : "
         donator_list = {}
         hist = history.get_user_history(config.bot_name)
+        message += "\n\nUser|Donation Ammount|\n"
+
         for tip in hist:
             if tip["sender"] in donator_list.keys():
                 donator_list[tip["sender"]] = float(donator_list[tip["sender"]]) + tip['amount']
