@@ -29,6 +29,13 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
+    def test_tip_simple_float_dot_long(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " 0.000000001 doge", None)
+        self.assertEqual(0, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
     def test_tip_simple_verify(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 100 doge verify", None)
@@ -94,6 +101,13 @@ class TestTip(unittest.TestCase):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " @just-an-dev 1000 doge", None)
         self.assertEqual(1000, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual("just-an-dev", tip.receiver.username)
+
+    def test_tip_negative(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " -99999999 doge verify", None)
+        self.assertEqual(-99999999, tip.amount)
         self.assertEqual("doge", tip.currency)
         self.assertEqual("just-an-dev", tip.receiver.username)
 
