@@ -156,7 +156,7 @@ class SoDogeTip:
             for gen_request in db.all():
                 vanity_request = VanityGenRequest.create_from_array(gen_request)
 
-                # todo: send message to warn user (it's start)
+                # send message to warn user (it's start)
                 vanity_request.user.send_private_message("Vanity Generation : Start",
                                                          "Vanity address generation have start :)")
 
@@ -167,11 +167,15 @@ class SoDogeTip:
                 if vanity_request.import_address():
                     # make sure address is correctly import before move fund
 
+                    time_start = time.time()
                     # transfer funds
                     vanity_request.move_funds(tx_queue, failover_time)
 
                     # todo: set request finish (add time)
+                    time_end = time.time()
+                    vanity_request.duration = (time_end - time_start)
+                    vanity_request.update_data()
 
-                    # todo: send message to warn user (it's finish)
+                    #  send message to warn user (it's finish)
                     vanity_request.user.send_private_message("Vanity Generation : Finish",
                                                              "Vanity address is finish, you can use our new address, and thanks to support " + config.bot_name)

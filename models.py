@@ -235,7 +235,7 @@ class UserStorage:
             table.insert({"type": "simple", "address": address, "coin": "doge", "enable": False})
 
             if active is True:
-                active_user_address(username, address)
+                UserStorage.active_user_address(username, address)
         else:
             bot_logger.logger.error("address %s already registered for  %s " % (str(address), str(username)))
 
@@ -312,6 +312,9 @@ class VanityGenRequest(object):
         self.difficulty = None
         self.address = None
         self.privkey = None
+        self.duration = 0
+
+        self.id = random.randint(0, 99999999)
 
         # to check if we move funds of user
         self.use = None
@@ -334,7 +337,17 @@ class VanityGenRequest(object):
             self.pattern = pattern
 
     def save_resquest(self):
-        pass
+        db = TinyDB(config.vanitygen)
+        db.insert({
+            "id": self.id,
+            "user": self.user.username,
+            "use": self.use,
+            "pattern": self.pattern,
+            "finish": False,
+            "address": self.address,
+            "difficulty": self.difficulty,
+            "duration": 0
+        })
 
     def create_from_array(self, arr_vanity):
         self.user = User(arr_vanity['user'])
@@ -368,3 +381,11 @@ class VanityGenRequest(object):
         # on import success clean key from memory
         self.privkey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         self.privkey = None
+
+    def update_data(self):
+        db = TinyDB(config.vanitygen)
+        vanity_db = Query()
+
+        db.update(set("finish", True), vanity_db.id == self.id)
+        db.update(set("difficulty", self.difficulty), vanity_db.id == self.id)
+        db.update(set("duration", self.duration), vanity_db.id == self.id)
