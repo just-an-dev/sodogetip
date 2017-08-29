@@ -22,6 +22,9 @@ unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json'
 logs_path = DATA_PATH + 'logs/'
 history_path = DATA_PATH + 'history/'
 
+# vanity-gen request
+vanitygen = DATA_PATH + 'vanitygen.json'
+
 spam_limit = 1000
 rate_fee = 1
 
@@ -34,4 +37,8 @@ url_get_value = {
 
 tip_keyword = {
     "dogecar" : 98
+}
+
+vanitygen_price = {
+ ""
 }

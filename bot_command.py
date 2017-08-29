@@ -14,7 +14,7 @@ import user_function
 import utils
 
 
-def register_user(msg, reddit):
+def register_user(msg):
     user = models.User(msg.author.name)
     if not user.is_registered():
         user.get_new_address()
@@ -64,7 +64,7 @@ def register_user(msg, reddit):
 
     # we have just comment so send info in PM
     if type(msg) is Comment:
-        reddit.redditor(msg.author.name).message(tittle_reply, content_reply)
+        user.send_private_message(tittle_reply, content_reply)
 
 
 def info_user(msg):
@@ -150,7 +150,7 @@ def withdraw_user(msg, failover_time):
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
 
 
-def tip_user(reddit, msg, tx_queue, failover_time):
+def tip_user(msg, tx_queue, failover_time):
     bot_logger.logger.info('An user mention detected ')
     bot_logger.logger.debug("failover_time : %s " % (str(failover_time.value)))
 
@@ -176,12 +176,12 @@ def tip_user(reddit, msg, tx_queue, failover_time):
     if not utils.check_amount_valid(tip.amount):
         # invalid amount
         bot_logger.logger.info(lang.message_invalid_amount)
-        reddit.redditor(msg.author.name).message('invalid amount', lang.message_invalid_amount)
+        tip.sender.send_private_message('invalid amount', lang.message_invalid_amount)
         return False
 
     if tip.currency is None:
         bot_logger.logger.info(lang.message_invalid_currency)
-        reddit.redditor(msg.author.name).message('invalid currency', lang.message_invalid_currency)
+        tip.sender.send_private_message('invalid currency', lang.message_invalid_currency)
         return False
 
     # update receiver
@@ -189,29 +189,29 @@ def tip_user(reddit, msg, tx_queue, failover_time):
 
     # check user not tip self
     if tip.sender.username == tip.receiver.username:
-        reddit.redditor(tip.sender.username).message('cannot tip self',
-                                                     Template(lang.message_recipient_self).render(
-                                                         username=tip.sender.username))
+        tip.sender.send_private_message('cannot tip self',
+                                        Template(lang.message_recipient_self).render(
+                                            username=tip.sender.username))
         return False
 
     # check sender have enough
     user_spendable_balance = tip.sender.get_balance(failover_time)
     bot_logger.logger.debug('user_spendable_balance = %s' % user_spendable_balance)
 
-    # in failover we need to use only user_balance
-    if tip.amount >= float(user_spendable_balance):
+    # check user not send more they have
+    if tip.amount > float(user_spendable_balance):
         user_pending_balance = tip.sender.get_balance_unconfirmed()
         # not enough for tip
         if tip.amount < float(user_pending_balance):
-            reddit.redditor(tip.sender.username).message('pending tip',
-                                                         Template(lang.message_balance_pending_tip).render(
-                                                             username=tip.sender.username))
+            tip.sender.send_private_message('pending tip',
+                                            Template(lang.message_balance_pending_tip).render(
+                                                username=tip.sender.username))
         else:
             bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                 tip.sender.username, str(tip.amount), str(user_spendable_balance)))
-            reddit.redditor(tip.sender.username).message('low balance',
-                                                         Template(lang.message_balance_low_tip).render(
-                                                             username=tip.sender.username))
+            tip.sender.send_private_message('low balance',
+                                            Template(lang.message_balance_low_tip).render(
+                                                username=tip.sender.username))
 
     else:
         # add tip to history of sender & receiver
@@ -244,11 +244,11 @@ def tip_user(reddit, msg, tx_queue, failover_time):
             user_function.save_unregistered_tip(tip)
 
             # send message to sender of tip
-            reddit.redditor(tip.sender.username).message('tipped user not registered',
-                                                         Template(lang.message_recipient_register).render(
-                                                             username=tip.receiver.username))
+            tip.sender.send_private_message('tipped user not registered',
+                                            Template(lang.message_recipient_register).render(
+                                                username=tip.receiver.username))
             # send message to receiver
-            reddit.redditor(tip.receiver.username).message(
+            tip.receiver.send_private_message(
                 Template(
                     lang.message_recipient_need_register_title).render(amount=str(tip.amount)),
                 Template(
@@ -278,7 +278,7 @@ def history_user(msg):
 
 
 # Resend tips to previously unregistered users that are now registered
-def replay_remove_pending_tip(reddit, tx_queue, failover_time):
+def replay_pending_tip(reddit, tx_queue, failover_time):
     # check if user have pending tips
     list_tips = user_function.get_unregistered_tip()
 
@@ -329,7 +329,7 @@ def replay_remove_pending_tip(reddit, tx_queue, failover_time):
         bot_logger.logger.info("no pending tipping")
 
 
-def donate(reddit, msg, tx_queue, failover_time):
+def donate(msg, tx_queue, failover_time):
     user = models.User(msg.author.name)
     if user.is_registered():
         split_message = msg.body.lower().strip().split()
@@ -344,7 +344,57 @@ def donate(reddit, msg, tx_queue, failover_time):
             history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
-            reddit.redditor(user.username).message('invalid amount', lang.message_invalid_amount)
+            user.send_private_message('invalid amount', lang.message_invalid_amount)
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+def vanity(msg):
+    user = models.User(msg.author.name)
+    if user.is_registered():
+
+        v = models.VanityGenRequest(user)
+        v.parse_message(msg.body.lower().strip())
+        if len(v.pattern) not in config.vanitygen_price.keys():
+            user.send_private_message("Vanity Request : Error",
+                                      "Your request can't be process, pattern too long or too short")
+        else:
+            if v.save_resquest():
+                # send money to vanity account
+
+                amount = config.vanitygen_price[len(v.pattern)] - 2  # reduce fee to move funds after generation
+                crypto.send_to(None, user.address, config.vanitygen_address, amount)
+
+                # send message
+                user.send_private_message("Vanity Request : Received", "Your request will be process in few time")
+            else:
+                # send error message
+                user.send_private_message("Vanity Request : Error",
+                                          "Your request can't be process, check your pattern is a valid base58 string, and start with D")
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+def hall_of_fame(msg):
+    user = models.User(msg.author.name)
+    if user.is_registered():
+        message = "Donation Tip to " + config.bot_name + " : "
+        donator_list = {}
+        hist = history.get_user_history(config.bot_name)
+        message += "\n\nUser|Donation Ammount|\n"
+
+        for tip in hist:
+            if tip["sender"] in donator_list.keys():
+                donator_list[tip["sender"]] = float(donator_list[tip["sender"]]) + tip['amount']
+            else:
+                donator_list[tip["sender"]] = tip['amount']
+
+        for donor in sorted(donator_list.items(), key=lambda user: user[1], reverse=True):
+            message += "%s|%s|\n" % (donor[0], str(donor[1]))
+
+        user.send_private_message("Hall Of Fame", message)
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

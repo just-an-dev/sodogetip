@@ -4,6 +4,7 @@ import traceback
 import praw
 import requests
 from praw.models import Message, Comment
+from tinydb import TinyDB
 
 import bot_command
 import bot_logger
@@ -12,7 +13,7 @@ import crypto
 import lang
 import reddit_gold
 import utils
-from models import UserStorage
+from models import UserStorage, VanityGenRequest
 
 
 class SoDogeTip:
@@ -40,7 +41,7 @@ class SoDogeTip:
                         split_message = msg_body.lower().split()
 
                         if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
-                            bot_command.register_user(msg, self.reddit)
+                            bot_command.register_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif (msg_body == '+info' and msg_subject == '+info') or (
@@ -62,11 +63,19 @@ class SoDogeTip:
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(self.reddit, msg, tx_queue, failover_time)
+                            bot_command.tip_user(msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.donate(self.reddit, msg, tx_queue, failover_time)
+                            bot_command.donate(msg, tx_queue, failover_time)
+
+                        elif split_message.count('+halloffame'):
+                            utils.mark_msg_read(self.reddit, msg)
+                            bot_command.hall_of_fame(msg)
+
+                        elif split_message.count('+vanity'):
+                            utils.mark_msg_read(self.reddit, msg)
+                            bot_command.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
                             reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
@@ -88,7 +97,7 @@ class SoDogeTip:
     def process_pending_tip(self, tx_queue, failover_time):
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
-            bot_command.replay_remove_pending_tip(self.reddit, tx_queue, failover_time)
+            bot_command.replay_pending_tip(self.reddit, tx_queue, failover_time)
             time.sleep(60)
 
     def anti_spamming_tx(self):
@@ -99,22 +108,23 @@ class SoDogeTip:
             bot_logger.logger.info('Make clean of tx')
             # get list of account
             list_account = UserStorage.get_users()
-            for account in list_account.items():
-                address = UserStorage.get_user_address(account)
-                # don't flood rpc daemon
-                time.sleep(1)
-                list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
+            if len(list_account) > 0:
+                for account in list_account.items():
+                    address = UserStorage.get_user_address(account)
+                    # don't flood rpc daemon
+                    time.sleep(1)
+                    list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
 
-                if len(list_tx) > int(config.spam_limit):
-                    unspent_amounts = []
-                    for i in range(0, len(list_tx), 1):
-                        unspent_amounts.append(list_tx[i]['amount'])
-                        # limits to 200 transaction to not explode timeout rpc
-                        if i > 200:
-                            break
+                    if len(list_tx) > int(config.spam_limit):
+                        unspent_amounts = []
+                        for i in range(0, len(list_tx), 1):
+                            unspent_amounts.append(list_tx[i]['amount'])
+                            # limits to 200 transaction to not explode timeout rpc
+                            if i > 200:
+                                break
 
-                    bot_logger.logger.info('Consolidate %s account !' % account)
-                    crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
+                        bot_logger.logger.info('Consolidate %s account !' % account)
+                        crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
 
             # wait a bit before re-scan account
             time.sleep(240)
@@ -141,3 +151,35 @@ class SoDogeTip:
                 traceback.print_exc()
 
             bot_logger.logger.debug('failover_time : %s' % str(failover_time.value))
+
+    def vanitygen(self, tx_queue, failover_time):
+        while True:
+            bot_logger.logger.info('Check if we need to generate address')
+            # get user request of gen
+            db = TinyDB(config.vanitygen)
+            for gen_request in db.all():
+                vanity_request = VanityGenRequest.create_from_array(gen_request)
+
+                # send message to warn user (it's start)
+                vanity_request.user.send_private_message("Vanity Generation : Start",
+                                                         "Vanity address generation have start :)")
+
+                # generate address
+                vanity_request.generate()
+
+                # import address into wallet (set account of this address) - no rescan
+                if vanity_request.import_address():
+                    # make sure address is correctly import before move fund
+
+                    time_start = time.time()
+                    # transfer funds
+                    vanity_request.move_funds(tx_queue, failover_time)
+
+                    # set request finish (add time)
+                    time_end = time.time()
+                    vanity_request.duration = (time_end - time_start)
+                    vanity_request.update_data()
+
+                    #  send message to warn user (it's finish)
+                    vanity_request.user.send_private_message("Vanity Generation : Finish",
+                                                             "Vanity address is finish, you can use our new address, and thanks to support %s" % config.bot_name)

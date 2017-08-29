@@ -4,6 +4,9 @@
 - Add monthly report script
 - Fix an error on withdraw
 - Add gild as alias of gold command
+- Change user.json format
+- Add vanity generation address
+- Add an Hall of Fame #86
 
 # v2.0.1 - 10/07/2017
 - Fix an error on formatting

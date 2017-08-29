@@ -29,6 +29,13 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
+    def test_tip_simple_float_dot_long(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " 0.000000001 doge", None)
+        self.assertEqual(0, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual(False, tip.verify)
+
     def test_tip_simple_verify(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 100 doge verify", None)
@@ -97,6 +104,13 @@ class TestTip(unittest.TestCase):
         self.assertEqual("doge", tip.currency)
         self.assertEqual("just-an-dev", tip.receiver.username)
 
+    def test_tip_negative(self):
+        tip = models.Tip()
+        tip.parse_message("+/u/" + config.bot_name + " -99999999 doge verify", None)
+        self.assertEqual(-99999999, tip.amount)
+        self.assertEqual("doge", tip.currency)
+        self.assertEqual("just-an-dev", tip.receiver.username)
+
     def test_tip_address(self):
         mock_rpc = MockRpc()
         tip = models.Tip()
@@ -122,6 +136,17 @@ class TestTip(unittest.TestCase):
 
         tip = models.Tip().create_from_array(list_tips[2])
         self.assertEqual(True, tip.is_expired())
+
+    def test_create_from_array(self):
+        list_tips = user_function.get_unregistered_tip()
+
+        tip = models.Tip().create_from_array(list_tips[1])
+        self.assertEqual(list_tips[1]['amount'], tip.amount)
+        self.assertEqual(list_tips[1]['sender'], tip.sender.username)
+        self.assertEqual(list_tips[1]['receiver'], tip.receiver.username)
+        self.assertEqual(list_tips[1]['message_fullname'], tip.message_fullname)
+        self.assertEqual(list_tips[1]['time'], tip.time)
+        self.assertEqual(list_tips[1]['id'], tip.id)
 
 
 class TestUser(unittest.TestCase):
