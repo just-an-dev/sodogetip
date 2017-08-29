@@ -191,7 +191,7 @@ def tip_user(msg, tx_queue, failover_time):
     if tip.sender.username == tip.receiver.username:
         tip.sender.send_private_message('cannot tip self',
                                         Template(lang.message_recipient_self).render(
-                                                         username=tip.sender.username))
+                                            username=tip.sender.username))
         return False
 
     # check sender have enough
@@ -205,13 +205,13 @@ def tip_user(msg, tx_queue, failover_time):
         if tip.amount < float(user_pending_balance):
             tip.sender.send_private_message('pending tip',
                                             Template(lang.message_balance_pending_tip).render(
-                                                             username=tip.sender.username))
+                                                username=tip.sender.username))
         else:
             bot_logger.logger.info('user %s not have enough to tip this amount (%s), balance = %s' % (
                 tip.sender.username, str(tip.amount), str(user_spendable_balance)))
             tip.sender.send_private_message('low balance',
                                             Template(lang.message_balance_low_tip).render(
-                                                             username=tip.sender.username))
+                                                username=tip.sender.username))
 
     else:
         # add tip to history of sender & receiver
@@ -246,7 +246,7 @@ def tip_user(msg, tx_queue, failover_time):
             # send message to sender of tip
             tip.sender.send_private_message('tipped user not registered',
                                             Template(lang.message_recipient_register).render(
-                                                             username=tip.receiver.username))
+                                                username=tip.receiver.username))
             # send message to receiver
             tip.receiver.send_private_message(
                 Template(
@@ -357,15 +357,39 @@ def vanity(msg):
         v = models.VanityGenRequest(user)
         v.parse_message(msg.body.lower().strip())
         if v.save_resquest():
-            # todo : send money to vanity account
-            amount = config.vanitygen[len(v.pattern)] - 1  # reduce fee to move funds after generation
+            # send money to vanity account
+            amount = config.vanitygen[len(v.pattern)] - 2  # reduce fee to move funds after generation
+            crypto.send_to(None, user.address, config.vanitygen_address, amount)
 
-            # todo: send message
-            pass
+            # send message
+            user.send_private_message("Vanity Request : Received", "Your request will be process in few time")
         else:
-            # todo: send error message
-            pass
+            # send error message
+            user.send_private_message("Vanity Request : Error",
+                                      "Your request can't be process, check your pattern is a valid base58 string, and start with D")
 
+
+    else:
+        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
+
+
+def hall_of_fame(msg):
+    user = models.User(msg.author.name)
+    if user.is_registered():
+        message = "Donation Tip to " + config.bot_name + " : "
+        donator_list = {}
+        hist = history.get_user_history(config.bot_name)
+        for tip in hist:
+            if tip["sender"] in donator_list.keys():
+                donator_list[tip["sender"]] = float(donator_list[tip["sender"]]) + tip['amount']
+            else:
+                donator_list[tip["sender"]] = tip['amount']
+
+        for donor in sorted(donator_list.items(), key=lambda user: user[1], reverse=True):
+            message += "%s|%s|\n" % (donor[0], str(donor[1]))
+
+        user.send_private_message("Hall Of Fame", message)
     else:
         bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

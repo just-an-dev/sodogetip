@@ -69,6 +69,10 @@ class SoDogeTip:
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.donate(msg, tx_queue, failover_time)
 
+                        elif split_message.count('+halloffame'):
+                            utils.mark_msg_read(self.reddit, msg)
+                            bot_command.hall_of_fame(msg)
+
                         elif split_message.count('+vanity'):
                             utils.mark_msg_read(self.reddit, msg)
                             bot_command.vanity(msg)
@@ -171,11 +175,11 @@ class SoDogeTip:
                     # transfer funds
                     vanity_request.move_funds(tx_queue, failover_time)
 
-                    # todo: set request finish (add time)
+                    # set request finish (add time)
                     time_end = time.time()
                     vanity_request.duration = (time_end - time_start)
                     vanity_request.update_data()
 
                     #  send message to warn user (it's finish)
                     vanity_request.user.send_private_message("Vanity Generation : Finish",
-                                                             "Vanity address is finish, you can use our new address, and thanks to support " + config.bot_name)
+                                                             "Vanity address is finish, you can use our new address, and thanks to support %s" % config.bot_name)
