@@ -1,6 +1,8 @@
 import datetime
 import random
 import re
+
+import praw
 from tinydb import TinyDB, Query
 
 import bot_logger
@@ -211,6 +213,11 @@ class User(object):
         # register in users table
         UserStorage.add_address(self.username, self.address)
 
+    def send_private_message(self, title, content):
+        if self.reddit is None:
+            self.reddit = praw.Reddit(config.bot_name)
+        self.reddit.redditor(self.username).message(title, content)
+
 
 class UserStorage:
     @staticmethod
@@ -333,6 +340,8 @@ class VanityGenRequest(object):
 
         for key in arr_vanity.keys():
             setattr(self, key, arr_vanity[key])
+
+        return self
 
     def generate(self):
         # parse output
