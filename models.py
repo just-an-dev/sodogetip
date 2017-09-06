@@ -2,6 +2,7 @@ import datetime
 import random
 import re
 import subprocess
+import time
 
 import praw
 from tinydb import TinyDB, Query
@@ -196,7 +197,7 @@ class User(object):
 
             if failover_time is not None:
                 # if we call function without failover_time, we consider we are in safe mode
-                if datetime.time.time() > int(failover_time.value) + 86400:
+                if int(time.time()) > int(failover_time.value) + 86400:
                     # not in safe mode so add unconfirmed balance
                     balance += float(self.get_balance_unconfirmed())
 
