@@ -98,7 +98,7 @@ class SoDogeTip:
         while True:
             bot_logger.logger.info('Make clean of unregistered tips')
             bot_command.replay_pending_tip(self.reddit, tx_queue, failover_time)
-            time.sleep(60)
+            time.sleep(3600)
 
     def anti_spamming_tx(self):
         # protect against spam attacks of an address having UTXOs.
@@ -183,3 +183,6 @@ class SoDogeTip:
                     #  send message to warn user (it's finish)
                     vanity_request.user.send_private_message("Vanity Generation : Finish",
                                                              "Vanity address is finish, you can use our new address, and thanks to support %s" % config.bot_name)
+
+            # wait a bit before re-check
+            time.sleep(300)

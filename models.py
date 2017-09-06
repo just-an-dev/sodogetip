@@ -319,7 +319,7 @@ class VanityGenRequest(object):
         # to check if we move funds of user
         self.use = None
 
-    def parse_message(self, message_to_parse, rpc=None):
+    def parse_message(self, message_to_parse):
         split_message = message_to_parse.split()
 
         # parse message like : +vanity use Dpatern
