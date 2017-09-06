@@ -109,7 +109,7 @@ class SoDogeTip:
             # get list of account
             list_account = UserStorage.get_users()
             if len(list_account) > 0:
-                for account in list_account.items():
+                for account in list_account:
                     address = UserStorage.get_user_address(account)
                     # don't flood rpc daemon
                     time.sleep(1)
