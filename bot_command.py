@@ -37,7 +37,7 @@ def register_user(msg):
         # pending_tips is balance of tip send to unregistered users
         pending_tips = user.get_balance_pending_tip()
         unconfirmed_balance = user.get_balance_unconfirmed()
-        spendable_balance = user.get_balance(user.address)
+        spendable_balance = user.get_balance()
 
         bot_logger.logger.info('user %s spendable_balance = %s' % (user.username, spendable_balance))
 
@@ -74,7 +74,7 @@ def info_user(msg):
         # pending_tips is balance of tip send to unregistered users
         pending_tips = user.get_balance_pending_tip()
         unconfirmed_balance = user.get_balance_unconfirmed()
-        spendable_balance = user.get_balance(user.address)
+        spendable_balance = user.get_balance()
 
         bot_logger.logger.info('user %s spendable_balance = %s' % (user.username, spendable_balance))
 
@@ -373,7 +373,7 @@ def vanity(msg):
                 user.send_private_message("Vanity Request : Error",
                                           "Your request can't be process, check your pattern is a valid base58 string, and start with D")
     else:
-        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        bot_logger.logger.info('user %s not registered (command : vanity) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))
 
 
@@ -396,5 +396,5 @@ def hall_of_fame(msg):
 
         user.send_private_message("Hall Of Fame", message)
     else:
-        bot_logger.logger.info('user %s not registered (command : donate) ' % user.username)
+        bot_logger.logger.info('user %s not registered (command : hall_of_fame) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

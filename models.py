@@ -1,4 +1,5 @@
 import datetime
+import multiprocessing
 import random
 import re
 import subprocess
@@ -195,7 +196,7 @@ class User(object):
             # get unconfirmed balance come of bot
             balance += float(crypto.get_user_spendable_balance(self.address))
 
-            if failover_time is not None:
+            if failover_time is not None and type(failover_time) is type(multiprocessing.Value):
                 # if we call function without failover_time, we consider we are in safe mode
                 if int(time.time()) > int(failover_time.value) + 86400:
                     # not in safe mode so add unconfirmed balance
