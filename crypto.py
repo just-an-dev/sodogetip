@@ -20,6 +20,7 @@ def base58_is_valid(string):
 
     return True
 
+
 def get_rpc():
     return AuthServiceProxy("http://%s:%s@%s:%s" % (
         config.rpc_config['doge_rpc_username'], config.rpc_config['doge_rpc_password'],
@@ -52,6 +53,7 @@ def check_passphrase():
         exit()
 
     rpc.walletlock()
+
 
 def get_user_spendable_balance(address, rpc=None):
     if rpc is None:
