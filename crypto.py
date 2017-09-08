@@ -10,6 +10,15 @@ import bot_logger
 import config
 import models
 
+B58_DIGITS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+
+def base58_is_valid(string):
+    for car in string:
+        if car not in B58_DIGITS:
+            return False
+
+    return True
 
 def get_rpc():
     return AuthServiceProxy("http://%s:%s@%s:%s" % (
