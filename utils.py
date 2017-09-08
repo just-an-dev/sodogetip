@@ -1,28 +1,9 @@
-import json
-import os
 import traceback
 
 import requests
-from tinydb import TinyDB
 
 import bot_logger
-import config
 from config import url_get_value
-
-
-def create_user_storage():
-    if not os.path.exists(config.user_file):
-        bot_logger.logger.info("create an empty user file")
-        data = {}
-        with open(config.user_file, 'w+') as f:
-            json.dump(data, f)
-
-
-def create_unregistered_tip_storage():
-    if not os.path.exists(config.unregistered_tip_user):
-        bot_logger.logger.info("create an empty unregistered tip user file")
-        db = TinyDB(config.unregistered_tip_user)
-        db.close()
 
 
 def get_coin_value(balance, currency=None, format=2):
