@@ -1,3 +1,14 @@
+import datetime
+import random
+import re
+
+import bot_logger
+import config
+import crypto
+import utils
+from models import User
+
+
 class Tip(object):
     """Class to represent a tip of user"""
 

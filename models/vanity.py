@@ -1,3 +1,13 @@
+import random
+import subprocess
+
+from tinydb import TinyDB, Query
+
+import config
+import crypto
+from models import User, UserStorage
+
+
 class VanityGenRequest(object):
     """Class to represent an user"""
 
@@ -28,7 +38,7 @@ class VanityGenRequest(object):
             self.use = False
 
         # check patern is ok
-        if pattern[0] == "D" and base58_is_valid(pattern):
+        if pattern[0] == "D" and crypto.base58_is_valid(pattern):
             self.pattern = pattern
 
     def save_resquest(self):
@@ -75,7 +85,7 @@ class VanityGenRequest(object):
 
     def import_address(self):
         rpc = crypto.get_rpc()
-        rpc.importprivkey(self.private_key, "reddit-vanity-" + self.user.username, false)
+        rpc.importprivkey(self.private_key, "reddit-vanity-" + self.user.username, False)
 
         # on import success clean key from memory
         self.private_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
