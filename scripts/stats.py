@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # list of users
 import argparse
 import datetime
