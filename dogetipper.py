@@ -8,10 +8,10 @@ from tinydb import TinyDB
 
 import bot_command
 import bot_logger
+import commands
 import config
 import crypto
 import lang
-import reddit_gold
 import utils
 from models import UserStorage, VanityGenRequest
 
@@ -78,7 +78,7 @@ class SoDogeTip:
                             bot_command.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
-                            reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
+                            commands.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
                         else:
