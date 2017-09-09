@@ -9,6 +9,9 @@ from config import url_get_value
 def get_coin_value(balance, currency=None, format=2):
     str_format = str("{0:." + str(format) + "f}")
 
+    if not balance > 0:
+        return float(0.0)
+
     try:
         jc_currency = requests.get(url_get_value['cryptonator']).json()
         coin_val = xpath_get(jc_currency, "/ticker/price")
