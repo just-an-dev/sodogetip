@@ -24,7 +24,7 @@ class SoDogeTip:
         bot_logger.logger.info('Main Bot loop !')
 
         while True:
-            bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
+            # bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
 
@@ -87,7 +87,7 @@ class SoDogeTip:
                             bot_logger.logger.info('Currently not supported')
 
                 # to not explode rate limit :)
-                bot_logger.logger.info('Make an pause !')
+                #bot_logger.logger.info('Make an pause !')
                 time.sleep(3)
             except:
                 traceback.print_exc()
