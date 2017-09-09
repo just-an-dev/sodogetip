@@ -8,6 +8,7 @@ import bot_logger
 import config
 import crypto
 import user_function
+from models import history
 
 
 class User(object):
@@ -81,6 +82,9 @@ class User(object):
         if self.reddit is None:
             self.reddit = praw.Reddit(config.bot_name)
         self.reddit.redditor(self.username).message(title, content)
+
+    def get_history(self):
+        return history.get_user_history(self.username)
 
 
 class UserStorage:

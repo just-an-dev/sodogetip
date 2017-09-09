@@ -41,41 +41,41 @@ class SoDogeTip:
                         split_message = msg_body.lower().split()
 
                         if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
-                            bot_command.register_user(msg)
+                            commands.register_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif (msg_body == '+info' and msg_subject == '+info') or (
                                         msg_body == '+balance' and msg_subject == '+balance'):
-                            bot_command.info_user(msg)
+                            commands.info_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
-                            bot_command.help_user(msg)
+                            commands.help_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
-                            bot_command.history_user(msg)
+                            commands.history_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.withdraw_user(msg, failover_time)
+                            commands.withdraw_user(msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(msg, tx_queue, failover_time)
+                            commands.tip_user(msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.donate(msg, tx_queue, failover_time)
+                            commands.donate(msg, tx_queue, failover_time)
 
                         elif split_message.count('+halloffame'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.hall_of_fame(msg)
+                            commands.hall_of_fame(msg)
 
                         elif split_message.count('+vanity'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.vanity(msg)
+                            commands.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
                             commands.gold(self.reddit, msg, tx_queue, failover_time)

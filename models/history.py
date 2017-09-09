@@ -86,32 +86,6 @@ def update_tip(user_history, tip):
         bot_logger.logger.warn("update history fail user=%s, tip.id=%s" % (user_history, tip.id))
 
 
-def build_message(data):
-    history_table = "\n\nDate|Sender|Receiver|Amount|Action|Finish|\n"
-    history_table += "---|---|---|---|:-:|:-:\n"
-    for tip in data[::-1]:
-        str_finish = "Pending"
-
-        if 'status' in tip.keys() and tip['status'] is not None and tip['status'] != "":
-            str_finish = str_finish + ' - ' + tip['status']
-
-        if tip['finish']:
-            str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
-
-        str_amount = ""
-        if tip['amount'] != "":
-            str_amount = str(float(tip['amount']))
-            if float(tip['amount']).is_integer():
-                str_amount = str(int(tip['amount']))
-
-        history_table += "%s|%s|%s|%s|%s|%s|\n" % (
-            datetime.datetime.strptime(tip['time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S'),
-            tip['sender'], tip['receiver'],
-            str_amount, tip['action'], str_finish)
-
-    return history_table
-
-
 def update_withdraw(user_history, status, tx_id, tip_id):
     # convert object to string of name if necessary
     if type(user_history) is models.User:
