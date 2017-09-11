@@ -7,5 +7,13 @@
       "coin": "doge",
       "address": "test_config"
     }
+  },
+  "just-an-dev": {
+    "1": {
+      "enable": true,
+      "type": "simple",
+      "coin": "doge",
+      "address": "nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR"
+    }
   }
 }

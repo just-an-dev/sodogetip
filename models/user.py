@@ -142,7 +142,11 @@ class UserStorage:
             table = db.table(username)
             user_db = Query()
             data = table.search(user_db.enable == True)
-            return data[0].get('address')
+            if len(data) > 0:
+                return data[0].get('address')
+            else:
+                # username not found
+                return None
         else:
             bot_logger.logger.error("get address of un-registered user  %s " % (str(username)))
 

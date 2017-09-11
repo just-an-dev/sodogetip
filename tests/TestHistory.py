@@ -1,7 +1,7 @@
 import unittest
 
-import history
 import models
+from models import history
 
 
 class TestHistory(unittest.TestCase):

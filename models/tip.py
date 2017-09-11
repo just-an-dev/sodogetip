@@ -6,7 +6,7 @@ import bot_logger
 import config
 import crypto
 import utils
-from models import User
+from user import User
 
 
 class Tip(object):

@@ -4,7 +4,7 @@ import unittest
 import config
 import models
 import user_function
-from MockRpc import MockRpc
+from tests.MockRpc import MockRpc
 
 
 class TestTip(unittest.TestCase):

@@ -111,20 +111,21 @@ class SoDogeTip:
             if len(list_account) > 0:
                 for account in list_account:
                     address = UserStorage.get_user_address(account)
-                    # don't flood rpc daemon
-                    time.sleep(1)
-                    list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
+                    if address is not None:
+                        # don't flood rpc daemon
+                        time.sleep(1)
+                        list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
 
-                    if len(list_tx) > int(config.spam_limit):
-                        unspent_amounts = []
-                        for i in range(0, len(list_tx), 1):
-                            unspent_amounts.append(list_tx[i]['amount'])
-                            # limits to 200 transaction to not explode timeout rpc
-                            if i > 200:
-                                break
+                        if len(list_tx) > int(config.spam_limit):
+                            unspent_amounts = []
+                            for i in range(0, len(list_tx), 1):
+                                unspent_amounts.append(list_tx[i]['amount'])
+                                # limits to 200 transaction to not explode timeout rpc
+                                if i > 200:
+                                    break
 
-                        bot_logger.logger.info('Consolidate %s account !' % account)
-                        crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
+                            bot_logger.logger.info('Consolidate %s account !' % account)
+                            crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
 
             # wait a bit before re-scan account
             time.sleep(240)
