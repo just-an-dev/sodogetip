@@ -32,7 +32,7 @@ class TestTip(unittest.TestCase):
     def test_tip_simple_float_dot_long(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 0.000000001 doge", None)
-        self.assertEqual(0, tip.amount)
+        self.assertEqual(0.000000001, tip.amount)
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
@@ -106,10 +106,7 @@ class TestTip(unittest.TestCase):
 
     def test_tip_negative(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " -99999999 doge verify", None)
-        self.assertEqual(-99999999, tip.amount)
-        self.assertEqual("doge", tip.currency)
-        self.assertEqual("just-an-dev", tip.receiver.username)
+        self.assertRaises(AttributeError, tip.parse_message, "+/u/" + config.bot_name + " -99999999 doge verify", None)
 
     def test_tip_address(self):
         mock_rpc = MockRpc()
