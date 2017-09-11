@@ -1,3 +1,4 @@
+import copy
 import datetime
 import unittest
 
@@ -32,7 +33,7 @@ class TestTip(unittest.TestCase):
     def test_tip_simple_float_dot_long(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 0.000000001 doge", None)
-        self.assertEqual(0.000000001, tip.amount)
+        self.assertEqual(0.000000001, float(tip.amount))
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
@@ -137,7 +138,10 @@ class TestTip(unittest.TestCase):
     def test_create_from_array(self):
         list_tips = user_function.get_unregistered_tip()
 
-        tip = models.Tip().create_from_array(list_tips[1])
+        # make a copy for tests :)
+        list_tips_edit = copy.deepcopy(list_tips)
+
+        tip = models.Tip().create_from_array(list_tips_edit[1])
         self.assertEqual(list_tips[1]['amount'], tip.amount)
         self.assertEqual(list_tips[1]['sender'], tip.sender.username)
         self.assertEqual(list_tips[1]['receiver'], tip.receiver.username)
