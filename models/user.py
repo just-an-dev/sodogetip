@@ -162,7 +162,9 @@ class UserStorage:
 
             if data == 1:
                 # disable all other address
-                table.update({"enable": False})
+                enabled_address = table.search(user_db.enable == True)
+                for item in enabled_address:
+                    table.update({"enable": False}, eids=[item.eid])
 
                 # enable only one
                 table.update({"enable": True}, user_db.address == address)

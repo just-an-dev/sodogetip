@@ -205,16 +205,24 @@ class TestUserStorage(unittest.TestCase):
                          {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
 
     def test_get_user_new(self):
-        self.assertEqual(models.UserStorage.get_users(), ['sodogetiptest', 'just-an-dev'])
+        self.assertIn('sodogetiptest', models.UserStorage.get_users())
+        self.assertIn('just-an-dev', models.UserStorage.get_users())
 
     def test_get_user_new_addr(self):
-        self.assertEqual(models.UserStorage.get_all_users_address(),
-                         {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
+        self.assertDictContainsSubset(models.UserStorage.get_all_users_address(),
+                                      {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
 
     def test_get_user_new_addr_value(self):
         self.assertEqual(user_function.get_users_old().values(), ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
         self.assertEqual(models.UserStorage.get_all_users_address().values(),
                          ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
+
+    def test_active_user_address(self):
+        models.UserStorage.add_address("just-an-dev", "testing_addresss")
+        models.UserStorage.active_user_address("just-an-dev", "testing_addresss")
+        user = models.User("just-an-dev")
+        self.assertEqual(user.address, models.UserStorage.get_user_address("just-an-dev"))
+        self.assertEqual(True, user.is_registered())
 
 
 if __name__ == '__main__':
