@@ -160,7 +160,7 @@ class UserStorage:
             user_db = Query()
             data = table.count(user_db.address == address)
 
-            if data == 0:
+            if data == 1:
                 # disable all other address
                 table.update(set("enable", False))
 
