@@ -79,9 +79,8 @@ class User(object):
         UserStorage.add_address(self.username, self.address)
 
     def send_private_message(self, title, content):
-        if self.reddit is None:
-            self.reddit = praw.Reddit(config.bot_name)
-        self.reddit.redditor(self.username).message(title, content)
+        reddit = praw.Reddit(config.bot_name)
+        reddit.redditor(self.username).message(title, content)
 
     def get_history(self):
         return HistoryStorage.get_user_history(self.username)
