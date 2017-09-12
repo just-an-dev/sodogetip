@@ -2,7 +2,6 @@ from jinja2 import Template
 
 import bot_logger
 import config
-import history
 import lang
 import models
 
@@ -12,7 +11,7 @@ def hall_of_fame(msg):
     if user.is_registered():
         message = "Donation Tip to " + config.bot_name + " : "
         donator_list = {}
-        hist = history.get_user_history(config.bot_name)
+        hist = models.HistoryStorage.get_user_history(config.bot_name)
         message += "\n\nUser|Donation Ammount|\n"
 
         for tip in hist:

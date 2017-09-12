@@ -56,7 +56,7 @@ def replay_pending_tip(reddit, tx_queue, failover_time):
                 user_function.remove_pending_tip(tip.id)
 
             # update tip status
-            models.history.update_tip(tip.sender.username, tip)
-            models.history.update_tip(tip.receiver.username, tip)
+            models.HistoryStorage.update_tip(tip.sender.username, tip)
+            models.HistoryStorage.update_tip(tip.receiver.username, tip)
     else:
         bot_logger.logger.info("no pending tipping")

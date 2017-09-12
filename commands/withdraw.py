@@ -30,13 +30,14 @@ def withdraw_user(msg, failover_time):
                 receiver_address = split_message[4]
                 tip_id = random.randint(0, 99999999)
 
-                models.history.add_to_history(user.username, user.username, receiver_address, amount, "withdraw", "",
-                                              tip_id)
+                models.HistoryStorage.add_to_history(user.username, user.username, receiver_address, amount, "withdraw",
+                                                     "",
+                                                     tip_id)
 
                 send = crypto.tip_user(user.address, receiver_address, amount, None, failover_time)
 
                 if send:
-                    models.history.update_withdraw(user.username, True, send, tip_id)
+                    models.HistoryStorage.update_withdraw(user.username, True, send, tip_id)
 
                     value_usd = utils.get_coin_value(amount)
                     msg.reply(Template(lang.message_withdraw + lang.message_footer).render(

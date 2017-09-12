@@ -3,7 +3,6 @@ from jinja2 import Template
 import bot_logger
 import config
 import crypto
-import history
 import lang
 import models
 import utils
@@ -21,7 +20,7 @@ def donate(msg, tx_queue, failover_time):
             crypto.tip_user(user.username.address, models.User(config.bot_name).address, amount, tx_queue,
                             failover_time)
 
-            history.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
+            models.HistoryStorage.add_to_history(msg.author.name, msg.author.name, config.bot_name, amount, "donate")
         else:
             bot_logger.logger.info(lang.message_invalid_amount)
             user.send_private_message('invalid amount', lang.message_invalid_amount)

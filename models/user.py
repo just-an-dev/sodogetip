@@ -8,7 +8,7 @@ import bot_logger
 import config
 import crypto
 import user_function
-from models import history
+from models.history import HistoryStorage
 
 
 class User(object):
@@ -84,7 +84,7 @@ class User(object):
         self.reddit.redditor(self.username).message(title, content)
 
     def get_history(self):
-        return history.get_user_history(self.username)
+        return HistoryStorage.get_user_history(self.username)
 
 
 class UserStorage:

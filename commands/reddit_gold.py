@@ -7,7 +7,6 @@ from tinydb import TinyDB
 import bot_logger
 import config
 import crypto
-import history
 import lang
 import models
 import utils
@@ -54,8 +53,9 @@ def gold(reddit, msg, tx_queue, failover_time):
                 store_user_buy(user, quantity, tx_id)
 
                 # update user history
-                history.add_to_history(user, sender=user.username, receiver="Reddit", amount=config.price_reddit_gold,
-                                       action="buy reddit gold")
+                models.HistoryStorage.add_to_history(user, sender=user.username, receiver="Reddit",
+                                                     amount=config.price_reddit_gold,
+                                                     action="buy reddit gold")
 
                 # send succes message
                 msg.reply(Template(lang.message_buy_gold_success).render(username=user.username))

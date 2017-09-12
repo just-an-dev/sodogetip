@@ -6,7 +6,6 @@ import crypto
 import lang
 import models
 import utils
-from models import history
 
 
 def register_user(msg):
@@ -20,7 +19,7 @@ def register_user(msg):
             tittle_reply = 'you are registered'
 
             user.register()
-            history.add_to_history(msg.author.name, "", "", "", "register")
+            models.HistoryStorage.add_to_history(msg.author.name, "", "", "", "register")
 
             # create a backup of wallet
             crypto.backup_wallet()

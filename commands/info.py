@@ -4,7 +4,6 @@ import bot_logger
 import lang
 import models
 import utils
-from models import history
 
 
 def info_user(msg):
@@ -32,7 +31,7 @@ def info_user(msg):
             pending_tips_value_usd=str(pending_tips_value_usd),
             address=user.address))
 
-        history.add_to_history(user.username, "", "", spendable_balance, "info")
+        models.HistoryStorage.add_to_history(user.username, "", "", spendable_balance, "info")
     else:
         bot_logger.logger.info('user %s not registered (command : info) ' % msg.author.name)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))

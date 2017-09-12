@@ -73,8 +73,8 @@ def tip_user(msg, tx_queue, failover_time):
 
     else:
         # add tip to history of sender & receiver
-        models.history.add_to_history_tip(tip.sender.username, "tip send", tip)
-        models.history.add_to_history_tip(tip.receiver.username, "tip receive", tip)
+        models.HistoryStorage.add_to_history_tip(tip.sender.username, "tip send", tip)
+        models.HistoryStorage.add_to_history_tip(tip.receiver.username, "tip receive", tip)
 
         # check user who receive tip have an account
         if tip.receiver.is_registered():
@@ -115,5 +115,5 @@ def tip_user(msg, tx_queue, failover_time):
                     value_usd=str(tip.get_value_usd())))
 
         # update tip status
-        models.history.update_tip(tip.sender.username, tip)
-        models.history.update_tip(tip.receiver.username, tip)
+        models.HistoryStorage.update_tip(tip.sender.username, tip)
+        models.HistoryStorage.update_tip(tip.receiver.username, tip)
