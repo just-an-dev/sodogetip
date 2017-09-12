@@ -23,9 +23,9 @@ def base58_is_valid(string):
 
 def get_rpc():
     return AuthServiceProxy("http://%s:%s@%s:%s" % (
-        config.rpc_config['doge_rpc_username'], config.rpc_config['doge_rpc_password'],
-        config.rpc_config['doge_rpc_host'],
-        config.rpc_config['doge_rpc_port']), timeout=config.rpc_config['timeout'])
+        config.rpc_config['rpc_username'], config.rpc_config['rpc_password'],
+        config.rpc_config['rpc_host'],
+        config.rpc_config['rpc_port']), timeout=config.rpc_config['timeout'])
 
 
 def backup_wallet():
