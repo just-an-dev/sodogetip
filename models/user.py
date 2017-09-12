@@ -162,10 +162,10 @@ class UserStorage:
 
             if data == 1:
                 # disable all other address
-                table.update(set("enable", False))
+                table.update({"enable": False})
 
                 # enable only one
-                table.update(set("enable", True), user_db.address == address)
+                table.update({"enable": True}, user_db.address == address)
             else:
                 bot_logger.logger.error("active a not found address (%s)  of user  %s " % (str(address), str(username)))
 
