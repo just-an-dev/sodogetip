@@ -81,7 +81,7 @@ def get_user_spendable_balance(address, rpc=None):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(spendable_amounts))))
 
-    return int(sum(spendable_amounts))
+    return float(sum(spendable_amounts))
 
 
 def get_user_confirmed_balance(address):
@@ -100,7 +100,7 @@ def get_user_confirmed_balance(address):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
-    return int(sum(unspent_amounts))
+    return float(sum(unspent_amounts))
 
 
 def get_user_unconfirmed_balance(address):
@@ -118,7 +118,7 @@ def get_user_unconfirmed_balance(address):
 
     bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
 
-    return int(sum(unspent_amounts))
+    return float(sum(unspent_amounts))
 
 
 def tip_user(sender_address, receiver_address, amount_tip, tx_queue, failover_time):
