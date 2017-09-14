@@ -50,6 +50,7 @@ def check_passphrase():
     # check
     wallet_info = rpc.getwalletinfo()
     if wallet_info['unlocked_until'] < time.time():
+        bot_logger.logger.error("error durring unlock your wallet")
         exit()
 
     rpc.walletlock()
