@@ -45,3 +45,8 @@ vanitygen_price = {
  "3":"10",
  "4":"50"
 }
+
+
+# shop
+shop_enabled = False
+shop_fee = float(1/100)
