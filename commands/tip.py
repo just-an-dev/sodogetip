@@ -61,6 +61,7 @@ def tip_user(msg, tx_queue, failover_time):
         user_pending_balance = tip.sender.get_balance_unconfirmed()
         # not enough for tip
         if tip.amount < float(user_pending_balance):
+            # todo : add this to pendding tips
             tip.sender.send_private_message('pending tip',
                                             Template(lang.message_balance_pending_tip).render(
                                                 username=tip.sender.username))
