@@ -1,5 +1,6 @@
 # v2.1 - xx/07/2017
 - Fix issue #78 (clean code - balances)
+- Big restructuring #90
 - Add remind function
 - Add monthly report script
 - Fix an error on withdraw
