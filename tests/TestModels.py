@@ -1,10 +1,11 @@
+import copy
 import datetime
 import unittest
 
 import config
 import models
 import user_function
-from MockRpc import MockRpc
+from tests.MockRpc import MockRpc
 
 
 class TestTip(unittest.TestCase):
@@ -32,7 +33,7 @@ class TestTip(unittest.TestCase):
     def test_tip_simple_float_dot_long(self):
         tip = models.Tip()
         tip.parse_message("+/u/" + config.bot_name + " 0.000000001 doge", None)
-        self.assertEqual(0, tip.amount)
+        self.assertEqual(0.000000001, float(tip.amount))
         self.assertEqual("doge", tip.currency)
         self.assertEqual(False, tip.verify)
 
@@ -106,10 +107,7 @@ class TestTip(unittest.TestCase):
 
     def test_tip_negative(self):
         tip = models.Tip()
-        tip.parse_message("+/u/" + config.bot_name + " -99999999 doge verify", None)
-        self.assertEqual(-99999999, tip.amount)
-        self.assertEqual("doge", tip.currency)
-        self.assertEqual("just-an-dev", tip.receiver.username)
+        self.assertRaises(AttributeError, tip.parse_message, "+/u/" + config.bot_name + " -99999999 doge verify", None)
 
     def test_tip_address(self):
         mock_rpc = MockRpc()
@@ -140,7 +138,10 @@ class TestTip(unittest.TestCase):
     def test_create_from_array(self):
         list_tips = user_function.get_unregistered_tip()
 
-        tip = models.Tip().create_from_array(list_tips[1])
+        # make a copy for tests :)
+        list_tips_edit = copy.deepcopy(list_tips)
+
+        tip = models.Tip().create_from_array(list_tips_edit[1])
         self.assertEqual(list_tips[1]['amount'], tip.amount)
         self.assertEqual(list_tips[1]['sender'], tip.sender.username)
         self.assertEqual(list_tips[1]['receiver'], tip.receiver.username)
@@ -204,16 +205,24 @@ class TestUserStorage(unittest.TestCase):
                          {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
 
     def test_get_user_new(self):
-        self.assertEqual(models.UserStorage.get_users(), ['sodogetiptest', 'just-an-dev'])
+        self.assertIn('sodogetiptest', models.UserStorage.get_users())
+        self.assertIn('just-an-dev', models.UserStorage.get_users())
 
     def test_get_user_new_addr(self):
-        self.assertEqual(models.UserStorage.get_all_users_address(),
-                         {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
+        self.assertDictContainsSubset(models.UserStorage.get_all_users_address(),
+                                      {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
 
     def test_get_user_new_addr_value(self):
         self.assertEqual(user_function.get_users_old().values(), ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
         self.assertEqual(models.UserStorage.get_all_users_address().values(),
                          ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
+
+    def test_active_user_address(self):
+        models.UserStorage.add_address("just-an-dev", "testing_addresss")
+        models.UserStorage.active_user_address("just-an-dev", "testing_addresss")
+        user = models.User("just-an-dev")
+        self.assertEqual(user.address, models.UserStorage.get_user_address("just-an-dev"))
+        self.assertEqual(True, user.is_registered())
 
 
 if __name__ == '__main__':

@@ -2,10 +2,10 @@
 ## sample of config file
 
 rpc_config = {
-    "doge_rpc_port": "22545",
-    "doge_rpc_host": "127.0.0.1",
-    "doge_rpc_username": "dogecoinrpc",
-    "doge_rpc_password": "dogecoinpassword",
+    "rpc_port": "22545",
+    "rpc_host": "127.0.0.1",
+    "rpc_username": "dogecoinrpc",
+    "rpc_password": "dogecoinpassword",
     "timeout": 60
 }
 
@@ -22,8 +22,6 @@ unregistered_tip_user = DATA_PATH + 'unregistered_tip_user.json'
 logs_path = DATA_PATH + 'logs/'
 history_path = DATA_PATH + 'history/'
 
-# vanity-gen request
-vanitygen = DATA_PATH + 'vanitygen.json'
 
 spam_limit = 1000
 rate_fee = 1
@@ -39,6 +37,16 @@ tip_keyword = {
     "dogecar" : 98
 }
 
+# vanity-gen request
+vanity_enabled = False
+vanitygen = DATA_PATH + 'vanitygen.json'
+vanitygen_address = "DGo1dHhU2pRAyU58LgACYU3i3fpaZakG5u"
 vanitygen_price = {
- ""
+ "3":"10",
+ "4":"50"
 }
+
+
+# shop
+shop_enabled = False
+shop_fee = float(1/100)

@@ -10,12 +10,22 @@ import bot_logger
 import config
 import models
 
+B58_DIGITS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+
+def base58_is_valid(string):
+    for car in string:
+        if car not in B58_DIGITS:
+            return False
+
+    return True
+
 
 def get_rpc():
     return AuthServiceProxy("http://%s:%s@%s:%s" % (
-        config.rpc_config['doge_rpc_username'], config.rpc_config['doge_rpc_password'],
-        config.rpc_config['doge_rpc_host'],
-        config.rpc_config['doge_rpc_port']), timeout=config.rpc_config['timeout'])
+        config.rpc_config['rpc_username'], config.rpc_config['rpc_password'],
+        config.rpc_config['rpc_host'],
+        config.rpc_config['rpc_port']), timeout=config.rpc_config['timeout'])
 
 
 def backup_wallet():
@@ -43,9 +53,11 @@ def check_passphrase():
     # check
     wallet_info = rpc.getwalletinfo()
     if wallet_info['unlocked_until'] < time.time():
+        bot_logger.logger.error("error durring unlock your wallet")
         exit()
 
     rpc.walletlock()
+
 
 def get_user_spendable_balance(address, rpc=None):
     if rpc is None:
@@ -73,7 +85,7 @@ def get_user_spendable_balance(address, rpc=None):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(spendable_amounts))))
 
-    return int(sum(spendable_amounts))
+    return float(sum(spendable_amounts))
 
 
 def get_user_confirmed_balance(address):
@@ -92,7 +104,7 @@ def get_user_confirmed_balance(address):
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(unspent_amounts))))
 
-    return int(sum(unspent_amounts))
+    return float(sum(unspent_amounts))
 
 
 def get_user_unconfirmed_balance(address):
@@ -110,7 +122,7 @@ def get_user_unconfirmed_balance(address):
 
     bot_logger.logger.debug("unconfirmed_amounts %s" % (str(sum(unspent_amounts))))
 
-    return int(sum(unspent_amounts))
+    return float(sum(unspent_amounts))
 
 
 def tip_user(sender_address, receiver_address, amount_tip, tx_queue, failover_time):

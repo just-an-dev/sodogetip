@@ -8,10 +8,10 @@ from tinydb import TinyDB
 
 import bot_command
 import bot_logger
+import commands
 import config
 import crypto
 import lang
-import reddit_gold
 import utils
 from models import UserStorage, VanityGenRequest
 
@@ -24,7 +24,7 @@ class SoDogeTip:
         bot_logger.logger.info('Main Bot loop !')
 
         while True:
-            bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
+            # bot_logger.logger.debug('main failover_time : %s' % str(failover_time.value))
 
             try:
 
@@ -41,44 +41,44 @@ class SoDogeTip:
                         split_message = msg_body.lower().split()
 
                         if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
-                            bot_command.register_user(msg)
+                            commands.register_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif (msg_body == '+info' and msg_subject == '+info') or (
                                         msg_body == '+balance' and msg_subject == '+balance'):
-                            bot_command.info_user(msg)
+                            commands.info_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+help' and msg_subject == '+help':
-                            bot_command.help_user(msg)
+                            commands.help_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif msg_body == '+history' and msg_subject == '+history':
-                            bot_command.history_user(msg)
+                            commands.history_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
                         elif split_message.count('+withdraw') and msg_subject == '+withdraw':
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.withdraw_user(msg, failover_time)
+                            commands.withdraw_user(msg, failover_time)
 
                         elif split_message.count('+/u/' + config.bot_name):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.tip_user(msg, tx_queue, failover_time)
+                            commands.tip_user(msg, tx_queue, failover_time)
 
                         elif split_message.count('+donate'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.donate(msg, tx_queue, failover_time)
+                            commands.donate(msg, tx_queue, failover_time)
 
                         elif split_message.count('+halloffame'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.hall_of_fame(msg)
+                            commands.hall_of_fame(msg)
 
                         elif split_message.count('+vanity'):
                             utils.mark_msg_read(self.reddit, msg)
-                            bot_command.vanity(msg)
+                            commands.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
-                            reddit_gold.gold(self.reddit, msg, tx_queue, failover_time)
+                            commands.gold(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
                         else:
@@ -87,7 +87,7 @@ class SoDogeTip:
                             bot_logger.logger.info('Currently not supported')
 
                 # to not explode rate limit :)
-                bot_logger.logger.info('Make an pause !')
+                #bot_logger.logger.info('Make an pause !')
                 time.sleep(3)
             except:
                 traceback.print_exc()
@@ -111,20 +111,21 @@ class SoDogeTip:
             if len(list_account) > 0:
                 for account in list_account:
                     address = UserStorage.get_user_address(account)
-                    # don't flood rpc daemon
-                    time.sleep(1)
-                    list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
+                    if address is not None:
+                        # don't flood rpc daemon
+                        time.sleep(1)
+                        list_tx = rpc_antispam.listunspent(1, 99999999999, [address])
 
-                    if len(list_tx) > int(config.spam_limit):
-                        unspent_amounts = []
-                        for i in range(0, len(list_tx), 1):
-                            unspent_amounts.append(list_tx[i]['amount'])
-                            # limits to 200 transaction to not explode timeout rpc
-                            if i > 200:
-                                break
+                        if len(list_tx) > int(config.spam_limit):
+                            unspent_amounts = []
+                            for i in range(0, len(list_tx), 1):
+                                unspent_amounts.append(list_tx[i]['amount'])
+                                # limits to 200 transaction to not explode timeout rpc
+                                if i > 200:
+                                    break
 
-                        bot_logger.logger.info('Consolidate %s account !' % account)
-                        crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
+                            bot_logger.logger.info('Consolidate %s account !' % account)
+                            crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
 
             # wait a bit before re-scan account
             time.sleep(240)
