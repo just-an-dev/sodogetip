@@ -50,4 +50,5 @@ def withdraw_user(msg, failover_time):
             bot_logger.logger.info(lang.message_invalid_amount)
             msg.reply(lang.message_invalid_amount + lang.message_footer)
     else:
+        bot_logger.logger.info('user %s not registered (command : withdraw) ' % user.username)
         msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=msg.author.name))
