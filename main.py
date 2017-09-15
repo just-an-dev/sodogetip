@@ -8,7 +8,6 @@ from threading import Thread
 import bot_logger
 import config
 import crypto
-import utils
 from dogetipper import SoDogeTip
 
 if __name__ == "__main__":
@@ -25,12 +24,6 @@ if __name__ == "__main__":
             # create directory to store user history
             if not os.path.exists(config.history_path):
                 os.makedirs(config.history_path)
-
-            # create file if not exist (user storage)
-            utils.create_user_storage()
-
-            # create file if not exist (tip unregistered user )
-            utils.create_unregistered_tip_storage()
 
             # start bot
             tx_queue = Queue()

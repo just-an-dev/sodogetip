@@ -1,3 +1,4 @@
+requests
 python-bitcoinrpc
 praw
 jinja2

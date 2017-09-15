@@ -23,7 +23,7 @@ formatter_output = logging.Formatter('%(asctime)s - (%(threadName)-11s) - (%(lev
 path_log_file = config.logs_path + 'activity_' + date.today().strftime('%Y%m%d') + '.log'
 
 # move logs to an other file for anti-spam
-if threading.current_thread().name is "anti_spam":
+if threading.current_thread().getName() == "anti_spam":
     path_log_file = config.logs_path + 'anti_spam_' + date.today().strftime('%Y%m%d') + '.log'
 
 file_handler = RotatingFileHandler(path_log_file, 'a', 1000000, 1)
@@ -31,7 +31,7 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter_file)
 logger.addHandler(file_handler)
 
-if threading.current_thread().name is not "anti_spam":
+if threading.current_thread().getName() != "anti_spam":
     # add log to std out for other thread
     steam_handler = logging.StreamHandler()
     steam_handler.setLevel(logging.DEBUG)
