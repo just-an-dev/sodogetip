@@ -37,6 +37,9 @@ def check_passphrase():
     rpc.walletpassphrase(wallet_passphrase, int(config.rpc_config['timeout']))
     logging.disable(logging.NOTSET)
 
+    # let some daemon time to unlock wallet
+    time.sleep(1)
+
     # check
     wallet_info = rpc.getwalletinfo()
     if wallet_info['unlocked_until'] < time.time():
