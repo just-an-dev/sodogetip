@@ -65,20 +65,24 @@ class SoDogeTip:
                             utils.mark_msg_read(self.reddit, msg)
                             commands.tip_user(msg, tx_queue, failover_time)
 
-                        elif split_message.count('+donate'):
+                        elif msg_subject == '+donate':
                             utils.mark_msg_read(self.reddit, msg)
                             commands.donate(msg, tx_queue, failover_time)
 
-                        elif split_message.count('+halloffame'):
+                        elif msg_subject == '+halloffame':
                             utils.mark_msg_read(self.reddit, msg)
                             commands.hall_of_fame(msg)
 
-                        elif split_message.count('+vanity'):
+                        elif msg_subject == '+vanity':
                             utils.mark_msg_read(self.reddit, msg)
                             commands.vanity(msg)
 
                         elif msg_subject == '+gold' or msg_subject == '+gild':
                             commands.gold(self.reddit, msg, tx_queue, failover_time)
+                            utils.mark_msg_read(self.reddit, msg)
+
+                        elif msg_subject == '+offer':
+                            commands.offer(self.reddit, msg, tx_queue, failover_time)
                             utils.mark_msg_read(self.reddit, msg)
 
                         else:
@@ -105,7 +109,7 @@ class SoDogeTip:
         while True:
             rpc_antispam = crypto.get_rpc()
 
-            bot_logger.logger.info('Make clean of tx')
+            bot_logger.logger_anti_spam.logger.info('Make clean of tx')
             # get list of account
             list_account = UserStorage.get_users()
             if len(list_account) > 0:
@@ -124,7 +128,7 @@ class SoDogeTip:
                                 if i > 200:
                                     break
 
-                            bot_logger.logger.info('Consolidate %s account !' % account)
+                            bot_logger.logger_anti_spam.logger.info('Consolidate %s account !' % account)
                             crypto.send_to(rpc_antispam, address, address, sum(unspent_amounts), True)
 
             # wait a bit before re-scan account

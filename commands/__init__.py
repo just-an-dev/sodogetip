@@ -3,6 +3,7 @@ from .hall_of_fame import *
 from .help import *
 from .history import *
 from .info import *
+from .offer import *
 from .reddit_gold import *
 from .register import *
 from .tip import *
