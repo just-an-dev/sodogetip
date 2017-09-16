@@ -15,7 +15,7 @@ class User(object):
     """Class to represent an user"""
 
     def __init__(self, user):
-        self.username = user.lower()
+        self.username = user
 
         # address is activate address (only one address can be active)
         self.address = None
@@ -89,6 +89,9 @@ class User(object):
 class UserStorage:
     @staticmethod
     def add_address(username, address, active=True):
+        # sanitize (just lower)
+        username = str(unicode(username).lower())
+
         db = TinyDB(config.user_file)
         table = db.table(username)
 
@@ -106,16 +109,15 @@ class UserStorage:
 
     @staticmethod
     def exist(username):
-        db = TinyDB(config.user_file)
-        user_list = db.tables()
-        user_list.remove('_default')
-        if unicode(username).lower() in map(unicode.lower, user_list):
+        user_list = UserStorage.get_users()
+        if unicode(username).lower() in user_list:
             return True
         else:
             return False
 
     @classmethod
     def get_users(cls):
+        # get all users
         db = TinyDB(config.user_file)
         user_list = db.tables()
         data = map(unicode.lower, user_list)
@@ -125,10 +127,7 @@ class UserStorage:
     @classmethod
     def get_all_users_address(cls):
         list_address = {}
-        db = TinyDB(config.user_file)
-        user_list = db.tables()
-        data = map(unicode.lower, user_list)
-        data.remove('_default')
+        data = UserStorage.get_users()
         for account in data:
             list_address[account] = UserStorage.get_user_address(account)
 
@@ -136,6 +135,9 @@ class UserStorage:
 
     @classmethod
     def get_user_address(cls, username):
+        # sanitize (just lower)
+        username = str(unicode(username).lower())
+
         if UserStorage.exist(username):
             db = TinyDB(config.user_file)
             table = db.table(username)
@@ -151,6 +153,9 @@ class UserStorage:
 
     @classmethod
     def active_user_address(cls, username, address):
+        # sanitize (just lower)
+        username = str(unicode(username).lower())
+
         if UserStorage.exist(username):
             db = TinyDB(config.user_file)
             table = db.table(username)

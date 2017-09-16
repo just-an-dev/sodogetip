@@ -197,31 +197,24 @@ class TestUser(unittest.TestCase):
 
 
 class TestUserStorage(unittest.TestCase):
-    def test_get_user_migration(self):
-        self.assertEqual(user_function.get_users_old(), models.UserStorage.get_all_users_address())
-
-    def test_get_user_old(self):
-        self.assertEqual(user_function.get_users_old(),
-                         {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
-
     def test_get_user_new(self):
         self.assertIn('sodogetiptest', models.UserStorage.get_users())
         self.assertIn('just-an-dev', models.UserStorage.get_users())
 
-    def test_get_user_new_addr(self):
-        self.assertDictContainsSubset(models.UserStorage.get_all_users_address(),
-                                      {'sodogetiptest': 'test_config', 'just-an-dev': 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'})
+    def test_get_user_addr(self):
+        list = models.UserStorage.get_all_users_address()
 
-    def test_get_user_new_addr_value(self):
-        self.assertEqual(user_function.get_users_old().values(), ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
-        self.assertEqual(models.UserStorage.get_all_users_address().values(),
-                         ['test_config', 'nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR'])
+        self.assertIn('test_config', list['sodogetiptest'])
+        self.assertIn('nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR', list['just-an-dev'])
+
+        self.assertIn('test_config', list.values())
+        self.assertIn('nnBKn39onxAuS1cr6KuLAoV2SdfFh1dpsR', list.values())
 
     def test_active_user_address(self):
-        models.UserStorage.add_address("just-an-dev", "testing_addresss")
-        models.UserStorage.active_user_address("just-an-dev", "testing_addresss")
-        user = models.User("just-an-dev")
-        self.assertEqual(user.address, models.UserStorage.get_user_address("just-an-dev"))
+        models.UserStorage.add_address("just-aN-New", "testing_addresss")
+        models.UserStorage.active_user_address("jUst-an-new", "testing_addresss")
+        user = models.User("Just-an-new")
+        self.assertEqual(user.address, models.UserStorage.get_user_address("jusT-an-new"))
         self.assertEqual(True, user.is_registered())
 
 
