@@ -63,17 +63,28 @@ def replay_pending_tip(reddit, tx_queue, failover_time):
 
 
 def enablemultisig_1of2(rpc, reddit, msg, tx_queue, failover_time):
-    if user_function.user_exist(msg.author.name):
+    user = models.User(msg.author.name)
+    if user.is_registered():
+
         split_message = msg.body.lower().strip().split()
         enablemultisig_index = split_message.index('+enablemultisig')
+
         if split_message[enablemultisig_index + 1] == '1of2':
             userpubkey = split_message[enablemultisig_index + 2]
             address = user_function.get_user_address(msg.author.name)
             botpubkey = rpc.validateaddress(address)
+
             try:
-                multisig = rpc.createmultisig(1, [str(botpubkey['pubkey']), str(split_message[enablemultisig_index + 2])])
-                user_function.save_multisig(msg.author.name, multisig)
+                multisig = rpc.createmultisig(1,
+                                              [str(botpubkey['pubkey']), str(split_message[enablemultisig_index + 2])])
+                models.UserStorage.add_address_multisig(msg.author.name, multisig)
             except:
-                bot_logger.logger.info('user %s entered invalid pubkey (command : enablemultisig_1of2) ' % msg.author.name)
-            rpc.importaddress(multisig["address"], "redditmulti-%s" % msg.author.name, False)
-            msg.reply('1 of 2 multisig successfully created.  Your address is : ' + str(multisig["address"]) + '\n\n and your redeemScript is : ' + multisig["redeemScript"])
+                bot_logger.logger.info(
+                    'user %s entered invalid pubkey (command : enablemultisig_1of2) ' % msg.author.name)
+            rpc.importaddress(multisig["address"], "redditmulti-%s" % user.username, False)
+            msg.reply('1 of 2 multisig successfully created.  Your address is : ' + str(
+                multisig["address"]) + '\n\n and your redeemScript is : ' + multisig["redeemScript"])
+
+    else:
+        bot_logger.logger.info('user %s not registered (command : enablemultisig_1of2) ' % user.username)
+        msg.reply(Template(lang.message_need_register + lang.message_footer).render(username=user.username))

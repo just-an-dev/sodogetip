@@ -17,21 +17,6 @@ def get_users_old():
             data = {}
         return data
 
-# read file
-def get_multisig_users():
-    with open(DATA_PATH + bot_config['user_file'], 'r') as f:
-        try:
-            data = json.load(f)
-        except ValueError:
-            bot_logger.logger.warning("Error on read user file")
-            data = {}
-        return data
-
-def mutisig_enabled(username, type_multisig):
-    db = TinyDB(DATA_PATH + bot_config['multisig_user'])
-    table = db.table(username)
-    User = Query()
-    return table.search(User.type == type_multisig)
 
 def get_unregistered_tip():
     db = TinyDB(config.unregistered_tip_user)
@@ -71,15 +56,3 @@ def get_balance_unregistered_tip(user):
                 pending_tips.append(int(tip['amount']))
 
     return int(sum(pending_tips))
-
-
-def save_multisig(username, multisig, type="1of2"):
-    db = TinyDB(DATA_PATH + bot_config['multisig_user'])
-    table = db.table(username)
-    table.insert({
-        'address': multisig['address'],
-        'redeemscript': multisig['redeemScript'],
-        'type': type,
-        'enabled': True,
-    })
-    db.close()

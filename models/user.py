@@ -108,6 +108,22 @@ class UserStorage:
             bot_logger.logger.error("address %s already registered for  %s " % (str(address), str(username)))
 
     @staticmethod
+    def add_address_multisig(username, multisig, type="1of2"):
+        # sanitize (just lower)
+        username = str(unicode(username).lower())
+
+        db = TinyDB(config.user_file)
+        table = db.table(username)
+        table.insert({
+            'address': multisig['address'],
+            'redeemscript': multisig['redeemScript'],
+            'type': type,
+            "coin": "doge",
+            "enable": False
+        })
+        db.close()
+
+    @staticmethod
     def exist(username):
         user_list = UserStorage.get_users()
         if unicode(username).lower() in user_list:
