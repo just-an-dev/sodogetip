@@ -3,6 +3,7 @@ import datetime
 from jinja2 import Template
 
 import bot_logger
+import config
 import lang
 import models
 
@@ -33,7 +34,7 @@ def build_message(data):
             str_finish = str_finish + ' - ' + tip['status']
 
         if tip['finish']:
-            str_finish = "[Successful](https://chain.so/tx/DOGE/" + tip['tx_id'] + ")"
+            str_finish = "[Successful](" + config.block_explorer + tip['tx_id'] + ")"
 
         str_amount = ""
         if tip['amount'] != "":

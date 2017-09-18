@@ -57,7 +57,7 @@ message_not_supported = "__^[such ^error]__: ^That ^is ^currently ^not ^supporte
 
 message_history = ("Hello /u/{{ username }}! Here is your transaction history: \n\n")
 message_tip = (
-    "__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](https://chain.so/tx/DOGE/{{ txid }})")
+    "__^[wow ^so ^verify]__: ^/u/{{ sender }} ^-> ^/u/{{ receiver }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")  ^[[transaction]](" + config.block_explorer + "{{ txid }})")
 message_withdraw = (
     "__^[wow ^so ^verify]__: ^/u/{{ username }} ^-> ^{{ receiver_address }} ^__Ð{{ amount }}__ ^__doge__ ^__(${{ value_usd }})__ ^[[help]](" + link_help + ")")
 message_withdraw_to_self = ("__^[such ^error]__: ^You ^cannot ^withdraw ^to ^your ^own ^bot ^address")

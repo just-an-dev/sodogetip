@@ -50,3 +50,6 @@ vanitygen_price = {
 # shop
 shop_enabled = False
 shop_fee = float(1/100)
+
+
+block_explorer = "https://chain.so/tx/DOGE/"
