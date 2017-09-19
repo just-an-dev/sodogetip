@@ -80,8 +80,9 @@ def get_user_spendable_balance(address, rpc=None):
         trans = rpc.decoderawtransaction(rpc.getrawtransaction(list_unspent[i]['txid']))
         # for v_in in range(0,len(trans['vin']),1):
         vin = rpc.decoderawtransaction(rpc.getrawtransaction(trans['vin'][0]['txid']))
-        if vin['vout'][0]['scriptPubKey']['addresses'][0] in models.UserStorage.get_all_users_address().values():
-            spendable_amounts.append(list_unspent[i]['amount'])
+        if 'addresses' in vin['vout'][0]['scriptPubKey'].keys():
+            if vin['vout'][0]['scriptPubKey']['addresses'][0] in models.UserStorage.get_all_users_address().values():
+                spendable_amounts.append(list_unspent[i]['amount'])
 
     bot_logger.logger.debug("unspent_amounts %s" % (str(sum(spendable_amounts))))
 
