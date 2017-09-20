@@ -18,7 +18,7 @@ def get_coin_value(balance, currency=None, format=2):
     except:
         try:
             jc_currency = requests.get(url_get_value['coincap']).json()
-            coin_val = xpath_get(jc_currency, "/usdPrice")
+            coin_val = xpath_get(jc_currency, "/price_usd")
         except:
             try:
                 jc_currency = requests.get(url_get_value['cryptocompare']).json()
