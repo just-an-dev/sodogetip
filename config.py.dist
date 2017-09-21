@@ -25,6 +25,7 @@ history_path = DATA_PATH + 'history/'
 
 spam_limit = 1000
 rate_fee = 1
+minial_fee = 1
 
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
