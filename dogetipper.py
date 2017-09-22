@@ -40,20 +40,19 @@ class SoDogeTip:
                         msg_subject = msg.subject.strip()
                         split_message = msg_body.lower().split()
 
-                        if (msg_body == '+register' and msg_subject == '+register') or split_message.count('+register'):
+                        if msg_subject == '+register' or split_message.count('+register'):
                             commands.register_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
-                        elif (msg_body == '+info' and msg_subject == '+info') or (
-                                        msg_body == '+balance' and msg_subject == '+balance'):
+                        elif msg_subject == '+info' or msg_subject == '+balance':
                             commands.info_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
-                        elif msg_body == '+help' and msg_subject == '+help':
+                        elif msg_subject == '+help':
                             commands.help_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
-                        elif msg_body == '+history' and msg_subject == '+history':
+                        elif msg_subject == '+history':
                             commands.history_user(msg)
                             utils.mark_msg_read(self.reddit, msg)
 
