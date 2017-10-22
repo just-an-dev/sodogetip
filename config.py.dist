@@ -25,6 +25,7 @@ history_path = DATA_PATH + 'history/'
 
 spam_limit = 1000
 rate_fee = 1
+minial_fee = 1
 
 url_get_value = {
     "coincap": 'http://www.coincap.io/page/DOGE',
@@ -50,3 +51,6 @@ vanitygen_price = {
 # shop
 shop_enabled = False
 shop_fee = float(1/100)
+shop_offer = DATA_PATH + 'offer.json'
+
+block_explorer = "https://chain.so/tx/DOGE/"

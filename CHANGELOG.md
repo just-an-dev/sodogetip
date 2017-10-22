@@ -1,5 +1,9 @@
 # v2.2 - in progress
 - Add 1of2 multisig
+- Add possibility to gild an user #93
+
+# v2.1.1 - 24/07/2017
+- the + in tip mention is optional 
 
 # v2.1 - 15/07/2017
 - Fix issue #78 (clean code - balances)

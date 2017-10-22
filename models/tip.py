@@ -34,7 +34,7 @@ class Tip(object):
             rpc = crypto.get_rpc()
 
         p = re.compile(
-            '(\+\/u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z,.]+)\s(doge)\s?(verify)?',
+            '(\+?\/?u\/' + config.bot_name + ')\s?(@?[0-9a-zA-Z-_\/\+]+)?\s+(\d+|[0-9a-zA-Z,.]+)\s(doge)\s?(verify)?',
             re.IGNORECASE)
         m = p.search(message_to_parse.strip())
         # Group 1 is +/u/sodogetiptest
