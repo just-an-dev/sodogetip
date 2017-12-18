@@ -1,4 +1,7 @@
 # SoDogeTip Bot 
+
+More info : www.sodogetip.xyz
+
 Tip a user: `+/u/sodogetip 10 doge`
 
 ## Commands 
